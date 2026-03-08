@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db, apiKeys } from '@/lib/db';
-import { eq } from 'drizzle-orm';
-import { getUserId } from '@/lib/auth';
+import { getCurrentUser } from '@/lib/data';
 
 const API_BASE = process.env.API_BASE_URL || 'http://localhost:3000';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
-  const userId = await getUserId();
-  if (!userId) {
+  const user = await getCurrentUser();
+  if (!user) {
     return NextResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 });
   }
 
@@ -18,27 +18,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: { message: 'HTML is required' } }, { status: 400 });
   }
 
-  // For dev bypass, use the dev API key
-  let authHeader = '';
-  if (process.env.DOCUFORGE_DEV_BYPASS === 'true') {
-    authHeader = 'Bearer df_live_dev_bypass';
-  } else {
-    // Get user's first API key
-    const [key] = await db
-      .select({ keyPrefix: apiKeys.keyPrefix })
-      .from(apiKeys)
-      .where(eq(apiKeys.userId, userId))
-      .limit(1);
-
-    if (!key) {
-      return NextResponse.json(
-        { error: { message: 'Create an API key first to use the playground' } },
-        { status: 400 },
-      );
-    }
-
-    // We can't recover the raw key, so make a direct internal call
-    authHeader = `Bearer ${key.keyPrefix}`;
+  const serviceSecret = process.env.DASHBOARD_SERVICE_SECRET;
+  if (!serviceSecret) {
+    return NextResponse.json(
+      { error: { message: 'Playground is not configured. Set DASHBOARD_SERVICE_SECRET.' } },
+      { status: 500 },
+    );
   }
 
   try {
@@ -46,7 +31,8 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: authHeader,
+        'X-Service-Secret': serviceSecret,
+        'X-Service-User-Id': user.id,
       },
       body: JSON.stringify({
         html,

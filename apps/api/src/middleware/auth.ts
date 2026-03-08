@@ -19,6 +19,26 @@ declare module 'hono' {
 }
 
 export const authMiddleware = createMiddleware(async (c, next) => {
+  // Service-to-service auth from dashboard playground
+  const serviceSecret = c.req.header('X-Service-Secret');
+  if (serviceSecret && process.env.DASHBOARD_SERVICE_SECRET) {
+    if (serviceSecret === process.env.DASHBOARD_SERVICE_SECRET) {
+      const serviceUserId = c.req.header('X-Service-User-Id');
+      if (serviceUserId) {
+        const [user] = await db
+          .select({ id: users.id, email: users.email, plan: users.plan })
+          .from(users)
+          .where(eq(users.id, serviceUserId))
+          .limit(1);
+        if (user) {
+          c.set('user', user);
+          return next();
+        }
+      }
+    }
+    throw new AuthError();
+  }
+
   const authHeader = c.req.header('Authorization');
   if (!authHeader?.startsWith('Bearer ')) {
     throw new AuthError('Missing or invalid Authorization header');

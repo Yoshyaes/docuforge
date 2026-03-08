@@ -53,9 +53,7 @@ export default async function DashboardPage() {
             Overview
           </h1>
           <Link
-            href="https://docs.getdocuforge.dev"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/playground"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-br from-accent to-orange-600 text-white text-sm font-semibold shadow-[0_0_30px_rgba(249,115,22,0.15)]"
           >
             <span>&#9889;</span> Generate PDF
