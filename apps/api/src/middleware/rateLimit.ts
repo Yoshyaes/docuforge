@@ -39,9 +39,8 @@ export const rateLimitMiddleware = createMiddleware(async (c, next) => {
     }
   } catch (err) {
     if (err instanceof RateLimitError) throw err;
-    // Fail closed: deny request if Redis is unavailable
-    console.error('Rate limiter error (denying request):', err);
-    throw new RateLimitError(5);
+    // Fail open: allow request if Redis is unavailable
+    console.error('Rate limiter error (allowing request):', err);
   }
 
   return next();
