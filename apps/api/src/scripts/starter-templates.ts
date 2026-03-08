@@ -459,7 +459,7 @@ export const starterTemplates: StarterTemplate[] = [
       expiry_date: 'February 25, 2028',
       location: 'San Francisco, CA',
       certificate_id: 'CERT-2026-00847',
-      verification_url: 'https://verify.docuforge.dev/CERT-2026-00847',
+      verification_url: 'https://verify.getdocuforge.dev/CERT-2026-00847',
       signers: [
         { name: 'Sarah Johnson', title: 'Director of Education' },
         { name: 'Michael Park', title: 'Lead Instructor' },

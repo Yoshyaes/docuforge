@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	defaultBaseURL = "https://api.docuforge.dev"
+	defaultBaseURL = "https://api.getdocuforge.dev"
 	userAgent      = "docuforge-go/0.1.0"
 )
 

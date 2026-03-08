@@ -8,14 +8,14 @@
  *
  * Environment variables:
  *   DOCUFORGE_API_KEY  - Your DocuForge API key (required)
- *   DOCUFORGE_API_URL  - API base URL (default: https://api.docuforge.dev)
+ *   DOCUFORGE_API_URL  - API base URL (default: https://api.getdocuforge.dev)
  */
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 
 const API_KEY = process.env.DOCUFORGE_API_KEY;
-const API_URL = (process.env.DOCUFORGE_API_URL || 'https://api.docuforge.dev').replace(/\/$/, '');
+const API_URL = (process.env.DOCUFORGE_API_URL || 'https://api.getdocuforge.dev').replace(/\/$/, '');
 
 async function apiRequest(method: string, path: string, body?: unknown) {
   const controller = new AbortController();

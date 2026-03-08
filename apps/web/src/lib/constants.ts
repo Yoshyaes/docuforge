@@ -78,7 +78,7 @@ const pdf = await client.generate({
   options: { format: 'A4', margin: '20mm' }
 });
 
-console.log(pdf.url); // https://cdn.docuforge.dev/gen_abc123.pdf`,
+console.log(pdf.url); // https://cdn.getdocuforge.dev/gen_abc123.pdf`,
 
   react: `import DocuForge from 'docuforge';
 import { Document, Page, Table } from '@docuforge/react-pdf';
@@ -125,7 +125,7 @@ const pdf = await client.fromTemplate({
 
 console.log(pdf.url);`,
 
-  curl: `curl -X POST https://api.docuforge.dev/v1/generate \\
+  curl: `curl -X POST https://api.getdocuforge.dev/v1/generate \\
   -H "Authorization: Bearer df_live_..." \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -141,7 +141,7 @@ console.log(pdf.url);`,
 # {
 #   "id": "gen_abc123",
 #   "status": "completed",
-#   "url": "https://cdn.docuforge.dev/gen_abc123.pdf",
+#   "url": "https://cdn.getdocuforge.dev/gen_abc123.pdf",
 #   "pages": 1,
 #   "file_size": 24531,
 #   "generation_time_ms": 342

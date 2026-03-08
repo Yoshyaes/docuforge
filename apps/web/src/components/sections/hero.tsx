@@ -12,12 +12,12 @@ const pdf = await docuforge.generate({
 });
 
 console.log(pdf.url);
-// → https://cdn.docuforge.dev/gen_abc123.pdf`;
+// → https://cdn.getdocuforge.dev/gen_abc123.pdf`;
 
 const heroResponse = `{
   "id": "gen_abc123",
   "status": "completed",
-  "url": "https://cdn.docuforge.dev/gen_abc123.pdf",
+  "url": "https://cdn.getdocuforge.dev/gen_abc123.pdf",
   "pages": 1,
   "generation_time_ms": 287
 }`;
@@ -55,13 +55,13 @@ export function Hero() {
             </p>
 
             <div className="flex flex-wrap gap-3">
-              <Button size="lg" href="https://app.docuforge.dev/sign-up">
+              <Button size="lg" href="https://app.getdocuforge.dev/sign-up">
                 Start for Free
               </Button>
               <Button
                 variant="secondary"
                 size="lg"
-                href="https://docs.docuforge.dev"
+                href="https://docs.getdocuforge.dev"
               >
                 Read the Docs
               </Button>

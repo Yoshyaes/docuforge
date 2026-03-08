@@ -12,7 +12,7 @@ module DocuForge
     # @param api_key [String] Your DocuForge API key.
     # @param base_url [String] API base URL.
     # @param timeout [Integer] Request timeout in seconds.
-    def initialize(api_key:, base_url: "https://api.docuforge.dev", timeout: 30)
+    def initialize(api_key:, base_url: "https://api.getdocuforge.dev", timeout: 30)
       raise ArgumentError, "DocuForge API key is required" if api_key.nil? || api_key.empty?
 
       @api_key = api_key

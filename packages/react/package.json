@@ -39,7 +39,7 @@
     "url": "https://github.com/docuforge/docuforge",
     "directory": "packages/react"
   },
-  "homepage": "https://docuforge.dev/docs/react-components",
+  "homepage": "https://getdocuforge.dev/docs/react-components",
   "bugs": "https://github.com/docuforge/docuforge/issues",
   "scripts": {
     "build": "tsup",

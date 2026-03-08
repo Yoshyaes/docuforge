@@ -7,12 +7,12 @@ description: Retrieve generation history and details.
 
 ## Get a Generation
 
-`GET https://api.docuforge.dev/v1/generations/:id`
+`GET https://api.getdocuforge.dev/v1/generations/:id`
 
 Retrieve details of a specific PDF generation.
 
 ```bash
-curl https://api.docuforge.dev/v1/generations/gen_abc123 \
+curl https://api.getdocuforge.dev/v1/generations/gen_abc123 \
   -H "Authorization: Bearer df_live_sk_..."
 ```
 
@@ -24,7 +24,7 @@ curl https://api.docuforge.dev/v1/generations/gen_abc123 \
   "template_id": null,
   "input_type": "html",
   "status": "completed",
-  "url": "https://cdn.docuforge.dev/gen_abc123.pdf",
+  "url": "https://cdn.getdocuforge.dev/gen_abc123.pdf",
   "pages": 2,
   "file_size": 45230,
   "generation_time_ms": 1840,
@@ -35,7 +35,7 @@ curl https://api.docuforge.dev/v1/generations/gen_abc123 \
 
 ## List Generations
 
-`GET https://api.docuforge.dev/v1/generations`
+`GET https://api.getdocuforge.dev/v1/generations`
 
 List all generations for the authenticated user.
 
@@ -56,7 +56,7 @@ List all generations for the authenticated user.
       "template_id": null,
       "input_type": "html",
       "status": "completed",
-      "url": "https://cdn.docuforge.dev/gen_abc123.pdf",
+      "url": "https://cdn.getdocuforge.dev/gen_abc123.pdf",
       "pages": 2,
       "file_size": 45230,
       "generation_time_ms": 1840,

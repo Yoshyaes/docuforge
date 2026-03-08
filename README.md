@@ -17,7 +17,7 @@ const pdf = await df.generate({
 });
 
 console.log(pdf.url);
-// → https://cdn.docuforge.dev/gen_abc123.pdf
+// → https://cdn.getdocuforge.dev/gen_abc123.pdf
 ```
 
 ## Features
@@ -90,7 +90,7 @@ npm install docuforge
 pip install docuforge
 ```
 
-See the [SDK documentation](https://docs.docuforge.dev/quickstart) for full usage details.
+See the [SDK documentation](https://docs.getdocuforge.dev/quickstart) for full usage details.
 
 ## Deployment
 

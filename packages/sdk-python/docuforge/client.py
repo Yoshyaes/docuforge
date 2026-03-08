@@ -92,7 +92,7 @@ class DocuForge:
     def __init__(
         self,
         api_key: str,
-        base_url: str = "https://api.docuforge.dev",
+        base_url: str = "https://api.getdocuforge.dev",
         timeout: float = 30.0,
     ):
         if not api_key:

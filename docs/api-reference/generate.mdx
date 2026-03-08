@@ -5,7 +5,7 @@ description: Generate a PDF from HTML or a template.
 
 # Generate PDF
 
-`POST https://api.docuforge.dev/v1/generate`
+`POST https://api.getdocuforge.dev/v1/generate`
 
 Generate a pixel-perfect PDF from HTML or a saved template.
 
@@ -34,7 +34,7 @@ Generate a pixel-perfect PDF from HTML or a saved template.
 ## Example — HTML Mode
 
 ```bash
-curl -X POST https://api.docuforge.dev/v1/generate \
+curl -X POST https://api.getdocuforge.dev/v1/generate \
   -H "Authorization: Bearer df_live_sk_..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -50,7 +50,7 @@ curl -X POST https://api.docuforge.dev/v1/generate \
 ## Example — Template Mode
 
 ```bash
-curl -X POST https://api.docuforge.dev/v1/generate \
+curl -X POST https://api.getdocuforge.dev/v1/generate \
   -H "Authorization: Bearer df_live_sk_..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -69,7 +69,7 @@ curl -X POST https://api.docuforge.dev/v1/generate \
 {
   "id": "gen_abc123",
   "status": "completed",
-  "url": "https://cdn.docuforge.dev/gen_abc123.pdf",
+  "url": "https://cdn.getdocuforge.dev/gen_abc123.pdf",
   "pages": 2,
   "file_size": 45230,
   "generation_time_ms": 1840

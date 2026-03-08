@@ -23,7 +23,7 @@ export class DocuForge {
   constructor(apiKey: string, options?: DocuForgeOptions) {
     if (!apiKey) throw new Error('DocuForge API key is required');
     this.#apiKey = apiKey;
-    this.baseUrl = (options?.baseUrl ?? 'https://api.docuforge.dev').replace(/\/$/, '');
+    this.baseUrl = (options?.baseUrl ?? 'https://api.getdocuforge.dev').replace(/\/$/, '');
     this.timeout = options?.timeout ?? 30000;
   }
 

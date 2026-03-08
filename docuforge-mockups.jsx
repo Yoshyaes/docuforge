@@ -433,7 +433,7 @@ const pdf = await df.generate({
   }
 });
 
-// pdf.url \u2192 https://cdn.docuforge.dev/gen_k8x92m.pdf
+// pdf.url \u2192 https://cdn.getdocuforge.dev/gen_k8x92m.pdf
 // pdf.pages \u2192 2
 // pdf.generation_time_ms \u2192 1,240`} />
     </section>
@@ -491,7 +491,7 @@ const pdf = await df.generate({
 
 \u2713 Using DocuForge MCP server...
 \u2713 Template: invoice_standard
-\u2713 Generated: https://cdn.docuforge.dev/gen_m3kx9.pdf (2 pages, 1.2s)`} compact />
+\u2713 Generated: https://cdn.getdocuforge.dev/gen_m3kx9.pdf (2 pages, 1.2s)`} compact />
     </section>
   </div>
 );
@@ -617,7 +617,7 @@ const pdf = await df.generate({
 });
 
 console.log(pdf.url);
-// \u2192 https://cdn.docuforge.dev/gen_abc123.pdf`} />
+// \u2192 https://cdn.getdocuforge.dev/gen_abc123.pdf`} />
       </div>
       <div style={{ marginBottom: "20px" }}>
         <div style={{ fontSize: "13px", color: colors.textMuted, marginBottom: "8px" }}>3. Use with templates</div>

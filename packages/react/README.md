@@ -1,6 +1,6 @@
 # @docuforge/react-pdf
 
-React components for building pixel-perfect PDF documents with [DocuForge](https://docuforge.dev).
+React components for building pixel-perfect PDF documents with [DocuForge](https://getdocuforge.dev).
 
 Compose documents using familiar React patterns — pages, headers, footers, tables, grids, watermarks, barcodes, and signatures — then send them to the DocuForge API to generate production-ready PDFs.
 
@@ -398,13 +398,13 @@ const pdf = await df.fromReact({
   options: { format: 'A4' },
 });
 
-console.log(pdf.url); // https://cdn.docuforge.dev/gen_abc123.pdf
+console.log(pdf.url); // https://cdn.getdocuforge.dev/gen_abc123.pdf
 ```
 
 ### With the REST API directly
 
 ```bash
-curl -X POST https://api.docuforge.dev/v1/generate \
+curl -X POST https://api.getdocuforge.dev/v1/generate \
   -H "Authorization: Bearer df_live_..." \
   -H "Content-Type: application/json" \
   -d '{

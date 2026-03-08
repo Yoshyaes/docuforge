@@ -21,7 +21,7 @@ const pdf = await df.generate({
   options: { format: 'A4', margin: '1in' }
 });
 
-console.log(pdf.url);    // https://cdn.docuforge.dev/gen_abc123.pdf
+console.log(pdf.url);    // https://cdn.getdocuforge.dev/gen_abc123.pdf
 console.log(pdf.pages);  // 2
 ```
 
@@ -116,7 +116,7 @@ try {
 
 ```typescript
 const df = new DocuForge('df_live_...', {
-  baseUrl: 'https://api.docuforge.dev', // Custom API URL
+  baseUrl: 'https://api.getdocuforge.dev', // Custom API URL
   timeout: 30000                         // Request timeout in ms
 });
 ```
