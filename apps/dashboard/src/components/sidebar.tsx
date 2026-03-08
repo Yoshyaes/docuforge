@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { UserButton } from '@clerk/nextjs';
 import {
   LayoutDashboard,
   FileText,
@@ -144,7 +145,5 @@ function DevOrClerkUser() {
     );
   }
 
-  // Lazy import to avoid crash when ClerkProvider is absent
-  const { UserButton } = require('@clerk/nextjs');
   return <UserButton afterSignOutUrl="/" />;
 }
