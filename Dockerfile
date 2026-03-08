@@ -42,6 +42,9 @@ COPY packages/sdk-typescript/package.json packages/sdk-typescript/
 # Install all dependencies
 RUN pnpm install --frozen-lockfile
 
+# Copy root tsconfig (extended by apps/api/tsconfig.json)
+COPY tsconfig.json ./
+
 # Copy source code
 COPY apps/api/ apps/api/
 COPY packages/sdk-typescript/ packages/sdk-typescript/
