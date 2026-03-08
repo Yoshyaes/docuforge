@@ -32,7 +32,7 @@ export default async function KeysPage() {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar usageCount={stats.generationCount} usageLimit={getPlanLimit(user.plan)} />
+      <Sidebar usageCount={stats.generationCount} usageLimit={getPlanLimit(user.plan)} isAdmin={user.role === 'admin'} />
       <main className="flex-1 p-6 overflow-y-auto">
         <h1 className="text-[22px] font-bold text-text-primary tracking-tight mb-6">
           API Keys

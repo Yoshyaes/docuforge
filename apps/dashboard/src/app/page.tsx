@@ -45,6 +45,7 @@ export default async function DashboardPage() {
       <Sidebar
         usageCount={stats.generationCount}
         usageLimit={limit}
+        isAdmin={user.role === 'admin'}
       />
       <main className="flex-1 p-6 overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
