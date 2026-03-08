@@ -42,11 +42,11 @@
 - [X] Build + deploy successful
 - [ ] Run migrations: Render Shell tab → `pnpm --filter @docuforge/api db:push`
 
-#### Step 5: Point DNS at Render (requires `docuforge.dev` domain)
+#### Step 5: Point DNS at Render (requires `getdocuforge.dev` domain)
 
-- [ ] Go to Cloudflare DNS for `docuforge.dev`
+- [ ] Go to Cloudflare DNS for `getdocuforge.dev`
 - [ ] Add a CNAME record: **Name:** `api`, **Target:** your Render URL (e.g., `docuforge-api-xxxx.onrender.com`), **Proxy:** DNS only (gray cloud)
-- [ ] In Render → Settings → Custom Domains → Add `api.docuforge.dev`
+- [ ] In Render → Settings → Custom Domains → Add `api.getdocuforge.dev`
 - [ ] Wait for TLS certificate (~5 min)
 
 #### Step 6: Run database migrations
@@ -56,11 +56,11 @@
 
 #### Step 7: Verify API is live
 
-- [ ] Test health endpoint: `curl https://api.docuforge.dev/health` (or your Render URL directly)
+- [ ] Test health endpoint: `curl https://api.getdocuforge.dev/health` (or your Render URL directly)
 - [ ] Create an API key (via dashboard or directly in DB)
 - [ ] Test PDF generation:
   ```bash
-  curl -X POST https://api.docuforge.dev/v1/generate \
+  curl -X POST https://api.getdocuforge.dev/v1/generate \
     -H "Authorization: Bearer df_live_your_key_here" \
     -H "Content-Type: application/json" \
     -d '{"html": "<h1>Hello from DocuForge</h1>"}'
@@ -79,10 +79,10 @@
   ```
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=<from Clerk dashboard>
   CLERK_SECRET_KEY=<from Clerk dashboard>
-  NEXT_PUBLIC_API_URL=https://api.docuforge.dev
+  NEXT_PUBLIC_API_URL=https://api.getdocuforge.dev
   ```
 - [ ] Deploy
-- [ ] Go to Settings → Domains → Add `app.docuforge.dev`
+- [ ] Go to Settings → Domains → Add `app.getdocuforge.dev`
 - [ ] In Cloudflare DNS, add a CNAME record:
   - **Name:** `app`
   - **Target:** `cname.vercel-dns.com`
@@ -97,7 +97,7 @@
   - **Build Command:** `pnpm --filter @docuforge/web build`
   - **Install Command:** `pnpm install`
 - [ ] Deploy
-- [ ] Go to Settings → Domains → Add `docuforge.dev`
+- [ ] Go to Settings → Domains → Add `getdocuforge.dev`
 - [ ] In Cloudflare DNS, add CNAME: **Name:** `@`, **Target:** `cname.vercel-dns.com`, **Proxy:** DNS only
 
 #### Step 10: Deploy docs
@@ -105,22 +105,22 @@
 - [ ] Option A — Mintlify (recommended):
   - Go to https://mintlify.com and create a free account
   - Connect your GitHub repo, set root to `docs/`
-  - Add custom domain `docs.docuforge.dev` in Mintlify settings
+  - Add custom domain `docs.getdocuforge.dev` in Mintlify settings
   - In Cloudflare DNS, add the CNAME record Mintlify provides
 - [ ] Option B — Vercel:
   - Import repo to Vercel, set root to `docs/`
-  - Add domain `docs.docuforge.dev`
+  - Add domain `docs.getdocuforge.dev`
 
 #### Step 11: Verify llms.txt
 
-- [ ] Confirm `https://docuforge.dev/llms.txt` is accessible
+- [ ] Confirm `https://getdocuforge.dev/llms.txt` is accessible
   - This requires your root domain to serve the `public/` directory
   - If using Vercel for the main site, the files in `public/` are served automatically
   - If not, upload `llms.txt` and `llms-full.txt` to your hosting provider's static file directory
 
 #### Step 12: End-to-end verification
 
-- [ ] Complete flow test: sign up on `app.docuforge.dev` → create API key → generate a PDF via `api.docuforge.dev/v1/generate` → verify PDF URL loads from R2 → see it in the dashboard generations list
+- [ ] Complete flow test: sign up on `app.getdocuforge.dev` → create API key → generate a PDF via `api.getdocuforge.dev/v1/generate` → verify PDF URL loads from R2 → see it in the dashboard generations list
 
 ### Ship the Open Source Library (Days 3-5)
 
@@ -158,12 +158,12 @@ This is the single most important thing you do this week. It starts generating A
 
 ### Where to Publish
 
-- [X] Primary: `docuforge.dev/blog` *(blog system built in `apps/web/` — will go live when landing page deploys to Vercel)*
+- [X] Primary: `getdocuforge.dev/blog` *(blog system built in `apps/web/` — will go live when landing page deploys to Vercel)*
 - [ ] Cross-post to Dev.to
 - [ ] Cross-post to Hashnode
 - [X] Each tutorial is a complete, working example using the DocuForge SDK
 
-**Do NOT put these on the TAG blog.** TAG is for gaming content. DocuForge content lives on `docuforge.dev/blog`. Different audiences, different domains.
+**Do NOT put these on the TAG blog.** TAG is for gaming content. DocuForge content lives on `getdocuforge.dev/blog`. Different audiences, different domains.
 
 ### Stack Overflow Seeding
 
@@ -241,7 +241,7 @@ This is the single most important thing you do this week. It starts generating A
 
 ### Content Engine (Ongoing)
 
-- [ ] Publish 2-3 articles per week on `docuforge.dev/blog`
+- [ ] Publish 2-3 articles per week on `getdocuforge.dev/blog`
 - [ ] Use the same content automation workflow from TAG — templatize tutorials with a DocuForge-specific skill
 - [ ] Each tutorial follows the same skeleton: problem → install SDK → 10 lines of code → working PDF → link to docs
 - [ ] Refresh llms.txt monthly with new content
@@ -326,5 +326,5 @@ Use Taz as your first enterprise customer. This gives you a real case study, for
 | Upstash (Redis) | Free |
 | Cloudflare R2 (Storage) | Free |
 | Cloudflare (DNS/CDN) | Free |
-| `docuforge.dev` domain | ~$1/month ($12/year) |
+| `getdocuforge.dev` domain | ~$1/month ($12/year) |
 | **Total** | **~$8/month** |

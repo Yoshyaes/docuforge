@@ -21,7 +21,7 @@ pdf = df.generate(
     options={"format": "A4", "margin": "1in"}
 )
 
-print(pdf.url)    # https://cdn.docuforge.dev/gen_abc123.pdf
+print(pdf.url)    # https://cdn.getdocuforge.dev/gen_abc123.pdf
 print(pdf.pages)  # 2
 ```
 

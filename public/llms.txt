@@ -3,10 +3,10 @@
 > PDF generation API for developers. HTML in, pixel-perfect PDF out.
 
 ## Docs
-- [Quickstart](https://docs.docuforge.dev/quickstart)
-- [HTML to PDF](https://docs.docuforge.dev/api-reference/generate)
-- [Templates](https://docs.docuforge.dev/api-reference/templates)
-- [API Reference](https://docs.docuforge.dev/api-reference/generate)
+- [Quickstart](https://docs.getdocuforge.dev/quickstart)
+- [HTML to PDF](https://docs.getdocuforge.dev/api-reference/generate)
+- [Templates](https://docs.getdocuforge.dev/api-reference/templates)
+- [API Reference](https://docs.getdocuforge.dev/api-reference/generate)
 
 ## SDKs
 - TypeScript: `npm install docuforge`

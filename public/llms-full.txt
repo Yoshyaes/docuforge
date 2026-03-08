@@ -6,7 +6,7 @@
 
 DocuForge is a hosted PDF generation API. Send HTML or template data, get pixel-perfect PDFs back in under 3 seconds. No headless browsers to manage.
 
-**Base URL:** `https://api.docuforge.dev`
+**Base URL:** `https://api.getdocuforge.dev`
 **Authentication:** Bearer token in Authorization header (`Authorization: Bearer df_live_...`)
 
 ## SDKs
@@ -67,7 +67,7 @@ For template mode:
 {
   "id": "gen_abc123",
   "status": "completed",
-  "url": "https://cdn.docuforge.dev/gen_abc123.pdf",
+  "url": "https://cdn.getdocuforge.dev/gen_abc123.pdf",
   "pages": 2,
   "file_size": 45230,
   "generation_time_ms": 1840
@@ -96,7 +96,7 @@ Get a specific generation.
   "template_id": null,
   "input_type": "html",
   "status": "completed",
-  "url": "https://cdn.docuforge.dev/gen_abc123.pdf",
+  "url": "https://cdn.getdocuforge.dev/gen_abc123.pdf",
   "pages": 2,
   "file_size": 45230,
   "generation_time_ms": 1840,

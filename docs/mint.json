@@ -11,11 +11,11 @@
     "dark": "#EA580C"
   },
   "topbarLinks": [
-    { "name": "Dashboard", "url": "https://app.docuforge.dev" }
+    { "name": "Dashboard", "url": "https://app.getdocuforge.dev" }
   ],
   "topbarCtaButton": {
     "name": "Get API Key",
-    "url": "https://app.docuforge.dev"
+    "url": "https://app.getdocuforge.dev"
   },
   "tabs": [
     { "name": "API Reference", "url": "api-reference" },

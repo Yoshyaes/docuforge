@@ -48,7 +48,7 @@ export function PricingPreview() {
               ))}
             </ul>
 
-            <Button className="w-full" size="lg" href="https://app.docuforge.dev/sign-up">
+            <Button className="w-full" size="lg" href="https://app.getdocuforge.dev/sign-up">
               Get Your API Key
             </Button>
 

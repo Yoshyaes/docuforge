@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 
 const navLinks = [
   { label: 'Features', href: '/#features' },
-  { label: 'Docs', href: 'https://docs.docuforge.dev' },
+  { label: 'Docs', href: 'https://docs.getdocuforge.dev' },
   { label: 'Blog', href: '/blog' },
   { label: 'Pricing', href: '/#pricing' },
 ];
@@ -59,10 +59,10 @@ export function Navbar() {
 
         {/* Desktop CTA */}
         <div className="hidden md:flex items-center gap-3">
-          <Button variant="ghost" size="sm" href="https://app.docuforge.dev/sign-in">
+          <Button variant="ghost" size="sm" href="https://app.getdocuforge.dev/sign-in">
             Sign In
           </Button>
-          <Button size="sm" href="https://app.docuforge.dev/sign-up">
+          <Button size="sm" href="https://app.getdocuforge.dev/sign-up">
             Get Started Free
           </Button>
         </div>
@@ -92,10 +92,10 @@ export function Navbar() {
               </Link>
             ))}
             <div className="pt-3 border-t border-border-subtle flex flex-col gap-2">
-              <Button variant="secondary" size="sm" href="https://app.docuforge.dev/sign-in">
+              <Button variant="secondary" size="sm" href="https://app.getdocuforge.dev/sign-in">
                 Sign In
               </Button>
-              <Button size="sm" href="https://app.docuforge.dev/sign-up">
+              <Button size="sm" href="https://app.getdocuforge.dev/sign-up">
                 Get Started Free
               </Button>
             </div>

@@ -251,7 +251,7 @@ Upload generated PDFs to Cloudflare R2 (S3-compatible).
 // 2. Upload to R2 bucket with key: pdfs/{gen_id}.pdf
 // 3. Set Content-Type: application/pdf
 // 4. Set expiry: 24 hours by default (configurable per-plan)
-// 5. Return CDN URL: https://cdn.docuforge.dev/{gen_id}.pdf
+// 5. Return CDN URL: https://cdn.getdocuforge.dev/{gen_id}.pdf
 //
 // For MVP, use AWS S3 SDK with R2 endpoint.
 // If R2 isn't set up yet, fall back to local filesystem storage for development.
@@ -294,7 +294,7 @@ Upload generated PDFs to Cloudflare R2 (S3-compatible).
 // {
 //   "id": "gen_abc123",
 //   "status": "completed",
-//   "url": "https://cdn.docuforge.dev/gen_abc123.pdf",
+//   "url": "https://cdn.getdocuforge.dev/gen_abc123.pdf",
 //   "pages": 2,
 //   "file_size": 45230,
 //   "generation_time_ms": 1840
@@ -343,7 +343,7 @@ export class DocuForge {
 
   constructor(apiKey: string, options?: { baseUrl?: string }) {
     this.apiKey = apiKey;
-    this.baseUrl = options?.baseUrl ?? 'https://api.docuforge.dev';
+    this.baseUrl = options?.baseUrl ?? 'https://api.getdocuforge.dev';
   }
 
   async generate(params: GenerateParams): Promise<GenerateResponse> {
@@ -414,7 +414,7 @@ Mirror the TypeScript SDK API exactly. Use `httpx` for HTTP and `pydantic` for t
 # packages/sdk-python/docuforge/client.py
 
 class DocuForge:
-    def __init__(self, api_key: str, base_url: str = "https://api.docuforge.dev"):
+    def __init__(self, api_key: str, base_url: str = "https://api.getdocuforge.dev"):
         self.api_key = api_key
         self.base_url = base_url
 
@@ -506,10 +506,10 @@ Each guide should be a complete, copy-pasteable tutorial that an AI coding agent
 > PDF generation API for developers. HTML in, pixel-perfect PDF out.
 
 ## Docs
-- [Quickstart](https://docs.docuforge.dev/quickstart)
-- [HTML to PDF](https://docs.docuforge.dev/html-to-pdf)
-- [Templates](https://docs.docuforge.dev/templates)
-- [API Reference](https://docs.docuforge.dev/api-reference/generate)
+- [Quickstart](https://docs.getdocuforge.dev/quickstart)
+- [HTML to PDF](https://docs.getdocuforge.dev/html-to-pdf)
+- [Templates](https://docs.getdocuforge.dev/templates)
+- [API Reference](https://docs.getdocuforge.dev/api-reference/generate)
 
 ## SDKs
 - TypeScript: `npm install docuforge`
@@ -600,7 +600,7 @@ R2_ACCOUNT_ID=
 R2_ACCESS_KEY_ID=
 R2_SECRET_ACCESS_KEY=
 R2_BUCKET_NAME=docuforge-pdfs
-R2_PUBLIC_URL=https://cdn.docuforge.dev
+R2_PUBLIC_URL=https://cdn.getdocuforge.dev
 
 # Clerk
 CLERK_SECRET_KEY=

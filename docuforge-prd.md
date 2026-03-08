@@ -234,7 +234,7 @@ usage_daily
 
 ### API Specifications
 
-**Base URL:** `https://api.docuforge.dev/v1`
+**Base URL:** `https://api.getdocuforge.dev/v1`
 
 **Authentication:** Bearer token (`Authorization: Bearer df_live_...`)
 
@@ -260,7 +260,7 @@ Generate a PDF from HTML, React, or a template.
 {
   "id": "gen_abc123",
   "status": "completed",
-  "url": "https://cdn.docuforge.dev/gen_abc123.pdf",
+  "url": "https://cdn.getdocuforge.dev/gen_abc123.pdf",
   "pages": 2,
   "file_size": 45230,
   "generation_time_ms": 1840
@@ -314,7 +314,7 @@ Get usage stats for current billing period.
 
 ### Flow 1: First PDF in 5 Minutes
 
-1. Developer visits docuforge.dev, clicks "Get API Key"
+1. Developer visits getdocuforge.dev, clicks "Get API Key"
 2. Signs up with GitHub (via Clerk), lands on dashboard
 3. Copies API key from dashboard
 4. Installs SDK: `npm install docuforge`

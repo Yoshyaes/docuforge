@@ -24,6 +24,6 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://docuforge.dev"
-Documentation = "https://docs.docuforge.dev"
+Homepage = "https://getdocuforge.dev"
+Documentation = "https://docs.getdocuforge.dev"
 Repository = "https://github.com/docuforge/docuforge-python"

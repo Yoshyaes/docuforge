@@ -75,4 +75,4 @@ Add to `.mcp.json` in your project:
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `DOCUFORGE_API_KEY` | Yes | Your DocuForge API key |
-| `DOCUFORGE_API_URL` | No | API URL (default: `https://api.docuforge.dev`) |
+| `DOCUFORGE_API_URL` | No | API URL (default: `https://api.getdocuforge.dev`) |
