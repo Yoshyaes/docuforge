@@ -16,7 +16,7 @@ export default async function TemplatesPage() {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar usageCount={stats.generationCount} usageLimit={getPlanLimit(user.plan)} />
+      <Sidebar usageCount={stats.generationCount} usageLimit={getPlanLimit(user.plan)} isAdmin={user.role === 'admin'} />
       <main className="flex-1 p-6 overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-[22px] font-bold text-text-primary tracking-tight">

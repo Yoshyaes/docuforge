@@ -10,6 +10,8 @@ import {
   Settings,
   Play,
   BarChart3,
+  Shield,
+  Users,
 } from 'lucide-react';
 
 const navItems = [
@@ -22,12 +24,19 @@ const navItems = [
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
+const adminNavItems = [
+  { href: '/admin', label: 'Admin Overview', icon: Shield },
+  { href: '/admin/users', label: 'Users', icon: Users },
+  { href: '/admin/generations', label: 'All Generations', icon: FileText },
+];
+
 interface SidebarProps {
   usageCount?: number;
   usageLimit?: number;
+  isAdmin?: boolean;
 }
 
-export function Sidebar({ usageCount = 0, usageLimit = 1000 }: SidebarProps) {
+export function Sidebar({ usageCount = 0, usageLimit = 1000, isAdmin = false }: SidebarProps) {
   const pathname = usePathname();
   const pct = usageLimit > 0 ? Math.min(100, (usageCount / usageLimit) * 100) : 0;
 
@@ -68,6 +77,35 @@ export function Sidebar({ usageCount = 0, usageLimit = 1000 }: SidebarProps) {
           );
         })}
       </nav>
+
+      {/* Admin */}
+      {isAdmin && (
+        <div className="px-3 pb-2">
+          <div className="border-t border-border-subtle my-2" />
+          <div className="text-[10px] uppercase tracking-wider text-text-dim px-3 mb-1">Admin</div>
+          {adminNavItems.map((item) => {
+            const isActive =
+              item.href === '/admin'
+                ? pathname === '/admin'
+                : pathname.startsWith(item.href);
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium mb-0.5 transition-colors ${
+                  isActive
+                    ? 'bg-surface-hover text-text-primary'
+                    : 'text-text-muted hover:text-text-primary hover:bg-surface-hover/50'
+                }`}
+              >
+                <Icon size={16} className="opacity-70" />
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
+      )}
 
       {/* Usage */}
       <div className="mx-4 mb-4 border-t border-border-subtle pt-4">

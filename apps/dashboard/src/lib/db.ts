@@ -17,6 +17,7 @@ import {
 
 // Re-declare schema inline to avoid cross-workspace import issues
 export const planEnum = pgEnum('plan', ['free', 'starter', 'pro', 'enterprise']);
+export const roleEnum = pgEnum('role', ['user', 'admin']);
 export const inputTypeEnum = pgEnum('input_type', ['html', 'template']);
 export const statusEnum = pgEnum('status', ['queued', 'processing', 'completed', 'failed']);
 
@@ -25,6 +26,7 @@ export const users = pgTable('users', {
   email: varchar('email', { length: 255 }).notNull().unique(),
   clerkId: varchar('clerk_id', { length: 255 }).unique(),
   plan: planEnum('plan').notNull().default('free'),
+  role: roleEnum('role').notNull().default('user'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 

@@ -46,9 +46,9 @@
 
 > **Note:** Domain `getdocuforge.dev` was purchased via Vercel. DNS is managed by Vercel, not Cloudflare. Add DNS records in Vercel → Domains → `getdocuforge.dev` → DNS Records.
 
-- [ ] In Vercel DNS for `getdocuforge.dev`, add a CNAME record: **Name:** `api`, **Target:** `docuforge-api-53lm.onrender.com`
-- [ ] In Render → Settings → Custom Domains → Add `api.getdocuforge.dev`
-- [ ] Wait for TLS certificate (~5 min)
+- [X] In Vercel DNS for `getdocuforge.dev`, add a CNAME record: **Name:** `api`, **Target:** `docuforge-api-53lm.onrender.com`
+- [X] In Render → Settings → Custom Domains → Add `api.getdocuforge.dev` *(verified + TLS cert issued)*
+- [X] `https://api.getdocuforge.dev/health` returns `{"status":"ok"}`
 
 #### Step 6: Run database migrations
 
@@ -70,22 +70,12 @@
 
 #### Step 8: Deploy dashboard to Vercel
 
-- [ ] Set up Clerk account at https://clerk.com and create an application
-- [ ] Go to https://vercel.com and import your GitHub repo as a **separate project**
-- [ ] Configure:
-  - **Framework Preset:** Next.js
-  - **Root Directory:** `apps/dashboard`
-  - **Build Command:** `pnpm --filter @docuforge/dashboard build`
-  - **Install Command:** `pnpm install`
-- [ ] Add environment variables:
-  ```
-  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=<from Clerk dashboard>
-  CLERK_SECRET_KEY=<from Clerk dashboard>
-  NEXT_PUBLIC_API_URL=https://api.getdocuforge.dev
-  ```
-- [ ] Deploy
-- [ ] Go to Settings → Domains → Add `app.getdocuforge.dev`
-- [ ] In Vercel DNS for `getdocuforge.dev`, add a CNAME record: **Name:** `app`, **Target:** the Vercel deployment URL
+- [X] Set up Clerk account at https://clerk.com and create an application *(DocuForge app, Email + Google sign-in)*
+- [X] Go to https://vercel.com and import your GitHub repo as a **separate project**
+- [X] Configure: Next.js, Root Directory `apps/dashboard`, build `pnpm --filter @docuforge/dashboard build`
+- [X] Add environment variables (NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY, NEXT_PUBLIC_API_URL)
+- [X] Deploy *(live at `docuforge-dashboard.vercel.app`)*
+- [X] Domain `app.getdocuforge.dev` configured *(DNS propagation may take a few hours)*
 
 #### Step 9: Deploy landing page (`apps/web`) to Vercel
 
@@ -108,10 +98,7 @@
 
 #### Step 11: Verify llms.txt
 
-- [ ] Confirm `https://getdocuforge.dev/llms.txt` is accessible
-  - This requires your root domain to serve the `public/` directory
-  - If using Vercel for the main site, the files in `public/` are served automatically
-  - If not, upload `llms.txt` and `llms-full.txt` to your hosting provider's static file directory
+- [X] Confirm `https://getdocuforge.dev/llms.txt` is accessible *(verified — serving from `apps/web/public/`)*
 
 #### Step 12: End-to-end verification
 

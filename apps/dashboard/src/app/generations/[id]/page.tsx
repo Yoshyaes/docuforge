@@ -45,7 +45,7 @@ export default async function GenerationDetailPage({
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar usageCount={stats.generationCount} usageLimit={getPlanLimit(user.plan)} />
+      <Sidebar usageCount={stats.generationCount} usageLimit={getPlanLimit(user.plan)} isAdmin={user.role === 'admin'} />
       <main className="flex-1 p-6 overflow-y-auto">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">

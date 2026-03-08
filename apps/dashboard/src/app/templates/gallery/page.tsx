@@ -34,7 +34,7 @@ export default async function TemplateGalleryPage() {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar usageCount={stats.generationCount} usageLimit={getPlanLimit(user.plan)} />
+      <Sidebar usageCount={stats.generationCount} usageLimit={getPlanLimit(user.plan)} isAdmin={user.role === 'admin'} />
       <main className="flex-1 p-6 overflow-y-auto">
         <StarterGallery templates={starters} />
       </main>
