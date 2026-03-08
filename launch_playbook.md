@@ -58,7 +58,7 @@
 #### Step 7: Verify API is live
 
 - [X] Test health endpoint: `curl https://docuforge-api-53lm.onrender.com/health` → `{"status":"ok"}`
-- [ ] Create an API key (via dashboard or directly in DB)
+- [ ] Create an API key (via dashboard → API Keys page)
 - [ ] Test PDF generation:
   ```bash
   curl -X POST https://api.getdocuforge.dev/v1/generate \
@@ -68,6 +68,14 @@
   ```
 - [ ] Verify PDF URL loads from R2
 
+#### Step 7b: Configure Playground (service-to-service auth)
+
+- [ ] Generate a shared secret: `openssl rand -hex 32`
+- [ ] Add to **Render** (API) env vars: `DASHBOARD_SERVICE_SECRET=<secret>`
+- [ ] Add to **Vercel** (Dashboard) env vars: `DASHBOARD_SERVICE_SECRET=<secret>` and `API_BASE_URL=https://api.getdocuforge.dev`
+- [ ] Redeploy both services to pick up new env vars
+- [ ] Test Playground: go to dashboard → Playground → Generate PDF
+
 #### Step 8: Deploy dashboard to Vercel
 
 - [X] Set up Clerk account at https://clerk.com and create an application *(DocuForge app, Email + Google sign-in)*
@@ -76,6 +84,18 @@
 - [X] Add environment variables (NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY, NEXT_PUBLIC_API_URL)
 - [X] Deploy *(live at `docuforge-dashboard.vercel.app`)*
 - [X] Domain `app.getdocuforge.dev` configured *(DNS propagation may take a few hours)*
+- [X] Clerk sign-in working (ClerkProvider fix deployed)
+- [X] Admin dashboard built and deployed (admin overview, users, generations pages)
+- [X] fredaithings@gmail.com set as admin via Neon SQL Editor
+- [X] `DATABASE_URL` added to Vercel env vars
+
+#### Step 8b: Configure Clerk webhook (production user provisioning)
+
+- [ ] In Clerk Dashboard → Webhooks → Add Endpoint
+- [ ] URL: `https://api.getdocuforge.dev/webhooks/clerk`
+- [ ] Events: `user.created`, `user.updated`, `user.deleted`
+- [ ] Copy the Signing Secret → add as `CLERK_WEBHOOK_SECRET` env var in Render
+- *Note: The dashboard auto-provisions users on first sign-in as a fallback, but the webhook is the proper mechanism.*
 
 #### Step 9: Deploy landing page (`apps/web`) to Vercel
 
