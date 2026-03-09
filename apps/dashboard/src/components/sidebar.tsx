@@ -13,6 +13,7 @@ import {
   BarChart3,
   Shield,
   Users,
+  BookOpen,
 } from 'lucide-react';
 
 const navItems = [
@@ -77,6 +78,15 @@ export function Sidebar({ usageCount = 0, usageLimit = 1000, isAdmin = false }: 
             </Link>
           );
         })}
+        <a
+          href="https://fred-7da601c6.mintlify.app"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium mb-0.5 transition-colors text-text-muted hover:text-text-primary hover:bg-surface-hover/50"
+        >
+          <BookOpen size={16} className="opacity-70" />
+          Docs
+        </a>
       </nav>
 
       {/* Admin */}
