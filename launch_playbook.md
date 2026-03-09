@@ -58,22 +58,17 @@
 #### Step 7: Verify API is live
 
 - [X] Test health endpoint: `curl https://docuforge-api-53lm.onrender.com/health` → `{"status":"ok"}`
-- [ ] Create an API key (via dashboard → API Keys page)
-- [ ] Test PDF generation:
-  ```bash
-  curl -X POST https://api.getdocuforge.dev/v1/generate \
-    -H "Authorization: Bearer df_live_your_key_here" \
-    -H "Content-Type: application/json" \
-    -d '{"html": "<h1>Hello from DocuForge</h1>"}'
-  ```
-- [ ] Verify PDF URL loads from R2
+- [X] Create an API key (via dashboard → API Keys page)
+- [X] Test PDF generation *(completed — 637ms, R2 URL returned)*
+- [X] Verify PDF URL loads from R2 *(public R2.dev subdomain configured)*
+- [X] R2 env vars configured in Render: R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME, R2_PUBLIC_URL
+- [X] Rate limiter changed to fail-open when Redis is unavailable
 
 #### Step 7b: Configure Playground (service-to-service auth)
 
-- [ ] Generate a shared secret: `openssl rand -hex 32`
-- [ ] Add to **Render** (API) env vars: `DASHBOARD_SERVICE_SECRET=<secret>`
-- [ ] Add to **Vercel** (Dashboard) env vars: `DASHBOARD_SERVICE_SECRET=<secret>` and `API_BASE_URL=https://api.getdocuforge.dev`
-- [ ] Redeploy both services to pick up new env vars
+- [X] DASHBOARD_SERVICE_SECRET added to Render
+- [ ] Add to **Vercel** (Dashboard) env vars: `DASHBOARD_SERVICE_SECRET=<same secret>` and `API_BASE_URL=https://api.getdocuforge.dev`
+- [ ] Redeploy Vercel dashboard to pick up new env vars
 - [ ] Test Playground: go to dashboard → Playground → Generate PDF
 
 #### Step 8: Deploy dashboard to Vercel
