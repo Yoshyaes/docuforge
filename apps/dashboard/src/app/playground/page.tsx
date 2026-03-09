@@ -121,7 +121,7 @@ export default function PlaygroundPage() {
               value={html}
               onChange={(e) => setHtml(e.target.value)}
               spellCheck={false}
-              className="flex-1 p-4 bg-background text-text-primary font-mono text-[13px] leading-relaxed resize-none outline-none"
+              className="flex-1 p-4 bg-[#0A0A0B] text-[#FAFAFA] font-mono text-[13px] leading-relaxed resize-none outline-none"
               placeholder="Enter your HTML here..."
             />
           </div>
