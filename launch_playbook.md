@@ -67,9 +67,8 @@
 #### Step 7b: Configure Playground (service-to-service auth)
 
 - [X] DASHBOARD_SERVICE_SECRET added to Render
-- [ ] Add to **Vercel** (Dashboard) env vars: `DASHBOARD_SERVICE_SECRET=<same secret>` and `API_BASE_URL=https://api.getdocuforge.dev`
-- [ ] Redeploy Vercel dashboard to pick up new env vars
-- [ ] Test Playground: go to dashboard → Playground → Generate PDF
+- [X] DASHBOARD_SERVICE_SECRET and API_BASE_URL added to Vercel
+- [X] Playground tested — PDF generation working from browser
 
 #### Step 8: Deploy dashboard to Vercel
 
@@ -86,11 +85,10 @@
 
 #### Step 8b: Configure Clerk webhook (production user provisioning)
 
-- [ ] In Clerk Dashboard → Webhooks → Add Endpoint
-- [ ] URL: `https://api.getdocuforge.dev/webhooks/clerk`
-- [ ] Events: `user.created`, `user.updated`, `user.deleted`
-- [ ] Copy the Signing Secret → add as `CLERK_WEBHOOK_SECRET` env var in Render
-- *Note: The dashboard auto-provisions users on first sign-in as a fallback, but the webhook is the proper mechanism.*
+- [X] Clerk webhook configured with endpoint `https://api.getdocuforge.dev/webhooks/clerk`
+- [X] Events: `user.created`, `user.updated`, `user.deleted`
+- [X] `CLERK_WEBHOOK_SECRET` added to Render env vars
+- *Note: The dashboard also auto-provisions users on first sign-in as a fallback.*
 
 #### Step 9: Deploy landing page (`apps/web`) to Vercel
 
