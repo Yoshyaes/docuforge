@@ -101,7 +101,7 @@ export async function uploadPdf(
         CacheControl: 'public, max-age=86400',
       }),
     );
-    return `${PUBLIC_URL}/${generationId}.pdf`;
+    return `${PUBLIC_URL}/${key}`;
   }
 
   // Local filesystem fallback for development
