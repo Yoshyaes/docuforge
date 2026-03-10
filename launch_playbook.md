@@ -100,14 +100,8 @@
 
 #### Step 10: Deploy docs
 
-- [ ] Option A — Mintlify (recommended):
-  - Go to https://mintlify.com and create a free account
-  - Connect your GitHub repo, set root to `docs/`
-  - Add custom domain `docs.getdocuforge.dev` in Mintlify settings
-  - In Vercel DNS, add the CNAME record Mintlify provides
-- [ ] Option B — Vercel:
-  - Import repo to Vercel, set root to `docs/`
-  - Add domain `docs.getdocuforge.dev`
+- [X] Mintlify docs deployed *(live at `fred-7da601c6.mintlify.app`)*
+- [ ] Custom domain `docs.getdocuforge.dev` — blocked by Vercel DNS intercepting subdomains. Options: transfer DNS to Cloudflare, or keep using Mintlify default URL.
 
 #### Step 11: Verify llms.txt
 
@@ -176,10 +170,10 @@ This is the single most important thing you do this week. It starts generating A
 
 ### Polish the Full Flow
 
-- [ ] Sign up → get API key → generate first PDF → see it in dashboard (test end-to-end)
-- [ ] Fix any friction in the onboarding flow
+- [X] Sign up → get API key → generate first PDF → see it in dashboard (test end-to-end) *(verified)*
+- [X] Fix any friction in the onboarding flow *(added getting started checklist to dashboard home page)*
 - [ ] Make sure docs are complete and all code examples are copy-pasteable
-- [ ] Add an interactive playground on the homepage (paste HTML → see PDF preview)
+- [X] Add an interactive playground on the homepage (paste HTML → see PDF preview) *(playground live at `/playground` in dashboard)*
 
 ### Soft Launch Channels
 
