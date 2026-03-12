@@ -13,7 +13,7 @@ export interface BlogPost {
   content: string;
 }
 
-const BLOG_DIR = path.join(process.cwd(), 'content', 'blog');
+const BLOG_DIR = path.join(process.cwd(), '..', '..', 'content', 'blog');
 
 export async function getAllPosts(): Promise<BlogPost[]> {
   const files = fs.readdirSync(BLOG_DIR).filter((f) => f.endsWith('.mdx'));
@@ -29,8 +29,10 @@ export async function getAllPosts(): Promise<BlogPost[]> {
       description: data.description,
       date: data.date,
       author: data.author || 'DocuForge Team',
-      category: data.category || 'Tutorial',
-      readingTime: data.readingTime || Math.ceil(content.split(/\s+/).length / 200),
+      category: data.category || data.tags?.[0] || 'Tutorial',
+      readingTime: typeof data.readingTime === 'number'
+        ? data.readingTime
+        : (parseInt(data.readingTime) || Math.ceil(content.split(/\s+/).length / 200)),
       content,
     };
   });
@@ -51,8 +53,10 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
     description: data.description,
     date: data.date,
     author: data.author || 'DocuForge Team',
-    category: data.category || 'Tutorial',
-    readingTime: data.readingTime || Math.ceil(content.split(/\s+/).length / 200),
+    category: data.category || data.tags?.[0] || 'Tutorial',
+    readingTime: typeof data.readingTime === 'number'
+      ? data.readingTime
+      : (parseInt(data.readingTime) || Math.ceil(content.split(/\s+/).length / 200)),
     content,
   };
 }
