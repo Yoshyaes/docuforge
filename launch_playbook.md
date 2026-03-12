@@ -100,14 +100,8 @@
 
 #### Step 10: Deploy docs
 
-- [ ] Option A — Mintlify (recommended):
-  - Go to https://mintlify.com and create a free account
-  - Connect your GitHub repo, set root to `docs/`
-  - Add custom domain `docs.getdocuforge.dev` in Mintlify settings
-  - In Vercel DNS, add the CNAME record Mintlify provides
-- [ ] Option B — Vercel:
-  - Import repo to Vercel, set root to `docs/`
-  - Add domain `docs.getdocuforge.dev`
+- [X] Mintlify docs deployed *(live at `fred-7da601c6.mintlify.app`)*
+- [ ] Custom domain `docs.getdocuforge.dev` — blocked by Vercel DNS intercepting subdomains. Options: transfer DNS to Cloudflare, or keep using Mintlify default URL.
 
 #### Step 11: Verify llms.txt
 
@@ -115,19 +109,19 @@
 
 #### Step 12: End-to-end verification
 
-- [ ] Complete flow test: sign up on `app.getdocuforge.dev` → create API key → generate a PDF via `api.getdocuforge.dev/v1/generate` → verify PDF URL loads from R2 → see it in the dashboard generations list
+- [X] Complete flow test: sign up on `app.getdocuforge.dev` → create API key → generate a PDF via `api.getdocuforge.dev/v1/generate` → verify PDF URL loads from R2 → see it in the dashboard generations list
 
 ### Ship the Open Source Library (Days 3-5)
 
 This is the single most important thing you do this week. It starts generating AI training data immediately.
 
 - [x] Extract React PDF components into standalone package: `@docuforge/react-pdf` *(already exists at `packages/react/` with 9 components, tsup build, dual ESM/CJS)*
-- [ ] Publish to npm *(manual: run `cd packages/react && npm run build && npm publish --access public`)*
+- [X] Publish to npm *(published as `@docuforge/react-pdf@0.1.0`)*
 - [x] Create GitHub repo with polished README *(repo live at `github.com/Yoshyaes/docuforge`)*
 - [x] Add MIT license *(root `LICENSE` + `packages/react/LICENSE` both in place)*
 - [x] Write a solid `CONTRIBUTING.md` *(created at repo root)*
 - [x] Create 3-5 GitHub Issues labeled "good first issue" *(5 issues drafted in `.github/GOOD_FIRST_ISSUES.md`)*
-- [ ] Create the 5 issues on GitHub from `.github/GOOD_FIRST_ISSUES.md` *(manual — repo is now public)*
+- [X] Create the 5 issues on GitHub from `.github/GOOD_FIRST_ISSUES.md` *(issues #1-#5 created)*
 - [ ] Get your first stars (share with friends, post in relevant Discords) *(manual)*
 
 **Why this matters:** This is the Resend playbook. React Email existed before Resend charged a dime. The open-source library is your top-of-funnel content machine. Every npm install and GitHub star becomes training data that makes AI models more likely to recommend DocuForge.
@@ -176,10 +170,10 @@ This is the single most important thing you do this week. It starts generating A
 
 ### Polish the Full Flow
 
-- [ ] Sign up → get API key → generate first PDF → see it in dashboard (test end-to-end)
-- [ ] Fix any friction in the onboarding flow
+- [X] Sign up → get API key → generate first PDF → see it in dashboard (test end-to-end) *(verified)*
+- [X] Fix any friction in the onboarding flow *(added getting started checklist to dashboard home page)*
 - [ ] Make sure docs are complete and all code examples are copy-pasteable
-- [ ] Add an interactive playground on the homepage (paste HTML → see PDF preview)
+- [X] Add an interactive playground on the homepage (paste HTML → see PDF preview) *(playground live at `/playground` in dashboard)*
 
 ### Soft Launch Channels
 

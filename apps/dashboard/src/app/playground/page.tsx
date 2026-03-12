@@ -86,7 +86,7 @@ export default function PlaygroundPage() {
             <select
               value={format}
               onChange={(e) => setFormat(e.target.value)}
-              className="px-3 py-1.5 rounded-lg border border-border bg-background text-text-primary text-xs"
+              className="px-3 py-1.5 rounded-lg border border-[#333] bg-[#1a1a1d] text-[#FAFAFA] text-xs"
             >
               <option value="A4">A4</option>
               <option value="Letter">Letter</option>
@@ -95,7 +95,7 @@ export default function PlaygroundPage() {
             <select
               value={orientation}
               onChange={(e) => setOrientation(e.target.value as any)}
-              className="px-3 py-1.5 rounded-lg border border-border bg-background text-text-primary text-xs"
+              className="px-3 py-1.5 rounded-lg border border-[#333] bg-[#1a1a1d] text-[#FAFAFA] text-xs"
             >
               <option value="portrait">Portrait</option>
               <option value="landscape">Landscape</option>
