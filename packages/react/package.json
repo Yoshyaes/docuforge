@@ -36,11 +36,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/docuforge/docuforge",
+    "url": "https://github.com/Yoshyaes/docuforge",
     "directory": "packages/react"
   },
   "homepage": "https://getdocuforge.dev/docs/react-components",
-  "bugs": "https://github.com/docuforge/docuforge/issues",
+  "bugs": "https://github.com/Yoshyaes/docuforge/issues",
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch"

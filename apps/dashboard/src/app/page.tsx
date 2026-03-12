@@ -5,6 +5,7 @@ import { StatCard } from '@/components/stat-card';
 import { GenerationTable } from '@/components/generation-table';
 import { UsageChart } from '@/components/usage-chart';
 import { ApiKeyDisplay } from '@/components/api-key-display';
+import { OnboardingChecklist } from '@/components/onboarding-checklist';
 import { timeAgo } from '@/lib/utils';
 import {
   getCurrentUser,
@@ -59,6 +60,12 @@ export default async function DashboardPage() {
             <span>&#9889;</span> Generate PDF
           </Link>
         </div>
+
+        <OnboardingChecklist
+          hasApiKey={keys.length > 0}
+          hasGeneration={stats.generationCount > 0}
+          apiKeyPreview={firstKey ? `${firstKey.keyPrefix}${'•'.repeat(16)}` : undefined}
+        />
 
         <div className="flex gap-4 mb-6 flex-wrap">
           <StatCard
