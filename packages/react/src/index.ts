@@ -22,8 +22,14 @@ export type { WatermarkProps } from './components/Watermark';
 export { Barcode } from './components/Barcode';
 export type { BarcodeProps } from './components/Barcode';
 
-export { Signature } from './components/Signature';
-export type { SignatureProps } from './components/Signature';
-
 export { List } from './components/List';
 export type { ListProps } from './components/List';
+
+export { Signature } from "./components/Signature";
+export type { SignatureProps } from "./components/Signature";
+
+export { Divider } from "./components/Divider";
+export type { DividerProps } from "./components/Divider";
+
+export { PageNumber } from "./components/PageNumber";
+export type { PageNumberProps } from "./components/PageNumber";
