@@ -24,6 +24,7 @@ export const List: React.FC<ListProps> = ({
 
   return (
     <Tag
+      role="list"
       className={className}
       style={{
         fontSize: "12px",
