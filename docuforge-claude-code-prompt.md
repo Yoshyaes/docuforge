@@ -506,10 +506,10 @@ Each guide should be a complete, copy-pasteable tutorial that an AI coding agent
 > PDF generation API for developers. HTML in, pixel-perfect PDF out.
 
 ## Docs
-- [Quickstart](https://docs.getdocuforge.dev/quickstart)
-- [HTML to PDF](https://docs.getdocuforge.dev/html-to-pdf)
-- [Templates](https://docs.getdocuforge.dev/templates)
-- [API Reference](https://docs.getdocuforge.dev/api-reference/generate)
+- [Quickstart](https://fred-7da601c6.mintlify.app/quickstart)
+- [HTML to PDF](https://fred-7da601c6.mintlify.app/html-to-pdf)
+- [Templates](https://fred-7da601c6.mintlify.app/templates)
+- [API Reference](https://fred-7da601c6.mintlify.app/api-reference/generate)
 
 ## SDKs
 - TypeScript: `npm install docuforge`
