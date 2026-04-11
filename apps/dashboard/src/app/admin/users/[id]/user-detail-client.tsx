@@ -54,6 +54,35 @@ function formatBytes(bytes: number): string {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
 }
 
+interface ApiErrorRow {
+  id: string;
+  method: string;
+  path: string;
+  errorCode: string;
+  errorMessage: string;
+  statusCode: number;
+  createdAt: string;
+}
+
+interface ApiErrorsPayload {
+  totals: {
+    totalErrors: number;
+    authErrors: number;
+    validationErrors: number;
+    rateLimits: number;
+    usageLimits: number;
+    serverErrors: number;
+  };
+  grouped: {
+    errorCode: string;
+    path: string;
+    occurrences: number;
+    sampleMessage: string;
+    lastOccurrence: string;
+  }[];
+  recent: ApiErrorRow[];
+}
+
 export function UserDetailClient({ userId }: { userId: string }) {
   const [data, setData] = useState<UserDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -63,6 +92,7 @@ export function UserDetailClient({ userId }: { userId: string }) {
     percentage: number;
     last_occurrence: string;
   }[] | null>(null);
+  const [apiErrorsData, setApiErrorsData] = useState<ApiErrorsPayload | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -77,6 +107,11 @@ export function UserDetailClient({ userId }: { userId: string }) {
         }
       })
       .finally(() => setLoading(false));
+
+    fetch(`/api/admin/api-errors?hours=720&userId=${userId}`)
+      .then((r) => r.json())
+      .then(setApiErrorsData)
+      .catch(() => setApiErrorsData(null));
   }, [userId]);
 
   if (loading) return <div className="text-text-muted text-sm">Loading...</div>;
@@ -187,6 +222,81 @@ export function UserDetailClient({ userId }: { userId: string }) {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* API Errors (pre-insert failures — what killed their requests before a generation row was written) */}
+      {apiErrorsData && apiErrorsData.totals.totalErrors > 0 && (
+        <div className="mb-8">
+          <h2 className="text-sm font-semibold text-text-primary mb-3">
+            API Errors — last 30 days{' '}
+            <span className="text-text-muted font-normal">
+              ({apiErrorsData.totals.totalErrors} pre-insert failure
+              {apiErrorsData.totals.totalErrors === 1 ? '' : 's'})
+            </span>
+          </h2>
+          <div className="rounded-lg border border-border-subtle bg-surface p-4 mb-3">
+            <div className="grid grid-cols-5 gap-3 mb-2">
+              <div>
+                <div className="text-[10px] text-text-dim uppercase">Auth</div>
+                <div className="text-sm font-bold text-text-primary">{apiErrorsData.totals.authErrors}</div>
+              </div>
+              <div>
+                <div className="text-[10px] text-text-dim uppercase">Validation</div>
+                <div className="text-sm font-bold text-text-primary">{apiErrorsData.totals.validationErrors}</div>
+              </div>
+              <div>
+                <div className="text-[10px] text-text-dim uppercase">Rate</div>
+                <div className="text-sm font-bold text-text-primary">{apiErrorsData.totals.rateLimits}</div>
+              </div>
+              <div>
+                <div className="text-[10px] text-text-dim uppercase">Usage</div>
+                <div className="text-sm font-bold text-text-primary">{apiErrorsData.totals.usageLimits}</div>
+              </div>
+              <div>
+                <div className="text-[10px] text-text-dim uppercase">5xx</div>
+                <div className="text-sm font-bold text-red-400">{apiErrorsData.totals.serverErrors}</div>
+              </div>
+            </div>
+          </div>
+          {apiErrorsData.recent.length > 0 && (
+            <div className="rounded-lg border border-border-subtle overflow-hidden">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-border-subtle bg-surface">
+                    <th className="text-left px-3 py-2 text-text-muted font-medium">When</th>
+                    <th className="text-left px-3 py-2 text-text-muted font-medium">Method</th>
+                    <th className="text-left px-3 py-2 text-text-muted font-medium">Path</th>
+                    <th className="text-left px-3 py-2 text-text-muted font-medium">Error</th>
+                    <th className="text-right px-3 py-2 text-text-muted font-medium">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {apiErrorsData.recent.slice(0, 20).map((e) => (
+                    <tr key={e.id} className="border-b border-border-subtle last:border-0">
+                      <td className="px-3 py-2 text-text-dim whitespace-nowrap">
+                        {new Date(e.createdAt).toLocaleString()}
+                      </td>
+                      <td className="px-3 py-2 font-mono text-text-muted">{e.method}</td>
+                      <td className="px-3 py-2 font-mono text-text-muted truncate max-w-[180px]" title={e.path}>
+                        {e.path}
+                      </td>
+                      <td className="px-3 py-2 text-text-primary">
+                        <div className="font-semibold">{e.errorCode}</div>
+                        <div
+                          className="text-[10px] text-text-dim truncate max-w-[260px]"
+                          title={e.errorMessage}
+                        >
+                          {e.errorMessage}
+                        </div>
+                      </td>
+                      <td className="px-3 py-2 text-right text-text-muted">{e.statusCode}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 

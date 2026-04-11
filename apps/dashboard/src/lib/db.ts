@@ -91,10 +91,22 @@ export const usageDaily = pgTable(
   }),
 );
 
+export const apiErrors = pgTable('api_errors', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  apiKeyPrefix: varchar('api_key_prefix', { length: 16 }),
+  method: varchar('method', { length: 10 }).notNull(),
+  path: varchar('path', { length: 255 }).notNull(),
+  errorCode: varchar('error_code', { length: 64 }).notNull(),
+  errorMessage: text('error_message').notNull(),
+  statusCode: integer('status_code').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
 export const db = drizzle(pool, {
-  schema: { users, apiKeys, templates, templateVersions, generations, usageDaily },
+  schema: { users, apiKeys, templates, templateVersions, generations, usageDaily, apiErrors },
 });

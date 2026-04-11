@@ -17,4 +17,12 @@ __pycache__/
 *.key
 *.cert
 .claude/
+.claire/
 DocuForge Assets/
+
+# Build artifacts
+*.tsbuildinfo
+
+# Local-only: audit outputs and founder outreach drafts contain user PII
+audit-prod-*.txt
+outreach/*.md

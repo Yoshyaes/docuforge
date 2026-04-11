@@ -6,6 +6,7 @@ import { GenerationTable } from '@/components/generation-table';
 import { UsageChart } from '@/components/usage-chart';
 import { ApiKeyDisplay } from '@/components/api-key-display';
 import { OnboardingChecklist } from '@/components/onboarding-checklist';
+import { StarterTemplatePicker } from '@/components/starter-template-picker';
 import { timeAgo } from '@/lib/utils';
 import {
   getCurrentUser,
@@ -29,6 +30,7 @@ export default async function DashboardPage() {
 
   const limit = getPlanLimit(user.plan);
   const firstKey = keys[0];
+  const isFirstRun = !stats.hasAnyGeneration;
 
   const generations = recentGens.map((g) => ({
     id: g.id,
@@ -61,41 +63,89 @@ export default async function DashboardPage() {
           </Link>
         </div>
 
+        {isFirstRun && (
+          <div className="mb-6 rounded-2xl border border-accent/30 bg-gradient-to-br from-accent/10 via-surface to-surface p-8 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-48 h-48 rounded-full bg-accent/10 blur-3xl -mr-24 -mt-24 pointer-events-none" />
+            <div className="relative">
+              <div className="text-[11px] uppercase tracking-widest text-accent font-bold mb-2">
+                Welcome to DocuForge
+              </div>
+              <h2 className="text-[28px] font-bold text-text-primary tracking-tight leading-tight mb-2">
+                Generate your first PDF
+                <br />
+                in under 60 seconds.
+              </h2>
+              <p className="text-sm text-text-muted max-w-lg mb-5">
+                No API key needed to start. Open the playground, pick a starter
+                template, and watch a real PDF render in the preview pane. Then
+                come back to grab your API key and wire it into your code.
+              </p>
+              <div className="flex gap-3 flex-wrap">
+                <Link
+                  href="/playground?template=invoice&autorun=1"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-br from-accent to-orange-600 text-white text-sm font-bold shadow-[0_0_40px_rgba(249,115,22,0.25)]"
+                >
+                  Generate your first PDF →
+                </Link>
+                <Link
+                  href="/keys"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-border-subtle text-text-primary text-sm font-semibold hover:border-accent/50 transition-colors"
+                >
+                  Or create an API key
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
         <OnboardingChecklist
           hasApiKey={keys.length > 0}
-          hasGeneration={stats.generationCount > 0}
-          apiKeyPreview={firstKey ? `${firstKey.keyPrefix}${'•'.repeat(16)}` : undefined}
+          hasGeneration={stats.hasAnyGeneration}
+          apiKeyPreview={firstKey?.keyPrefix}
         />
 
-        <div className="flex gap-4 mb-6 flex-wrap">
-          <StatCard
-            value={stats.generationCount.toLocaleString()}
-            label="PDFs Generated"
-          />
-          <StatCard
-            value={stats.avgTimeMs > 0 ? `${(stats.avgTimeMs / 1000).toFixed(1)}s` : '—'}
-            label="Avg Generation Time"
-          />
-          <StatCard
-            value={stats.successRate > 0 ? `${stats.successRate}%` : '—'}
-            label="Success Rate"
-          />
-          <StatCard value={`$${planLabel === 'Free' ? '0' : planLabel}`} label="Current Plan" />
-        </div>
+        {isFirstRun ? (
+          <>
+            <StarterTemplatePicker />
+            <ApiKeyDisplay
+              keyPreview={
+                firstKey ? `${firstKey.keyPrefix}${'•'.repeat(16)}` : 'No API key yet'
+              }
+            />
+          </>
+        ) : (
+          <>
+            <div className="flex gap-4 mb-6 flex-wrap">
+              <StatCard
+                value={stats.generationCount.toLocaleString()}
+                label="PDFs Generated"
+              />
+              <StatCard
+                value={stats.avgTimeMs > 0 ? `${(stats.avgTimeMs / 1000).toFixed(1)}s` : '—'}
+                label="Avg Generation Time"
+              />
+              <StatCard
+                value={stats.successRate > 0 ? `${stats.successRate}%` : '—'}
+                label="Success Rate"
+              />
+              <StatCard value={`$${planLabel === 'Free' ? '0' : planLabel}`} label="Current Plan" />
+            </div>
 
-        <div className="mb-6">
-          <UsageChart data={chartData} />
-        </div>
+            <div className="mb-6">
+              <UsageChart data={chartData} />
+            </div>
 
-        <div className="mb-6">
-          <GenerationTable generations={generations} />
-        </div>
+            <div className="mb-6">
+              <GenerationTable generations={generations} />
+            </div>
 
-        <ApiKeyDisplay
-          keyPreview={
-            firstKey ? `${firstKey.keyPrefix}${'•'.repeat(16)}` : 'No API key yet'
-          }
-        />
+            <ApiKeyDisplay
+              keyPreview={
+                firstKey ? `${firstKey.keyPrefix}${'•'.repeat(16)}` : 'No API key yet'
+              }
+            />
+          </>
+        )}
       </main>
     </div>
   );

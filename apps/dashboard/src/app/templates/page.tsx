@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Plus } from 'lucide-react';
+import { Plus, FileText } from 'lucide-react';
 import { Sidebar } from '@/components/sidebar';
 import { timeAgo } from '@/lib/utils';
 import { getCurrentUser, getUserTemplates, getOverviewStats, getPlanLimit } from '@/lib/data';
@@ -50,18 +50,26 @@ export default async function TemplatesPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {tmpls.map((tmpl) => (
-              <Link
+              <div
                 key={tmpl.id}
-                href={`/templates/${tmpl.id}`}
-                className="bg-surface border border-border rounded-[14px] p-5 hover:border-accent/30 transition-colors"
+                className="bg-surface border border-border rounded-[14px] p-5 hover:border-accent/30 transition-colors group relative"
               >
-                <div className="text-sm font-semibold text-text-primary mb-1">
-                  {tmpl.name}
-                </div>
-                <div className="text-xs text-text-dim">
-                  v{tmpl.version} &middot; Updated {timeAgo(tmpl.updatedAt)}
-                </div>
-              </Link>
+                <Link href={`/templates/${tmpl.id}`} className="block">
+                  <div className="text-sm font-semibold text-text-primary mb-1 pr-16">
+                    {tmpl.name}
+                  </div>
+                  <div className="text-xs text-text-dim">
+                    v{tmpl.version} &middot; Updated {timeAgo(tmpl.updatedAt)}
+                  </div>
+                </Link>
+                <Link
+                  href={`/playground?userTemplate=${encodeURIComponent(tmpl.id)}&autorun=1`}
+                  className="absolute top-4 right-4 inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-accent/10 text-accent text-[11px] font-semibold hover:bg-accent/20 transition-colors"
+                  title="Render this template as a PDF"
+                >
+                  <FileText size={11} /> Render
+                </Link>
+              </div>
             ))}
           </div>
         )}

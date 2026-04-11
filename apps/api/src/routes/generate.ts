@@ -9,6 +9,7 @@ import { mergeTemplate } from '../services/templates.js';
 import { checkUsageLimit, incrementUsage } from '../services/usage.js';
 import { ValidationError, NotFoundError, UsageLimitError } from '../lib/errors.js';
 import { deliverWebhook } from '../services/webhooks.js';
+import { maybeCelebrateFirstPdf } from '../services/drip.js';
 import { renderReactToHtml } from '../services/react-renderer.js';
 import { processBarcodes } from '../services/barcodes.js';
 import { eq, and } from 'drizzle-orm';
@@ -189,6 +190,7 @@ app.post('/', async (c) => {
 
       // Increment usage
       await incrementUsage(user.id, result.pages, result.fileSize);
+      void maybeCelebrateFirstPdf(user.id);
 
       return c.json({
         id: generationId,
@@ -217,6 +219,7 @@ app.post('/', async (c) => {
 
     // Increment usage
     await incrementUsage(user.id, result.pages, result.fileSize);
+    void maybeCelebrateFirstPdf(user.id);
 
     const response = {
       id: generationId,

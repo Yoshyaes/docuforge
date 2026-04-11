@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { Check, Key, FileText, Terminal, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Check, Key, FileText, Terminal, Package, X } from 'lucide-react';
 
 interface OnboardingChecklistProps {
   hasApiKey: boolean;
@@ -10,31 +10,68 @@ interface OnboardingChecklistProps {
   apiKeyPreview?: string;
 }
 
-const steps = [
+const DISMISS_KEY = 'docuforge:onboarding-dismissed';
+const SDK_TAB_KEY = 'docuforge:sdk-tab';
+
+type StepId = 'first-pdf' | 'api-key' | 'try-api' | 'install-sdk';
+
+const stepMeta: Record<
+  StepId,
+  { label: string; icon: typeof FileText }
+> = {
+  'first-pdf': { label: 'Generate your first PDF in the playground', icon: FileText },
+  'api-key': { label: 'Create an API key', icon: Key },
+  'try-api': { label: 'Call the API from code', icon: Terminal },
+  'install-sdk': { label: 'Install an official SDK', icon: Package },
+};
+
+const STEP_ORDER: StepId[] = ['first-pdf', 'api-key', 'try-api', 'install-sdk'];
+
+const SDK_TABS = [
   {
-    id: 'account',
-    label: 'Create your account',
-    always: true,
+    id: 'ts',
+    label: 'TypeScript',
+    install: 'npm install docuforge',
+    code: `import { DocuForge } from 'docuforge';
+
+const df = new DocuForge({ apiKey: process.env.DOCUFORGE_API_KEY });
+
+const pdf = await df.generate({
+  html: '<h1>Hello from DocuForge!</h1>',
+});
+console.log(pdf.url);`,
   },
   {
-    id: 'api-key',
-    label: 'Create an API key',
-    href: '/keys',
-    cta: 'Create Key',
-    icon: Key,
+    id: 'python',
+    label: 'Python',
+    install: 'pip install docuforge',
+    code: `from docuforge import DocuForge
+
+df = DocuForge(api_key=os.environ["DOCUFORGE_API_KEY"])
+
+pdf = df.generate(html="<h1>Hello from DocuForge!</h1>")
+print(pdf.url)`,
   },
   {
-    id: 'first-pdf',
-    label: 'Generate your first PDF',
-    href: '/playground',
-    cta: 'Open Playground',
-    icon: FileText,
+    id: 'go',
+    label: 'Go',
+    install: 'go get github.com/docuforge/docuforge-go',
+    code: `import "github.com/docuforge/docuforge-go"
+
+client := docuforge.NewClient(os.Getenv("DOCUFORGE_API_KEY"))
+pdf, err := client.Generate(ctx, &docuforge.GenerateRequest{
+    HTML: "<h1>Hello from DocuForge!</h1>",
+})`,
   },
   {
-    id: 'try-api',
-    label: 'Try the API directly',
-    cta: 'Copy curl',
-    icon: Terminal,
+    id: 'ruby',
+    label: 'Ruby',
+    install: 'gem install docuforge',
+    code: `require "docuforge"
+
+df = Docuforge::Client.new(api_key: ENV["DOCUFORGE_API_KEY"])
+pdf = df.generate(html: "<h1>Hello from DocuForge!</h1>")
+puts pdf.url`,
   },
 ] as const;
 
@@ -44,32 +81,76 @@ export function OnboardingChecklist({
   apiKeyPreview,
 }: OnboardingChecklistProps) {
   const [dismissed, setDismissed] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<string | null>(null);
+  const [sdkTab, setSdkTab] = useState<(typeof SDK_TABS)[number]['id']>('ts');
+  const [sdkExpanded, setSdkExpanded] = useState(false);
+  const [installSdkDone, setInstallSdkDone] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.localStorage.getItem(DISMISS_KEY) === '1') {
+      setDismissed(true);
+    }
+    if (window.localStorage.getItem('docuforge:onboarding-sdk-done') === '1') {
+      setInstallSdkDone(true);
+    }
+    const savedTab = window.localStorage.getItem(SDK_TAB_KEY) as
+      | (typeof SDK_TABS)[number]['id']
+      | null;
+    if (savedTab && SDK_TABS.some((t) => t.id === savedTab)) {
+      setSdkTab(savedTab);
+    }
+  }, []);
+
+  const handleDismiss = () => {
+    setDismissed(true);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(DISMISS_KEY, '1');
+    }
+  };
 
   if (dismissed) return null;
 
-  const completedSteps = {
-    account: true,
-    'api-key': hasApiKey,
+  // "install-sdk" has no DB signal — treat it as opt-in (marked done when user
+  // clicks "mark as done" after inspecting the snippets).
+  const completedSteps: Record<StepId, boolean> = {
     'first-pdf': hasGeneration,
-    'try-api': hasGeneration,
+    'api-key': hasApiKey,
+    'try-api': hasGeneration && hasApiKey,
+    'install-sdk': installSdkDone,
   };
 
   const completedCount = Object.values(completedSteps).filter(Boolean).length;
-  const allDone = completedCount === 4;
-
+  const allDone = completedCount === STEP_ORDER.length;
   if (allDone) return null;
 
+  const keyPlaceholder = apiKeyPreview ? `${apiKeyPreview}...` : 'YOUR_API_KEY';
   const curlCommand = `curl -X POST https://api.getdocuforge.dev/v1/generate \\
-  -H "Authorization: Bearer ${apiKeyPreview || 'YOUR_API_KEY'}" \\
+  -H "Authorization: Bearer ${keyPlaceholder}" \\
   -H "Content-Type: application/json" \\
   -d '{"html": "<h1>Hello from DocuForge!</h1>"}'`;
 
-  const handleCopyCurl = () => {
-    navigator.clipboard.writeText(curlCommand);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const copy = (key: string, value: string) => {
+    navigator.clipboard.writeText(value);
+    setCopied(key);
+    setTimeout(() => setCopied(null), 1500);
   };
+
+  const markSdkDone = () => {
+    setInstallSdkDone(true);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('docuforge:onboarding-sdk-done', '1');
+    }
+  };
+
+  const chooseSdkTab = (id: (typeof SDK_TABS)[number]['id']) => {
+    setSdkTab(id);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(SDK_TAB_KEY, id);
+    }
+  };
+
+  const activeSdk = SDK_TABS.find((t) => t.id === sdkTab) ?? SDK_TABS[0];
 
   return (
     <div className="mb-6 rounded-xl border border-border bg-surface p-5">
@@ -83,8 +164,9 @@ export function OnboardingChecklist({
           </p>
         </div>
         <button
-          onClick={() => setDismissed(true)}
+          onClick={handleDismiss}
           className="text-text-dim hover:text-text-muted transition-colors p-1"
+          aria-label="Dismiss"
         >
           <X size={16} />
         </button>
@@ -95,64 +177,142 @@ export function OnboardingChecklist({
         <div className="flex-1 h-1.5 rounded-full bg-border overflow-hidden">
           <div
             className="h-full rounded-full bg-gradient-to-r from-accent to-yellow-400 transition-all duration-500"
-            style={{ width: `${(completedCount / 4) * 100}%` }}
+            style={{ width: `${(completedCount / STEP_ORDER.length) * 100}%` }}
           />
         </div>
         <span className="text-xs text-text-dim font-medium">
-          {completedCount}/4
+          {completedCount}/{STEP_ORDER.length}
         </span>
       </div>
 
       {/* Steps */}
       <div className="space-y-2">
-        {steps.map((step) => {
-          const done = completedSteps[step.id as keyof typeof completedSteps];
+        {STEP_ORDER.map((id) => {
+          const meta = stepMeta[id];
+          const done = completedSteps[id];
+          const Icon = meta.icon;
+          const isFirstOpen = !done && id === STEP_ORDER.find((s) => !completedSteps[s]);
+
           return (
             <div
-              key={step.id}
-              className={`flex items-center justify-between rounded-lg px-3 py-2.5 transition-colors ${
-                done
-                  ? 'bg-green-500/5'
-                  : 'bg-surface-hover/30'
+              key={id}
+              className={`rounded-lg px-3 py-2.5 transition-colors ${
+                done ? 'bg-green-500/5' : isFirstOpen ? 'bg-accent/5' : 'bg-surface-hover/30'
               }`}
             >
-              <div className="flex items-center gap-3">
-                <div
-                  className={`w-5 h-5 rounded-full flex items-center justify-center ${
-                    done
-                      ? 'bg-green-500/20 text-green-400'
-                      : 'border border-border-subtle text-text-dim'
-                  }`}
-                >
-                  {done ? (
-                    <Check size={12} strokeWidth={3} />
-                  ) : (
-                    <span className="w-1.5 h-1.5 rounded-full bg-text-dim" />
-                  )}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-5 h-5 rounded-full flex items-center justify-center ${
+                      done
+                        ? 'bg-green-500/20 text-green-400'
+                        : 'border border-border-subtle text-text-dim'
+                    }`}
+                  >
+                    {done ? (
+                      <Check size={12} strokeWidth={3} />
+                    ) : (
+                      <Icon size={11} />
+                    )}
+                  </div>
+                  <span
+                    className={`text-[13px] font-medium ${
+                      done ? 'text-text-muted line-through' : 'text-text-primary'
+                    }`}
+                  >
+                    {meta.label}
+                  </span>
                 </div>
-                <span
-                  className={`text-[13px] font-medium ${
-                    done ? 'text-text-muted line-through' : 'text-text-primary'
-                  }`}
-                >
-                  {step.label}
-                </span>
+
+                {!done && id === 'first-pdf' && (
+                  <Link
+                    href="/playground?template=invoice&autorun=1"
+                    className="text-xs font-semibold text-accent hover:text-orange-400 transition-colors"
+                  >
+                    Open playground
+                  </Link>
+                )}
+                {!done && id === 'api-key' && (
+                  <Link
+                    href="/keys"
+                    className="text-xs font-semibold text-accent hover:text-orange-400 transition-colors"
+                  >
+                    Create key
+                  </Link>
+                )}
+                {!done && id === 'try-api' && (
+                  <button
+                    onClick={() => copy('curl', curlCommand)}
+                    className="text-xs font-semibold text-accent hover:text-orange-400 transition-colors"
+                  >
+                    {copied === 'curl' ? 'Copied!' : 'Copy curl'}
+                  </button>
+                )}
+                {!done && id === 'install-sdk' && (
+                  <button
+                    onClick={() => setSdkExpanded((v) => !v)}
+                    className="text-xs font-semibold text-accent hover:text-orange-400 transition-colors"
+                  >
+                    {sdkExpanded ? 'Hide' : 'Show snippets'}
+                  </button>
+                )}
               </div>
-              {!done && 'href' in step && step.href && (
-                <Link
-                  href={step.href}
-                  className="text-xs font-semibold text-accent hover:text-orange-400 transition-colors"
-                >
-                  {step.cta}
-                </Link>
-              )}
-              {!done && step.id === 'try-api' && hasApiKey && (
-                <button
-                  onClick={handleCopyCurl}
-                  className="text-xs font-semibold text-accent hover:text-orange-400 transition-colors"
-                >
-                  {copied ? 'Copied!' : step.cta}
-                </button>
+
+              {/* Inline SDK tabs panel */}
+              {id === 'install-sdk' && sdkExpanded && !done && (
+                <div className="mt-3 pt-3 border-t border-border-subtle">
+                  <div className="flex gap-2 mb-2">
+                    {SDK_TABS.map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => chooseSdkTab(tab.id)}
+                        className={`px-2.5 py-1 rounded text-[11px] font-semibold transition-colors ${
+                          sdkTab === tab.id
+                            ? 'bg-accent/20 text-accent'
+                            : 'text-text-dim hover:text-text-muted'
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="rounded bg-[#0A0A0B] border border-border-subtle p-3 mb-2 flex items-center justify-between">
+                    <code className="text-[11px] text-text-primary font-mono">
+                      {activeSdk.install}
+                    </code>
+                    <button
+                      onClick={() => copy(`install-${activeSdk.id}`, activeSdk.install)}
+                      className="text-[10px] text-accent font-semibold ml-3"
+                    >
+                      {copied === `install-${activeSdk.id}` ? 'Copied!' : 'Copy'}
+                    </button>
+                  </div>
+                  <div className="rounded bg-[#0A0A0B] border border-border-subtle p-3 relative">
+                    <pre className="text-[11px] text-text-primary font-mono whitespace-pre-wrap">
+                      {activeSdk.code}
+                    </pre>
+                    <button
+                      onClick={() => {
+                        copy(`code-${activeSdk.id}`, activeSdk.code);
+                        markSdkDone();
+                      }}
+                      className="absolute top-2 right-2 text-[10px] text-accent font-semibold"
+                    >
+                      {copied === `code-${activeSdk.id}` ? 'Copied!' : 'Copy'}
+                    </button>
+                  </div>
+                  <div className="mt-2 text-right">
+                    <button
+                      onClick={() => {
+                        markSdkDone();
+                        setSdkExpanded(false);
+                      }}
+                      className="text-[11px] text-text-dim hover:text-text-muted"
+                    >
+                      Mark as done
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
           );

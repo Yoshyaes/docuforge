@@ -12,6 +12,7 @@ import { renderReactToHtml } from './react-renderer.js';
 import { processBarcodes } from './barcodes.js';
 import { incrementUsage } from './usage.js';
 import { deliverWebhook } from './webhooks.js';
+import { maybeCelebrateFirstPdf } from './drip.js';
 import { eq, and } from 'drizzle-orm';
 
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
@@ -129,6 +130,7 @@ export function startWorker() {
             .where(eq(generations.id, generationId));
 
           await incrementUsage(userId, result.pages, result.fileSize);
+          void maybeCelebrateFirstPdf(userId);
 
           const response = {
             id: generationId,
@@ -158,6 +160,7 @@ export function startWorker() {
           .where(eq(generations.id, generationId));
 
         await incrementUsage(userId, result.pages, result.fileSize);
+        void maybeCelebrateFirstPdf(userId);
 
         const response = {
           id: generationId,

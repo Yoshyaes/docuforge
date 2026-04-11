@@ -91,6 +91,7 @@ export async function getOverviewStats(userId: string) {
     totalPages: usageResult?.totalPages || 0,
     avgTimeMs: Math.round(genStats.avgTime || 0),
     successRate,
+    hasAnyGeneration: (genStats.total || 0) > 0,
   };
 }
 

@@ -143,6 +143,71 @@ export const stripeSubscriptions = pgTable('stripe_subscriptions', {
   statusIdx: index('stripe_subs_status_idx').on(table.status),
 }));
 
+// --- Email drip campaign tracking ---
+
+export const emailCampaignEnum = pgEnum('email_campaign', [
+  'welcome',
+  'nudge1',
+  'nudge2',
+  'last_call',
+  'first_pdf',
+  'reengagement',
+]);
+
+export const emailStatusEnum = pgEnum('email_status', [
+  'queued',
+  'sent',
+  'failed',
+  'skipped',
+]);
+
+export const emailEvents = pgTable(
+  'email_events',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: uuid('user_id')
+      .references(() => users.id, { onDelete: 'cascade' })
+      .notNull(),
+    campaign: emailCampaignEnum('campaign').notNull(),
+    status: emailStatusEnum('status').notNull().default('queued'),
+    providerMessageId: varchar('provider_message_id', { length: 255 }),
+    errorMessage: text('error_message'),
+    sentAt: timestamp('sent_at'),
+    openedAt: timestamp('opened_at'),
+    clickedAt: timestamp('clicked_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    userCampaignIdx: index('email_events_user_campaign_idx').on(
+      table.userId,
+      table.campaign,
+    ),
+    statusIdx: index('email_events_status_idx').on(table.status),
+  }),
+);
+
+// --- API error logging (pre-insert / validation / auth failures) ---
+
+export const apiErrors = pgTable(
+  'api_errors',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
+    apiKeyPrefix: varchar('api_key_prefix', { length: 16 }),
+    method: varchar('method', { length: 10 }).notNull(),
+    path: varchar('path', { length: 255 }).notNull(),
+    errorCode: varchar('error_code', { length: 64 }).notNull(),
+    errorMessage: text('error_message').notNull(),
+    statusCode: integer('status_code').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    userIdIdx: index('api_errors_user_id_idx').on(table.userId),
+    createdAtIdx: index('api_errors_created_at_idx').on(table.createdAt),
+    codeIdx: index('api_errors_code_idx').on(table.errorCode),
+  }),
+);
+
 // --- Custom fonts table ---
 
 export const customFonts = pgTable('custom_fonts', {

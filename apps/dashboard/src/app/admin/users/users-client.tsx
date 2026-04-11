@@ -10,9 +10,26 @@ interface User {
   role: string;
   created_at: string;
   generation_count: number;
+  success_count: number;
+  failure_count: number;
   key_count: number;
   last_generation: string | null;
+  first_generation: string | null;
+  time_to_first_gen_sec: number | null;
+  days_since_last_gen: number | null;
+  first_gen_status: string | null;
+  first_error_message: string | null;
+  used_input_types: string[] | null;
+  has_created_template: boolean;
 }
+
+type Stage =
+  | 'all'
+  | 'signed_up_only'
+  | 'has_key_no_gen'
+  | 'has_gen'
+  | 'active_7d'
+  | 'churned_30d';
 
 function timeAgo(date: string | null): string {
   if (!date) return 'Never';
@@ -25,18 +42,34 @@ function timeAgo(date: string | null): string {
   return `${days}d ago`;
 }
 
+function formatDuration(seconds: number | null): string {
+  if (seconds === null || seconds === undefined) return '—';
+  if (seconds < 60) return `${seconds}s`;
+  if (seconds < 3600) return `${Math.round(seconds / 60)}m`;
+  if (seconds < 86400) return `${Math.round(seconds / 3600)}h`;
+  return `${Math.round(seconds / 86400)}d`;
+}
+
+function successRate(u: User): string {
+  if (u.generation_count === 0) return '—';
+  const rate = Math.round((u.success_count / u.generation_count) * 100);
+  return `${rate}%`;
+}
+
 export function UsersClient() {
   const [users, setUsers] = useState<User[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [planFilter, setPlanFilter] = useState('all');
+  const [stage, setStage] = useState<Stage>('all');
 
   const fetchUsers = () => {
     setLoading(true);
     const params = new URLSearchParams();
     if (search) params.set('search', search);
     if (planFilter !== 'all') params.set('plan', planFilter);
+    if (stage !== 'all') params.set('stage', stage);
 
     fetch(`/api/admin/users?${params}`)
       .then((r) => r.json())
@@ -49,7 +82,8 @@ export function UsersClient() {
 
   useEffect(() => {
     fetchUsers();
-  }, [planFilter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [planFilter, stage]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,8 +102,8 @@ export function UsersClient() {
   return (
     <div>
       {/* Filters */}
-      <div className="flex gap-3 mb-4">
-        <form onSubmit={handleSearch} className="flex-1">
+      <div className="flex gap-3 mb-4 flex-wrap">
+        <form onSubmit={handleSearch} className="flex-1 min-w-[240px]">
           <input
             type="text"
             placeholder="Search by email..."
@@ -78,6 +112,18 @@ export function UsersClient() {
             className="w-full px-3 py-2 rounded-lg bg-surface border border-border-subtle text-sm text-text-primary placeholder:text-text-dim focus:outline-none focus:border-accent"
           />
         </form>
+        <select
+          value={stage}
+          onChange={(e) => setStage(e.target.value as Stage)}
+          className="px-3 py-2 rounded-lg bg-surface border border-border-subtle text-sm text-text-primary focus:outline-none focus:border-accent"
+        >
+          <option value="all">All stages</option>
+          <option value="signed_up_only">Signed up only (no key, no gen)</option>
+          <option value="has_key_no_gen">Has key, no generation</option>
+          <option value="has_gen">Has generated</option>
+          <option value="active_7d">Active last 7d</option>
+          <option value="churned_30d">Churned (silent 30d+)</option>
+        </select>
         <select
           value={planFilter}
           onChange={(e) => setPlanFilter(e.target.value)}
@@ -95,29 +141,31 @@ export function UsersClient() {
       <div className="text-xs text-text-dim mb-3">{total} users total</div>
 
       {/* Table */}
-      <div className="rounded-lg border border-border-subtle overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="rounded-lg border border-border-subtle overflow-hidden overflow-x-auto">
+        <table className="w-full text-sm min-w-[1100px]">
           <thead>
             <tr className="border-b border-border-subtle bg-surface">
               <th className="text-left px-4 py-3 text-text-muted font-medium">Email</th>
               <th className="text-left px-4 py-3 text-text-muted font-medium">Plan</th>
-              <th className="text-left px-4 py-3 text-text-muted font-medium">Role</th>
-              <th className="text-right px-4 py-3 text-text-muted font-medium">Generations</th>
+              <th className="text-right px-4 py-3 text-text-muted font-medium">Gens</th>
+              <th className="text-right px-4 py-3 text-text-muted font-medium">Success</th>
               <th className="text-right px-4 py-3 text-text-muted font-medium">Keys</th>
+              <th className="text-left px-4 py-3 text-text-muted font-medium">Time → 1st gen</th>
               <th className="text-left px-4 py-3 text-text-muted font-medium">Last Active</th>
+              <th className="text-left px-4 py-3 text-text-muted font-medium">1st error</th>
               <th className="text-left px-4 py-3 text-text-muted font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-text-dim">
+                <td colSpan={9} className="px-4 py-8 text-center text-text-dim">
                   Loading...
                 </td>
               </tr>
             ) : users.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-text-dim">
+                <td colSpan={9} className="px-4 py-8 text-center text-text-dim">
                   No users found
                 </td>
               </tr>
@@ -134,6 +182,14 @@ export function UsersClient() {
                     >
                       {u.email}
                     </Link>
+                    {u.has_created_template && (
+                      <span
+                        className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-accent/10 text-accent"
+                        title="Has created a template"
+                      >
+                        tpl
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 py-3">
                     <select
@@ -147,23 +203,22 @@ export function UsersClient() {
                       <option value="enterprise">Enterprise</option>
                     </select>
                   </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded ${
-                        u.role === 'admin'
-                          ? 'bg-accent/20 text-accent'
-                          : 'bg-surface text-text-dim'
-                      }`}
-                    >
-                      {u.role}
-                    </span>
-                  </td>
                   <td className="px-4 py-3 text-right text-text-muted">
                     {u.generation_count}
                   </td>
+                  <td className="px-4 py-3 text-right text-text-muted">{successRate(u)}</td>
                   <td className="px-4 py-3 text-right text-text-muted">{u.key_count}</td>
                   <td className="px-4 py-3 text-text-dim text-xs">
+                    {formatDuration(u.time_to_first_gen_sec)}
+                  </td>
+                  <td className="px-4 py-3 text-text-dim text-xs">
                     {timeAgo(u.last_generation)}
+                  </td>
+                  <td
+                    className="px-4 py-3 text-text-dim text-xs max-w-[200px] truncate"
+                    title={u.first_error_message || ''}
+                  >
+                    {u.first_error_message || '—'}
                   </td>
                   <td className="px-4 py-3">
                     <Link
