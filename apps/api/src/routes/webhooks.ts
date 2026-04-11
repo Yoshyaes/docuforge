@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { db } from '../lib/db.js';
 import { users } from '../schema/db.js';
 import { eq } from 'drizzle-orm';
-import { createApiKey } from '../services/apikeys.js';
+import { enqueueDripEmail } from '../services/drip.js';
 
 const app = new Hono();
 
@@ -100,8 +100,18 @@ async function handleClerkEvent(c: { json: (body: unknown, status?: number) => R
         })
         .returning();
 
-      // Auto-create first API key
-      await createApiKey(user.id, 'Default');
+      // We intentionally do NOT auto-create an API key here — the onboarding
+      // checklist drives the user to /keys where they can see the plaintext
+      // exactly once. Auto-creating a key whose plaintext is discarded
+      // silently broke onboarding for every prior signup.
+
+      // Kick off drip: welcome email now, later nudges via scheduled tick.
+      try {
+        await enqueueDripEmail({ userId: user.id, campaign: 'welcome' });
+      } catch (dripErr) {
+        const { logger: lg } = await import('../lib/logger.js');
+        lg.error({ err: dripErr, userId: user.id }, 'Failed to enqueue welcome email');
+      }
 
       const { logger } = await import('../lib/logger.js');
       logger.info({ userId: user.id, email }, 'New user created');

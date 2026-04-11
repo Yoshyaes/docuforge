@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Sidebar } from '@/components/sidebar';
 
 const DEFAULT_HTML = `<!DOCTYPE html>
@@ -43,22 +44,31 @@ const DEFAULT_HTML = `<!DOCTYPE html>
 </body>
 </html>`;
 
-export default function PlaygroundPage() {
+function PlaygroundInner() {
+  const searchParams = useSearchParams();
+  const templateSlug = searchParams.get('template');
+  const userTemplateId = searchParams.get('userTemplate');
+  const autorun = searchParams.get('autorun') === '1';
+
   const [html, setHtml] = useState(DEFAULT_HTML);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [format, setFormat] = useState('A4');
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
+  const [templateName, setTemplateName] = useState<string | null>(null);
+  const [templateLoading, setTemplateLoading] = useState<boolean>(
+    Boolean(templateSlug || userTemplateId),
+  );
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (htmlToUse?: string) => {
     setLoading(true);
     setError(null);
     try {
       const res = await fetch('/api/playground', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ html, format, orientation }),
+        body: JSON.stringify({ html: htmlToUse ?? html, format, orientation }),
       });
       const data = await res.json();
       if (data.url) {
@@ -73,15 +83,84 @@ export default function PlaygroundPage() {
     }
   };
 
+  // Load a starter template when ?template=<slug> is present.
+  useEffect(() => {
+    if (!templateSlug) return;
+    let cancelled = false;
+    setTemplateLoading(true);
+    fetch(`/api/starter-templates/${encodeURIComponent(templateSlug)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return;
+        if (data.html_content) {
+          setHtml(data.html_content);
+          setTemplateName(data.name || templateSlug);
+          if (autorun) {
+            void handleGenerate(data.html_content);
+          }
+        } else {
+          setError(data.error?.message || 'Starter template not found');
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setError('Failed to load starter template');
+      })
+      .finally(() => {
+        if (!cancelled) setTemplateLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [templateSlug]);
+
+  // Load a user template when ?userTemplate=<id> is present.
+  useEffect(() => {
+    if (!userTemplateId) return;
+    let cancelled = false;
+    setTemplateLoading(true);
+    fetch(`/api/templates/${encodeURIComponent(userTemplateId)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return;
+        if (data.html_content) {
+          setHtml(data.html_content);
+          setTemplateName(data.name || 'Your template');
+          if (autorun) {
+            void handleGenerate(data.html_content);
+          }
+        } else {
+          setError(data.error?.message || 'Template not found');
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setError('Failed to load template');
+      })
+      .finally(() => {
+        if (!cancelled) setTemplateLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userTemplateId]);
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Toolbar */}
         <div className="flex items-center justify-between px-6 py-3 border-b border-border bg-surface">
-          <h1 className="text-[16px] font-bold text-text-primary tracking-tight">
-            Playground
-          </h1>
+          <div>
+            <h1 className="text-[16px] font-bold text-text-primary tracking-tight">
+              Playground
+            </h1>
+            {templateName && (
+              <div className="text-[11px] text-text-dim mt-0.5">
+                Starter: <span className="text-accent">{templateName}</span>
+              </div>
+            )}
+          </div>
           <div className="flex items-center gap-3">
             <select
               value={format}
@@ -94,15 +173,15 @@ export default function PlaygroundPage() {
             </select>
             <select
               value={orientation}
-              onChange={(e) => setOrientation(e.target.value as any)}
+              onChange={(e) => setOrientation(e.target.value as 'portrait' | 'landscape')}
               className="px-3 py-1.5 rounded-lg border border-[#333] bg-[#1a1a1d] text-[#FAFAFA] text-xs"
             >
               <option value="portrait">Portrait</option>
               <option value="landscape">Landscape</option>
             </select>
             <button
-              onClick={handleGenerate}
-              disabled={loading || !html.trim()}
+              onClick={() => handleGenerate()}
+              disabled={loading || !html.trim() || templateLoading}
               className="px-4 py-1.5 rounded-lg bg-gradient-to-br from-accent to-orange-600 text-white text-sm font-semibold disabled:opacity-50"
             >
               {loading ? 'Generating...' : 'Generate PDF'}
@@ -137,10 +216,13 @@ export default function PlaygroundPage() {
                   {error}
                 </div>
               )}
-              {!pdfUrl && !error && (
+              {!pdfUrl && !error && !loading && (
                 <div className="text-gray-400 text-sm">
-                  Click "Generate PDF" to see a preview
+                  Click &quot;Generate PDF&quot; to see a preview
                 </div>
+              )}
+              {loading && !pdfUrl && (
+                <div className="text-gray-400 text-sm">Generating your PDF…</div>
               )}
               {pdfUrl && (
                 <iframe
@@ -154,5 +236,13 @@ export default function PlaygroundPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function PlaygroundPage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-text-dim">Loading playground…</div>}>
+      <PlaygroundInner />
+    </Suspense>
   );
 }

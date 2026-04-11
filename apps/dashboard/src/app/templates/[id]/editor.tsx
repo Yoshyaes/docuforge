@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import DOMPurify from 'dompurify';
 import { Sidebar } from '@/components/sidebar';
-import { Save, ArrowLeft, Eye, History, RotateCcw, X } from 'lucide-react';
+import { Save, ArrowLeft, Eye, History, RotateCcw, X, FileText } from 'lucide-react';
 import Link from 'next/link';
 
 interface Version {
@@ -80,6 +80,32 @@ export function TemplateEditor({ template, usageCount, usageLimit }: TemplateEdi
     }
   };
 
+  const handleRenderPdf = async () => {
+    // If there are unsaved changes, save first so the playground renders
+    // the latest content (playground fetches via /api/templates/:id).
+    if (hasChanges) {
+      setSaving(true);
+      setError(null);
+      try {
+        const res = await fetch(`/api/templates/${template.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, html_content: html }),
+        });
+        if (!res.ok) {
+          const data = await res.json().catch(() => null);
+          throw new Error(data?.error?.message || 'Failed to save before rendering');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to save before rendering');
+        setSaving(false);
+        return;
+      }
+      setSaving(false);
+    }
+    router.push(`/playground?userTemplate=${encodeURIComponent(template.id)}&autorun=1`);
+  };
+
   const handleRestore = async (versionId: string) => {
     setRestoring(versionId);
     try {
@@ -152,9 +178,17 @@ export function TemplateEditor({ template, usageCount, usageLimit }: TemplateEdi
             <button
               onClick={handleSave}
               disabled={saving || !hasChanges}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-br from-accent to-orange-600 text-white text-xs font-semibold disabled:opacity-50 transition-opacity"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium text-text-muted hover:text-text-primary disabled:opacity-50 transition-colors"
             >
               <Save size={14} /> {saving ? 'Saving...' : 'Save'}
+            </button>
+            <button
+              onClick={handleRenderPdf}
+              disabled={saving}
+              title={hasChanges ? 'Saves first, then renders' : 'Render this template as a PDF'}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-br from-accent to-orange-600 text-white text-xs font-semibold disabled:opacity-50 transition-opacity"
+            >
+              <FileText size={14} /> Render PDF
             </button>
           </div>
         </div>

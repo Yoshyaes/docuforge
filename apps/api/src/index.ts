@@ -12,6 +12,7 @@ import { rateLimitMiddleware } from './middleware/rateLimit.js';
 import { ipRateLimitMiddleware } from './middleware/ipRateLimit.js';
 import { AppError, errorResponse } from './lib/errors.js';
 import { browserPool } from './services/renderer.js';
+import { recordApiError } from './services/api-errors.js';
 
 import healthRoutes from './routes/health.js';
 import generateRoutes from './routes/generate.js';
@@ -30,6 +31,7 @@ import billingRoutes, { billingWebhookApp } from './routes/billing.js';
 import fontsRoutes from './routes/fonts.js';
 import analyticsRoutes from './routes/analytics.js';
 import { startWorker, stopWorker } from './services/queue.js';
+import { startDripWorker, stopDripWorker, scheduleDripTick } from './services/drip.js';
 
 const app = new Hono();
 
@@ -129,6 +131,31 @@ app.route('/v1', v1);
 // Global error handler
 app.onError((err, c) => {
   const { status, body } = errorResponse(err);
+
+  // Record /v1/* errors so the admin dashboard can see them. Fire-and-forget.
+  const path = c.req.path;
+  if (path.startsWith('/v1/')) {
+    const user = c.get('user') as { id: string } | undefined;
+    const authHeader = c.req.header('Authorization');
+    let keyPrefix: string | null = null;
+    if (authHeader?.startsWith('Bearer ')) {
+      const token = authHeader.slice(7);
+      if (token.startsWith('df_live_')) {
+        keyPrefix = token.slice(0, 16);
+      }
+    }
+
+    recordApiError({
+      userId: user?.id ?? null,
+      apiKeyPrefix: keyPrefix,
+      method: c.req.method,
+      path,
+      errorCode: body.error.code,
+      errorMessage: body.error.message,
+      statusCode: status,
+    });
+  }
+
   return c.json(body, status as any);
 });
 
@@ -144,6 +171,8 @@ async function start() {
   await browserPool.initialize();
   logger.info('Browser pool initialized');
   startWorker();
+  startDripWorker();
+  await scheduleDripTick();
 
   serve(
     { fetch: app.fetch, port },
@@ -162,6 +191,7 @@ start().catch((err) => {
 const shutdown = async () => {
   logger.info('Shutting down...');
   await stopWorker();
+  await stopDripWorker();
   await browserPool.shutdown();
   process.exit(0);
 };

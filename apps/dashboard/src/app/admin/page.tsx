@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation';
 import { Sidebar } from '@/components/sidebar';
-import { StatCard } from '@/components/stat-card';
 import { getCurrentUser, getPlanLimit } from '@/lib/data';
 import { AdminOverviewClient } from './admin-client';
 
