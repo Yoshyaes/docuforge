@@ -10,7 +10,12 @@ import { eq } from 'drizzle-orm';
 // it survives restarts.
 const EVENT_DEDUP_TTL_SECONDS = 60 * 60 * 24 * 7;
 
-async function markEventProcessed(eventId: string): Promise<boolean> {
+/**
+ * Returns true the first time a given event.id is seen; false on every
+ * subsequent call within EVENT_DEDUP_TTL_SECONDS. Exported so tests can
+ * exercise it directly.
+ */
+export async function markEventProcessed(eventId: string): Promise<boolean> {
   // SET NX returns 'OK' on success, null on already-set. We treat the
   // 'already exists' case as a duplicate retry and skip processing.
   const result = await redis.set(
@@ -21,6 +26,12 @@ async function markEventProcessed(eventId: string): Promise<boolean> {
     'NX',
   );
   return result === 'OK';
+}
+
+/** Resolve a Stripe price-id to a plan name. Exported for testing. */
+export function planForPriceId(priceId: string | undefined): string | null {
+  if (!priceId) return null;
+  return PRICE_PLAN_MAP[priceId] ?? null;
 }
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
