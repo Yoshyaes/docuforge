@@ -34,6 +34,7 @@ const columns = [
     links: [
       { label: 'Terms', href: '/terms' },
       { label: 'Privacy', href: '/privacy' },
+      { label: 'DPA', href: '/dpa' },
     ],
   },
 ];

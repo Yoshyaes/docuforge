@@ -4,6 +4,38 @@
 // is a regulated surface (handles API keys + billing), so a strict
 // baseline matters even though Next.js's defaults are already
 // reasonable.
+
+// CSP is deliberately Report-Only friendly here:
+// - script-src needs 'unsafe-inline' because Next.js injects inline
+//   hydration scripts without nonces by default. Migrating to nonces
+//   requires opting into next.config.js `experimental.serverActions`
+//   + a custom server, which is out of scope. We compensate with
+//   X-Frame-Options=DENY and X-Content-Type-Options=nosniff.
+// - Clerk needs its own connect-src + script-src + img-src.
+// - next/font hosts subset font files from fonts.gstatic.com.
+const cspDirectives = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'none'",
+  "form-action 'self' https://checkout.stripe.com",
+  // Next.js needs unsafe-inline + unsafe-eval for hydration.
+  // Clerk adds its own JS bundle from clerk.com.
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.clerk.accounts.dev https://*.clerk.com https://clerk.com",
+  // Tailwind + Clerk + next/font inject inline <style> tags.
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  // next/font subsets fonts at build time but Clerk loads from gstatic.
+  "font-src 'self' data: https://fonts.gstatic.com",
+  // Avatars come from img.clerk.com; we also keep data: for inline icons.
+  "img-src 'self' data: blob: https://img.clerk.com https://*.clerk.accounts.dev",
+  // The dashboard hits its own /api/* and the public API.
+  "connect-src 'self' https://api.getdocuforge.dev https://*.clerk.accounts.dev https://*.clerk.com https://clerk-telemetry.com",
+  // Workers (Clerk uses Web Workers in some flows).
+  "worker-src 'self' blob:",
+  // Block all <frame>/<iframe> src by default; Stripe billing portal needs an exception.
+  "frame-src 'self' https://*.stripe.com https://*.clerk.accounts.dev",
+];
+
 const securityHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'X-Frame-Options', value: 'DENY' },
@@ -16,6 +48,7 @@ const securityHeaders = [
     key: 'Strict-Transport-Security',
     value: 'max-age=63072000; includeSubDomains; preload',
   },
+  { key: 'Content-Security-Policy', value: cspDirectives.join('; ') },
 ];
 
 const nextConfig = {

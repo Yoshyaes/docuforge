@@ -15,6 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE}/contact`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${SITE}/terms`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${SITE}/privacy`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${SITE}/dpa`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
   ];
 
   let posts: Awaited<ReturnType<typeof getAllPosts>> = [];

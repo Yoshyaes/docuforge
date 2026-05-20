@@ -1,7 +1,7 @@
-export default function Loading() {
+﻿export default function Loading() {
   return (
     <div className="flex min-h-screen">
-      <div className="w-[240px] shrink-0" />
+      <div className="w-[220px] shrink-0" />
       <main className="flex-1 p-6 overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <div className="h-7 w-36 animate-pulse rounded bg-white/5" />

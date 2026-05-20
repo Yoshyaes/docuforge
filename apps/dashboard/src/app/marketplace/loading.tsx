@@ -1,7 +1,7 @@
-export default function Loading() {
+﻿export default function Loading() {
   return (
     <div className="flex min-h-screen">
-      <div className="w-[240px] shrink-0" />
+      <div className="w-[220px] shrink-0" />
       <main className="flex-1 p-8">
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
