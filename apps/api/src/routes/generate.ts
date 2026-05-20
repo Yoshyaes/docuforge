@@ -42,11 +42,24 @@ const generateSchema = z.object({
   styles: z.string().optional(),
   watermark: z
     .object({
-      text: z.string().optional(),
-      color: z.string().optional(),
+      // Bound the text to a reasonable length so it can't push the
+      // generated <style> past the document body and so the layout
+      // engine can't OOM on a 5MB watermark string.
+      text: z.string().max(200).optional(),
+      // Color is whitelisted to either a CSS hex (`#aaa`, `#aaaaaa`,
+      // `#aaaaaaaa`) or a named CSS color word. Anything outside the
+      // pattern is rejected before it reaches the template literal —
+      // closes the `red; } body { display:none } @import url(...)`
+      // class of CSS injection via watermark color.
+      color: z
+        .string()
+        .regex(/^(#[0-9A-Fa-f]{3,8}|[A-Za-z]{3,30})$/, 'Invalid watermark color')
+        .optional(),
       opacity: z.number().min(0).max(1).optional(),
-      angle: z.number().optional(),
-      fontSize: z.number().optional(),
+      // Bounded to keep the CSS transform finite and human-renderable.
+      angle: z.number().finite().min(-360).max(360).optional(),
+      // Cap font-size so a `wSize: 1e308` value can't OOM Playwright.
+      fontSize: z.number().finite().min(1).max(400).optional(),
     })
     .optional(),
   options: z

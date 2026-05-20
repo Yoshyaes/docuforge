@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/data';
+import { assertSameOrigin } from '@/lib/csrf';
 
 const API_BASE = process.env.API_BASE_URL || 'http://localhost:3000';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
+  const csrf = assertSameOrigin(request);
+  if (!csrf.ok) {
+    return NextResponse.json({ error: { message: 'Forbidden', reason: csrf.reason } }, { status: 403 });
+  }
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 });

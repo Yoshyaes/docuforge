@@ -5,6 +5,46 @@ import { fontId } from '../lib/id.js';
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { writeFile, mkdir, unlink } from 'fs/promises';
 import { join } from 'path';
+import { createHmac, timingSafeEqual } from 'crypto';
+
+const FONT_URL_TTL_SECONDS = 60 * 60; // 1h is enough for a render
+
+function getFontUrlSecret(): string {
+  // Reuse WEBHOOK_SIGNING_SECRET so we don't introduce yet another
+  // env var. In dev (no secret set) we fall back to a stable but
+  // process-local secret so dev rendering still works.
+  return process.env.WEBHOOK_SIGNING_SECRET || 'docuforge-dev-font-secret';
+}
+
+function signFontUrlPath(path: string, expires: string): string {
+  return createHmac('sha256', getFontUrlSecret())
+    .update(`${path}\n${expires}`)
+    .digest('hex');
+}
+
+/**
+ * Compute a signed URL signature for a local-mode font path. Called
+ * by getFontCssForUser when building the @font-face URL.
+ */
+export function buildFontUrlSignature(path: string): { sig: string; expires: string } {
+  const expires = String(Math.floor(Date.now() / 1000) + FONT_URL_TTL_SECONDS);
+  return { sig: signFontUrlPath(path, expires), expires };
+}
+
+/**
+ * Verify a signed font URL. Returns false on any mismatch (wrong sig,
+ * expired, or malformed). Constant-time compare on the signature.
+ */
+export function verifyFontUrlSignature(path: string, sig: string, expires: string): boolean {
+  const exp = Number(expires);
+  if (!Number.isFinite(exp) || exp * 1000 < Date.now()) return false;
+
+  const expected = signFontUrlPath(path, expires);
+  const a = Buffer.from(sig, 'hex');
+  const b = Buffer.from(expected, 'hex');
+  if (a.length !== b.length || a.length === 0) return false;
+  return timingSafeEqual(a, b);
+}
 
 const ALLOWED_FORMATS = ['woff2', 'ttf', 'otf'] as const;
 const MAX_FONT_SIZE = 5 * 1024 * 1024; // 5MB
@@ -245,9 +285,17 @@ export async function getFontCssForUser(userId: string): Promise<string> {
 
   const declarations = fonts.map((font) => {
     const cssFormat = FORMAT_TO_CSS[font.format] || 'truetype';
-    const url = provider === 'local'
-      ? `http://localhost:${process.env.PORT || 3000}/fonts/${font.userId}/${font.id}.${font.format}`
-      : `${baseUrl}/${font.storageKey}`;
+    let url: string;
+    if (provider === 'local') {
+      // Sign the URL so a leaked URL pattern doesn't give other users
+      // access to this user's fonts via the static handler.
+      const localPath = `/fonts/${font.userId}/${font.id}.${font.format}`;
+      const { sig, expires } = buildFontUrlSignature(localPath);
+      const host = `http://localhost:${process.env.PORT || 3000}`;
+      url = `${host}${localPath}?sig=${sig}&expires=${expires}`;
+    } else {
+      url = `${baseUrl}/${font.storageKey}`;
+    }
 
     // family was gated by FAMILY_PATTERN on upload, but escape again
     // before interpolating in case the DB row predates the regex.

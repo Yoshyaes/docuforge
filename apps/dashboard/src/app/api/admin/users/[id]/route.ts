@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/admin';
+import { assertSameOrigin } from '@/lib/csrf';
 import { db, users, generations, apiKeys, templates, usageDaily } from '@/lib/db';
 import { eq, desc, sql, gte } from 'drizzle-orm';
 
@@ -98,6 +99,10 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 }
 
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
+  const csrf = assertSameOrigin(request);
+  if (!csrf.ok) {
+    return NextResponse.json({ error: 'Forbidden', reason: csrf.reason }, { status: 403 });
+  }
   const admin = await requireAdmin();
   if (!admin) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
@@ -132,6 +137,10 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 }
 
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
+  const csrf = assertSameOrigin(request);
+  if (!csrf.ok) {
+    return NextResponse.json({ error: 'Forbidden', reason: csrf.reason }, { status: 403 });
+  }
   const admin = await requireAdmin();
   if (!admin) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });

@@ -4,10 +4,15 @@ import { eq, and } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import { nanoid } from 'nanoid';
 import { getCurrentUser } from '@/lib/data';
+import { assertSameOrigin } from '@/lib/csrf';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
+  const csrf = assertSameOrigin(request);
+  if (!csrf.ok) {
+    return NextResponse.json({ error: { message: 'Forbidden', reason: csrf.reason } }, { status: 403 });
+  }
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 });
@@ -18,7 +23,8 @@ export async function POST(request: NextRequest) {
   const name = body.name || 'Default';
 
   const rawKey = `df_live_${nanoid(32)}`;
-  const keyHash = await bcrypt.hash(rawKey, 10);
+  // bcrypt cost 12 matches the API key path in apps/api/src/services/apikeys.ts
+  const keyHash = await bcrypt.hash(rawKey, 12);
   const keyPrefix = rawKey.slice(0, 16);
 
   const [record] = await db
@@ -36,6 +42,10 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const csrf = assertSameOrigin(request);
+  if (!csrf.ok) {
+    return NextResponse.json({ error: { message: 'Forbidden', reason: csrf.reason } }, { status: 403 });
+  }
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: { message: 'Unauthorized' } }, { status: 401 });
