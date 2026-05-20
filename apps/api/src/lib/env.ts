@@ -34,16 +34,21 @@ const envSchema = z.object({
 export type Env = z.infer<typeof envSchema>;
 
 /**
- * Secrets that MUST be set when NODE_ENV=production. Each entry is the
- * env var name and a short reason — included in the failure message so
- * the deploy operator can fix it without grepping the codebase.
+ * Feature-gated secrets. If unset in production we log a warning at
+ * boot — the deploy succeeds, and the feature's own code returns 5xx
+ * with a clear message at call-time (see services/stripe.ts,
+ * services/webhooks.ts, routes/webhooks.ts, middleware/auth.ts).
+ *
+ * Boot used to hard-fail on these; that was overreach. A user who
+ * isn't using Stripe billing or Clerk webhooks shouldn't need to
+ * generate placeholders just to deploy.
  */
-const PRODUCTION_REQUIRED: Array<{ name: keyof Env; reason: string }> = [
-  { name: 'WEBHOOK_SIGNING_SECRET', reason: 'outbound webhook HMAC' },
-  { name: 'CLERK_WEBHOOK_SECRET', reason: 'inbound Clerk webhook signature verification' },
-  { name: 'STRIPE_SECRET_KEY', reason: 'Stripe API calls (billing)' },
-  { name: 'STRIPE_WEBHOOK_SECRET', reason: 'inbound Stripe webhook signature verification' },
-  { name: 'DASHBOARD_SERVICE_SECRET', reason: 'dashboard ↔ API service-to-service auth' },
+const FEATURE_GATED_SECRETS: Array<{ name: keyof Env; reason: string }> = [
+  { name: 'WEBHOOK_SIGNING_SECRET', reason: 'outbound webhook HMAC — webhooks will be skipped' },
+  { name: 'CLERK_WEBHOOK_SECRET', reason: 'inbound Clerk webhook verification — /webhooks/clerk will 500' },
+  { name: 'STRIPE_SECRET_KEY', reason: 'Stripe API calls — /v1/billing/* will 503' },
+  { name: 'STRIPE_WEBHOOK_SECRET', reason: 'inbound Stripe webhook verification — /v1/billing/webhooks will 500' },
+  { name: 'DASHBOARD_SERVICE_SECRET', reason: 'dashboard ↔ API service auth — playground / service routes will 401' },
 ];
 
 function validateEnv(): Env {
@@ -58,19 +63,29 @@ function validateEnv(): Env {
   const env = result.data;
 
   if (env.NODE_ENV === 'production') {
-    const missing: string[] = [];
-    for (const { name, reason } of PRODUCTION_REQUIRED) {
-      if (!env[name]) missing.push(`  ${name} — ${reason}`);
-    }
+    // Hard-fail on STORAGE_PROVIDER=local: there is no runtime guard
+    // that can save you. PDFs would land on the container's
+    // ephemeral disk and disappear on every redeploy.
     if (env.STORAGE_PROVIDER === 'local') {
-      missing.push(
-        '  STORAGE_PROVIDER=local is unsafe in production — PDFs would live on the ephemeral container disk. Set to r2, s3, or gcs.',
+      console.error('Production environment refuses to start:');
+      console.error(
+        '  STORAGE_PROVIDER=local is unsafe in production — PDFs would live on the',
       );
-    }
-    if (missing.length > 0) {
-      console.error('Production environment is missing required configuration:');
-      for (const line of missing) console.error(line);
+      console.error(
+        '  container ephemeral disk and be lost on every redeploy. Set to r2, s3, or gcs.',
+      );
       process.exit(1);
+    }
+
+    // Soft-warn on feature-gated secrets so an operator deploying
+    // without Stripe / Clerk / outbound webhooks isn't blocked.
+    const missing = FEATURE_GATED_SECRETS.filter(({ name }) => !env[name]);
+    if (missing.length > 0) {
+      console.warn('Production environment is starting with feature-gated secrets unset.');
+      console.warn('Each affected feature will fail loud at call-time:');
+      for (const { name, reason } of missing) {
+        console.warn(`  ${name}: ${reason}`);
+      }
     }
   }
 
