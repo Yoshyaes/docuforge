@@ -194,7 +194,7 @@ class DocuForge:
         """
         data: Dict[str, Any] = {"html": html, "output": output}
         if options:
-            data["options"] = options if isinstance(options, dict) else options.model_dump(exclude_none=True)
+            data["options"] = options if isinstance(options, dict) else options.model_dump(exclude_none=True, by_alias=True)
         if webhook:
             data["webhook"] = webhook
         if watermark:
@@ -221,7 +221,7 @@ class DocuForge:
         """
         body: Dict[str, Any] = {"template": template, "data": data, "output": output}
         if options:
-            body["options"] = options if isinstance(options, dict) else options.model_dump(exclude_none=True)
+            body["options"] = options if isinstance(options, dict) else options.model_dump(exclude_none=True, by_alias=True)
         if webhook:
             body["webhook"] = webhook
         resp = self._request("POST", "/v1/generate", json=body)
@@ -252,7 +252,7 @@ class DocuForge:
         if styles:
             body["styles"] = styles
         if options:
-            body["options"] = options if isinstance(options, dict) else options.model_dump(exclude_none=True)
+            body["options"] = options if isinstance(options, dict) else options.model_dump(exclude_none=True, by_alias=True)
         if webhook:
             body["webhook"] = webhook
         resp = self._request("POST", "/v1/generate", json=body)

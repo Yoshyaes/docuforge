@@ -22,7 +22,11 @@ class PDFOptions(BaseModel):
     orientation: Optional[Literal["portrait", "landscape"]] = None
     header: Optional[str] = None
     footer: Optional[str] = None
-    print_background: Optional[bool] = None
+    # The API field is `printBackground`. We accept the Pythonic
+    # `print_background` on input via `populate_by_name`, and rely on
+    # call sites to pass `by_alias=True` to `.model_dump()` so the
+    # serialized key matches the API.
+    print_background: Optional[bool] = Field(None, alias="printBackground")
 
     class Config:
         populate_by_name = True

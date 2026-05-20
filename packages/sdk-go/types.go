@@ -118,7 +118,7 @@ type PDFOptions struct {
 	Orientation     string  `json:"orientation,omitempty"`
 	Header          string  `json:"header,omitempty"`
 	Footer          string  `json:"footer,omitempty"`
-	PrintBackground *bool   `json:"print_background,omitempty"`
+	PrintBackground *bool   `json:"printBackground,omitempty"`
 }
 
 // WatermarkOptions controls the watermark applied to the PDF.
@@ -127,7 +127,7 @@ type WatermarkOptions struct {
 	Color    string  `json:"color,omitempty"`
 	Opacity  float64 `json:"opacity,omitempty"`
 	Angle    float64 `json:"angle,omitempty"`
-	FontSize float64 `json:"font_size,omitempty"`
+	FontSize float64 `json:"fontSize,omitempty"`
 }
 
 // GenerateParams are the parameters for generating a PDF from raw HTML.

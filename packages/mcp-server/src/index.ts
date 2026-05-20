@@ -63,7 +63,7 @@ server.tool(
     watermark: z.object({
       text: z.string().describe('Watermark text'),
       opacity: z.number().min(0).max(1).optional().describe('Watermark opacity (0-1)'),
-      rotation: z.number().optional().describe('Watermark rotation in degrees'),
+      angle: z.number().optional().describe('Watermark rotation in degrees'),
     }).optional().describe('Watermark configuration'),
     header: z.string().optional().describe('HTML for page header. Supports {{pageNumber}} and {{totalPages}}.'),
     footer: z.string().optional().describe('HTML for page footer. Supports {{pageNumber}} and {{totalPages}}.'),

@@ -121,10 +121,13 @@ module DocuForge
       request(:get, "/v1/usage")
     end
 
-    protected
-
     # Make an HTTP request and handle errors. Retries on 429/5xx with
     # exponential backoff.
+    #
+    # NOTE: this method is intentionally public so that Templates (a
+    # separate class) can call `@client.request(...)`. Ruby's `protected`
+    # keyword forbids cross-class invocations, which previously caused
+    # every `templates.*` call to raise NoMethodError.
     #
     # @param method [Symbol] HTTP method (:get, :post, :put, :delete).
     # @param path [String] API path.
