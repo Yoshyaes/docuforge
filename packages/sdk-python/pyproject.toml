@@ -23,7 +23,14 @@ dependencies = [
     "pydantic>=2.0",
 ]
 
+[project.optional-dependencies]
+test = ["pytest>=7", "respx>=0.20"]
+
 [project.urls]
 Homepage = "https://getdocuforge.dev"
 Documentation = "https://getdocuforge.dev/docs"
 Repository = "https://github.com/docuforge/docuforge-python"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

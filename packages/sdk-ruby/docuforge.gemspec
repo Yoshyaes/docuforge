@@ -18,7 +18,10 @@ Gem::Specification.new do |spec|
   spec.metadata["source_code_uri"] = "https://github.com/docuforge/docuforge-ruby"
 
   spec.files = Dir["lib/**/*.rb", "LICENSE", "README.md"]
+  spec.test_files = Dir["spec/**/*.rb"]
   spec.require_paths = ["lib"]
 
   spec.add_dependency "faraday", "~> 2.0"
+
+  spec.add_development_dependency "rspec", "~> 3.13"
 end

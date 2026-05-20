@@ -91,6 +91,14 @@ except DocuForgeError as e:
     print(f"Error {e.code}: {e.message}")
 ```
 
+## Development
+
+```bash
+pip install -e ".[test]"
+pytest                   # run the test suite (httpx requests are stubbed via respx)
+make test                # same, via the project's Makefile
+```
+
 ## License
 
 MIT

@@ -2,6 +2,14 @@
 
 require "bundler/gem_tasks"
 
+begin
+  require "rspec/core/rake_task"
+  RSpec::Core::RakeTask.new(:spec)
+rescue LoadError
+  # rspec is a dev dep — Rakefile loads even when it isn't installed
+  # (e.g., during `gem build` from a fresh checkout).
+end
+
 desc "Validate Ruby syntax"
 task :validate do
   Dir["lib/**/*.rb"].each do |file|
@@ -9,5 +17,8 @@ task :validate do
   end
 end
 
+desc "Run the rspec suite"
+task test: :spec
+
 desc "Pre-publish checks"
-task prepublish: [:validate, :build]
+task prepublish: [:validate, :spec, :build]
