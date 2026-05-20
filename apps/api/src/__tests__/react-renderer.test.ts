@@ -76,7 +76,7 @@ describe('React renderer (opt-in enabled)', () => {
   it('throws ValidationError when source exceeds 1MB', () => {
     const source = 'x'.repeat(1_048_577);
     expect(() => renderReactToHtml(source)).toThrow(ValidationError);
-    expect(() => renderReactToHtml(source)).toThrow('exceeds maximum size');
+    expect(() => renderReactToHtml(source)).toThrow(/exceeds 1MB/);
   });
 
   it('throws ValidationError when export is not a function', () => {

@@ -120,7 +120,7 @@ export function renderReactToHtml(
     );
   }
   if (componentSource.length > MAX_SOURCE_SIZE) {
-    throw new ValidationError(`React component source exceeds maximum size of ${MAX_SOURCE_SIZE} bytes`);
+    throw new ValidationError('React component source exceeds 1MB. Move large data into the `data` field instead of embedding it in the JSX.');
   }
 
   try {
@@ -144,9 +144,10 @@ export function renderReactToHtml(
   } catch (err) {
     if (err instanceof ValidationError) throw err;
     const msg = err instanceof Error ? err.message : String(err);
-    const safeMsg = process.env.NODE_ENV === 'production'
-      ? 'Failed to render React component'
-      : `Failed to render React component: ${msg}`;
+    const safeMsg =
+      process.env.NODE_ENV === 'production'
+        ? 'Failed to render the React component. Check for syntax errors or unsupported APIs (no useState/useEffect — render output must be static).'
+        : `Failed to render React component: ${msg}`;
     throw new ValidationError(safeMsg);
   }
 }

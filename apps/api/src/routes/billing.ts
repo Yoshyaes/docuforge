@@ -14,14 +14,22 @@ const app = new Hono();
 
 app.post('/checkout', async (c) => {
   if (!isStripeConfigured()) {
-    return c.json({ error: { code: 'NOT_CONFIGURED', message: 'Stripe is not configured' } }, 503);
+    return c.json(
+      {
+        error: {
+          code: 'NOT_CONFIGURED',
+          message: 'Billing is not yet enabled on this DocuForge instance. Contact support@getdocuforge.dev.',
+        },
+      },
+      503,
+    );
   }
 
   const body = await c.req.json();
   const plan = body.plan;
 
   if (!plan || !['starter', 'pro'].includes(plan)) {
-    throw new ValidationError('Plan must be "starter" or "pro"');
+    throw new ValidationError("Plan must be 'starter' or 'pro'. See https://getdocuforge.dev/pricing for details.");
   }
 
   const user = c.get('user');
@@ -32,7 +40,15 @@ app.post('/checkout', async (c) => {
 
 app.post('/portal', async (c) => {
   if (!isStripeConfigured()) {
-    return c.json({ error: { code: 'NOT_CONFIGURED', message: 'Stripe is not configured' } }, 503);
+    return c.json(
+      {
+        error: {
+          code: 'NOT_CONFIGURED',
+          message: 'Billing is not yet enabled on this DocuForge instance. Contact support@getdocuforge.dev.',
+        },
+      },
+      503,
+    );
   }
 
   const user = c.get('user');
@@ -68,7 +84,15 @@ export const billingWebhookApp = new Hono();
 
 billingWebhookApp.post('/', async (c) => {
   if (!isStripeConfigured()) {
-    return c.json({ error: { code: 'NOT_CONFIGURED', message: 'Stripe is not configured' } }, 503);
+    return c.json(
+      {
+        error: {
+          code: 'NOT_CONFIGURED',
+          message: 'Billing is not yet enabled on this DocuForge instance. Contact support@getdocuforge.dev.',
+        },
+      },
+      503,
+    );
   }
 
   const signature = c.req.header('stripe-signature');

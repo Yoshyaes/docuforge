@@ -58,12 +58,16 @@ export const authMiddleware = createMiddleware(async (c, next) => {
 
   const authHeader = c.req.header('Authorization');
   if (!authHeader?.startsWith('Bearer ')) {
-    throw new AuthError('Missing or invalid Authorization header');
+    throw new AuthError(
+      "Missing or invalid Authorization header. Add: Authorization: Bearer df_live_… (must start with df_live_).",
+    );
   }
 
   const token = authHeader.slice(7);
   if (!token || !token.startsWith('df_live_')) {
-    throw new AuthError();
+    throw new AuthError(
+      "API key has the wrong format. It should start with df_live_ (32+ chars). Find or create one at https://app.getdocuforge.dev/keys.",
+    );
   }
 
   // Look up key by prefix (first 16 chars) to narrow search, then verify hash

@@ -13,7 +13,7 @@ app.post('/', async (c) => {
   const body = await c.req.json().catch(() => ({}));
   const parsed = createKeySchema.safeParse(body);
   if (!parsed.success) {
-    throw new ValidationError('Invalid key name');
+    throw new ValidationError('Key name is required and must be 1–255 characters.');
   }
 
   const user = c.get('user');
@@ -34,7 +34,7 @@ app.delete('/:id', async (c) => {
   const deleted = await revokeApiKey(user.id, keyId);
 
   if (!deleted) {
-    throw new NotFoundError('API key');
+    throw new NotFoundError("API key", "It may have already been revoked. List your keys with GET /v1/keys.");
   }
 
   return c.json({ deleted: true });

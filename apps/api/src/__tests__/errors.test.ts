@@ -14,7 +14,27 @@ describe('Error classes', () => {
     const err = new AuthError();
     expect(err.statusCode).toBe(401);
     expect(err.code).toBe('UNAUTHORIZED');
-    expect(err.message).toBe('Invalid API key');
+    expect(err.message).toMatch(/Invalid API key/);
+    expect(err.message).toMatch(/df_live_/);
+  });
+
+  it('AuthError gives the user a hint about the header format', () => {
+    expect(new AuthError().message).toMatch(/Authorization:\s*Bearer/);
+  });
+
+  it('RateLimitError includes the retry-after seconds in the message', () => {
+    expect(new RateLimitError(42).message).toMatch(/Retry after 42s/);
+  });
+
+  it('NotFoundError supports an optional hint', () => {
+    expect(new NotFoundError('Template').message).toBe('Template not found');
+    expect(new NotFoundError('Template', 'List with GET /v1/templates.').message).toBe(
+      'Template not found. List with GET /v1/templates.',
+    );
+  });
+
+  it('UsageLimitError names the upgrade path', () => {
+    expect(new UsageLimitError().message).toMatch(/Upgrade to Starter or Pro/);
   });
 
   it('AuthError accepts custom message', () => {
