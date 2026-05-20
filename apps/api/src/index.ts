@@ -156,7 +156,7 @@ app.route('/v1', v1);
 
 // Global error handler
 app.onError((err, c) => {
-  const { status, body } = errorResponse(err);
+  const { status, body } = errorResponse(err, c.get('requestId'));
 
   // Send 5xx errors to Sentry (when configured). 4xx are expected
   // validation/auth failures and would drown the signal.

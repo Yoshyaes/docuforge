@@ -77,7 +77,15 @@ function buildFieldErrors(err: ZodError) {
   }));
 }
 
-export function errorResponse(err: unknown) {
+/**
+ * Build the JSON error response for a thrown error.
+ *
+ * Pass the request's correlation id (set by the logging middleware
+ * via c.set('requestId', ...)) so it gets baked into every response
+ * — customers can share that id with support to look up the
+ * corresponding server log line.
+ */
+export function errorResponse(err: unknown, requestId?: string) {
   if (err instanceof AppError) {
     return {
       status: err.statusCode,
@@ -86,6 +94,7 @@ export function errorResponse(err: unknown) {
           code: err.code,
           message: err.message,
           ...(err instanceof RateLimitError ? { retry_after: err.retryAfter } : {}),
+          ...(requestId ? { request_id: requestId } : {}),
         },
       },
     };
@@ -103,15 +112,16 @@ export function errorResponse(err: unknown) {
               ? fields[0].message
               : `Validation failed: ${fields.length} fields are invalid`,
           fields,
+          ...(requestId ? { request_id: requestId } : {}),
         },
       },
     };
   }
 
-  // Unexpected error: log with a fresh request_id so support can
-  // correlate the user's report to our log line.
-  const requestId = randomUUID();
-  logger.error({ err, requestId }, 'Unexpected error');
+  // Unexpected error. Prefer the caller's request id; mint a fresh
+  // one if missing so we always log+return a correlatable id.
+  const id = requestId ?? randomUUID();
+  logger.error({ err, requestId: id }, 'Unexpected error');
   return {
     status: 500,
     body: {
@@ -119,7 +129,7 @@ export function errorResponse(err: unknown) {
         code: 'INTERNAL_ERROR',
         message:
           'Something broke on our side. Retry in a minute. If this persists, share the request_id below with support@getdocuforge.dev.',
-        request_id: requestId,
+        request_id: id,
       },
     },
   };
