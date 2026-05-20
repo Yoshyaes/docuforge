@@ -1,9 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createHmac } from 'crypto';
 
-// Mock dns/promises to avoid real DNS lookups (SSRF validation hangs under fake timers)
+// Mock dns/promises to avoid real DNS lookups (SSRF validation hangs
+// under fake timers). The hardened webhooks service calls resolve4 +
+// resolve6; we stub both with a public IP so the SSRF check passes.
 vi.mock('dns/promises', () => ({
-  resolve: vi.fn().mockResolvedValue(['93.184.216.34']), // public IP
+  resolve4: vi.fn().mockResolvedValue(['93.184.216.34']),
+  resolve6: vi.fn().mockResolvedValue([]),
+  resolve: vi.fn().mockResolvedValue(['93.184.216.34']),
 }));
 
 // Mock fetch globally

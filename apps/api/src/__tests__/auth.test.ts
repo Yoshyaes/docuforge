@@ -165,7 +165,7 @@ describe('Auth middleware', () => {
 
   describe('Service-to-service auth', () => {
     it('succeeds with valid service secret and user ID', async () => {
-      process.env.DASHBOARD_SERVICE_SECRET = 'svc_secret_123';
+      process.env.DASHBOARD_SERVICE_SECRET = 'svc_secret_long_1234567890';
       (mockLimit as any)._returnValue = Promise.resolve([
         { id: 'usr_svc', email: 'svc@test.com', plan: 'enterprise' },
       ]);
@@ -173,7 +173,7 @@ describe('Auth middleware', () => {
       const app = createApp();
       const res = await app.request('/test', {
         headers: {
-          'X-Service-Secret': 'svc_secret_123',
+          'X-Service-Secret': 'svc_secret_long_1234567890',
           'X-Service-User-Id': 'usr_svc',
         },
       });
@@ -183,7 +183,7 @@ describe('Auth middleware', () => {
     });
 
     it('falls through to bearer auth when no X-Service-Secret header', async () => {
-      process.env.DASHBOARD_SERVICE_SECRET = 'svc_secret_123';
+      process.env.DASHBOARD_SERVICE_SECRET = 'svc_secret_long_1234567890';
       // No service header, no bearer => 401
       const app = createApp();
       const res = await app.request('/test');
@@ -191,7 +191,7 @@ describe('Auth middleware', () => {
     });
 
     it('returns 401 when service secret is wrong', async () => {
-      process.env.DASHBOARD_SERVICE_SECRET = 'svc_secret_123';
+      process.env.DASHBOARD_SERVICE_SECRET = 'svc_secret_long_1234567890';
 
       const app = createApp();
       const res = await app.request('/test', {

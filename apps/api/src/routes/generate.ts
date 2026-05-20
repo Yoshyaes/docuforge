@@ -34,7 +34,8 @@ const formatSchema = z.union([
 const MAX_HTML_SIZE = 5_242_880; // 5MB
 const MAX_REACT_SIZE = 5_242_880; // 5MB
 
-const generateSchema = z.object({
+// Exported so tests can exercise the real schema instead of a mirror.
+export const generateSchema = z.object({
   html: z.string().max(MAX_HTML_SIZE).optional(),
   react: z.string().max(MAX_REACT_SIZE).optional(),
   template: z.string().optional(),
