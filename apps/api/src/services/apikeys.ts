@@ -10,7 +10,12 @@ import { eq, and } from 'drizzle-orm';
  */
 export async function createApiKey(userId: string, name = 'Default') {
   const rawKey = apiKeyId();
-  const keyHash = await bcrypt.hash(rawKey, 10);
+  // Cost 12 ≈ 250ms/check on modern hardware. Two bumps: (a) audit
+  // 02 flagged cost 10 as too low for a long-lived secret, (b) makes
+  // brute-force on a leaked prefix economically painful even with
+  // partial leaks. The key itself has 192 bits of entropy so brute
+  // force was already infeasible — this is defence-in-depth.
+  const keyHash = await bcrypt.hash(rawKey, 12);
   const keyPrefix = rawKey.slice(0, 16);
 
   const [record] = await db

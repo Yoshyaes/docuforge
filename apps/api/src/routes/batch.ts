@@ -55,12 +55,18 @@ const app = new Hono();
  * Submit multiple PDF generation jobs to the async queue.
  */
 app.post('/', async (c) => {
-  // Idempotency key support — return cached response if key seen within 24h
+  const user = c.get('user');
+
+  // Idempotency key support — return cached response if key seen
+  // within 24h. Scope by user.id so the same Idempotency-Key from a
+  // different user can't pull our cached response (audit 02 P1).
   const idempotencyKey = c.req.header('Idempotency-Key');
-  if (idempotencyKey) {
-    const cacheKey = `idempotency:batch:${idempotencyKey}`;
+  const idemCacheKey = idempotencyKey
+    ? `idempotency:batch:${user.id}:${idempotencyKey}`
+    : null;
+  if (idemCacheKey) {
     try {
-      const cached = await redis.get(cacheKey);
+      const cached = await redis.get(idemCacheKey);
       if (cached) {
         return c.json(JSON.parse(cached as string), 202);
       }
@@ -77,7 +83,6 @@ app.post('/', async (c) => {
   }
 
   const { items, webhook } = parsed.data;
-  const user = c.get('user');
 
   // Check usage limit
   const withinLimit = await checkUsageLimit(user.id, user.plan);
@@ -134,10 +139,9 @@ app.post('/', async (c) => {
   };
 
   // Cache response for idempotency key
-  if (idempotencyKey) {
-    const cacheKey = `idempotency:batch:${idempotencyKey}`;
+  if (idemCacheKey) {
     try {
-      await redis.set(cacheKey, JSON.stringify(responseBody), 'EX', 86400); // 24h TTL
+      await redis.set(idemCacheKey, JSON.stringify(responseBody), 'EX', 86400); // 24h TTL
     } catch {
       // Ignore Redis errors for idempotency caching
     }

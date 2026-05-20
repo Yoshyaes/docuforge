@@ -1,7 +1,27 @@
 import Stripe from 'stripe';
 import { db } from '../lib/db.js';
+import { redis } from '../lib/redis.js';
+import { logger } from '../lib/logger.js';
 import { users, stripeCustomers, stripeSubscriptions } from '../schema/db.js';
 import { eq } from 'drizzle-orm';
+
+// Stripe retries an event for up to 3 days. Cache event IDs for 7 days
+// so a delayed retry can't double-process. The cache lives in Redis so
+// it survives restarts.
+const EVENT_DEDUP_TTL_SECONDS = 60 * 60 * 24 * 7;
+
+async function markEventProcessed(eventId: string): Promise<boolean> {
+  // SET NX returns 'OK' on success, null on already-set. We treat the
+  // 'already exists' case as a duplicate retry and skip processing.
+  const result = await redis.set(
+    `stripe:event:${eventId}`,
+    '1',
+    'EX',
+    EVENT_DEDUP_TTL_SECONDS,
+    'NX',
+  );
+  return result === 'OK';
+}
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
@@ -126,18 +146,54 @@ export function constructWebhookEvent(
 }
 
 export async function handleWebhookEvent(event: Stripe.Event): Promise<void> {
+  // Idempotency: refuse to process the same event.id twice. Stripe
+  // retries on any non-2xx and on timeouts; without dedup, double
+  // retries could flip a user's plan twice or double-charge usage.
+  const firstSeen = await markEventProcessed(event.id);
+  if (!firstSeen) {
+    logger.info({ eventId: event.id, type: event.type }, 'Stripe event already processed; skipping');
+    return;
+  }
+
   switch (event.type) {
     case 'checkout.session.completed': {
       const session = event.data.object as Stripe.Checkout.Session;
       const userId = session.metadata?.userId;
-      const plan = session.metadata?.plan;
-      if (!userId || !plan) break;
+      if (!userId) break;
 
       // Fetch the subscription outside the transaction (network call).
+      // The PLAN is derived from the actual price ID on the
+      // subscription, NOT from session.metadata.plan (which is
+      // client-controlled and trusting it lets an attacker pay
+      // starter price for pro features by tampering with the
+      // checkout-session creation payload).
       let stripeSub: Stripe.Subscription | null = null;
+      let resolvedPlan: string | null = null;
       if (session.subscription) {
         const stripe = getStripe();
         stripeSub = await stripe.subscriptions.retrieve(session.subscription as string);
+        const priceId = stripeSub.items.data[0]?.price.id;
+        resolvedPlan = priceId ? PRICE_PLAN_MAP[priceId] ?? null : null;
+      }
+      if (!resolvedPlan) {
+        logger.warn(
+          { eventId: event.id, userId, sessionId: session.id },
+          'checkout.session.completed: no subscription/price → no plan resolved; skipping',
+        );
+        break;
+      }
+
+      // Defense-in-depth: warn if the client-declared plan disagrees
+      // with the server-resolved plan (the price-id is authoritative).
+      if (session.metadata?.plan && session.metadata.plan !== resolvedPlan) {
+        logger.warn(
+          {
+            eventId: event.id,
+            declaredPlan: session.metadata.plan,
+            resolvedPlan,
+          },
+          'Stripe checkout: metadata.plan disagrees with resolved plan; using resolved plan',
+        );
       }
 
       // Apply plan + subscription record atomically so a crash between
@@ -146,7 +202,7 @@ export async function handleWebhookEvent(event: Stripe.Event): Promise<void> {
       await db.transaction(async (tx) => {
         await tx
           .update(users)
-          .set({ plan: plan as any })
+          .set({ plan: resolvedPlan as any })
           .where(eq(users.id, userId));
 
         if (stripeSub) {

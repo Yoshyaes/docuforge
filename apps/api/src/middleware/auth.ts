@@ -1,6 +1,7 @@
 import { Context, Next } from 'hono';
 import { createMiddleware } from 'hono/factory';
 import bcrypt from 'bcryptjs';
+import { timingSafeEqual } from 'crypto';
 import { db } from '../lib/db.js';
 import { apiKeys, users } from '../schema/db.js';
 import { eq } from 'drizzle-orm';
@@ -19,11 +20,26 @@ declare module 'hono' {
   }
 }
 
+/**
+ * Constant-time comparison of two strings. Returns false (without
+ * leaking length) if either side is empty or the lengths differ.
+ */
+function safeEqual(a: string | undefined, b: string | undefined): boolean {
+  if (!a || !b) return false;
+  const ab = Buffer.from(a);
+  const bb = Buffer.from(b);
+  if (ab.length !== bb.length) return false;
+  return timingSafeEqual(ab, bb);
+}
+
 export const authMiddleware = createMiddleware(async (c, next) => {
-  // Service-to-service auth from dashboard playground
+  // Service-to-service auth from dashboard playground. Constant-time
+  // compare on the secret; a non-empty secret is required (an empty
+  // env var must NOT match an empty header).
   const serviceSecret = c.req.header('X-Service-Secret');
-  if (serviceSecret && process.env.DASHBOARD_SERVICE_SECRET) {
-    if (serviceSecret === process.env.DASHBOARD_SERVICE_SECRET) {
+  const expectedSecret = process.env.DASHBOARD_SERVICE_SECRET;
+  if (serviceSecret && expectedSecret && expectedSecret.length >= 16) {
+    if (safeEqual(serviceSecret, expectedSecret)) {
       const serviceUserId = c.req.header('X-Service-User-Id');
       if (serviceUserId) {
         const [user] = await db
