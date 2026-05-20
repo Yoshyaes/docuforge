@@ -1,13 +1,22 @@
 ---
 title: POST /v1/pdf/sign
-description: Add a visual digital signature to a PDF document.
+description: Add a visual signature annotation to a PDF. Not a cryptographic signature.
 ---
 
 # Sign PDF
 
 `POST https://api.getdocuforge.dev/v1/pdf/sign`
 
-Add a visual digital signature annotation to a PDF document.
+<Warning>
+  This endpoint adds a **visual** signature annotation (image overlay +
+  reason/location/contact metadata). It is **not** a cryptographic
+  digital signature — there is no PAdES/CAdES envelope and the resulting
+  PDF is not tamper-evident. The response field is
+  `signature_annotation_added`, not `signed`, to make this explicit.
+  Cryptographic signing is on the roadmap.
+</Warning>
+
+Add a visual signature annotation to a PDF document.
 
 ## Request Body
 

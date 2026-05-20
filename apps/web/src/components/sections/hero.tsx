@@ -4,9 +4,11 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { CodeBlock } from '@/components/ui/code-block';
 
-const heroCode = `import DocuForge from 'docuforge';
+const heroCode = `import { DocuForge } from 'docuforge';
 
-const pdf = await docuforge.generate({
+const client = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+
+const pdf = await client.generate({
   html: '<h1>Invoice #1042</h1><p>Total: $69.98</p>',
   options: { format: 'A4' }
 });
@@ -19,6 +21,7 @@ const heroResponse = `{
   "status": "completed",
   "url": "https://cdn.getdocuforge.dev/gen_abc123.pdf",
   "pages": 1,
+  "file_size": 24531,
   "generation_time_ms": 287
 }`;
 
@@ -61,14 +64,14 @@ export function Hero() {
               <Button
                 variant="secondary"
                 size="lg"
-                href="https://fred-7da601c6.mintlify.app"
+                href="/docs"
               >
                 Read the Docs
               </Button>
             </div>
 
             <p className="mt-4 text-xs text-text-dim">
-              100 PDFs/month free. No credit card required.
+              1,000 PDFs/month free. No credit card required.
             </p>
           </motion.div>
 

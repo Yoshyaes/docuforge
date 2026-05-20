@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 
 const navLinks = [
   { label: 'Features', href: '/#features' },
-  { label: 'Docs', href: 'https://fred-7da601c6.mintlify.app' },
+  { label: 'Docs', href: '/docs' },
   { label: 'Blog', href: '/blog' },
   { label: 'Pricing', href: '/#pricing' },
 ];

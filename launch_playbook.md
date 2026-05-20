@@ -100,7 +100,7 @@
 
 #### Step 10: Deploy docs
 
-- [X] Mintlify docs deployed *(live at `fred-7da601c6.mintlify.app`)*
+- [X] Mintlify docs deployed *(preview subdomain — migrate to `docs.getdocuforge.dev` before launch)*
 - [X] Docs accessible at `getdocuforge.dev/docs/` via Next.js rewrite proxy to Mintlify. Custom subdomain `docs.getdocuforge.dev` deferred until Mintlify Startup plan ($150/mo) is justified by revenue.
 
 #### Step 11: Verify llms.txt

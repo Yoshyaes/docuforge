@@ -1,8 +1,8 @@
-# DocuForge
+﻿# DocuForge
 
 **PDF generation API for developers. HTML in, pixel-perfect PDF out.**
 
-Generate pixel-perfect PDFs from HTML or reusable templates. Full CSS support, smart page breaks, headers/footers with page numbers — all in under 3 seconds.
+Generate pixel-perfect PDFs from HTML or reusable templates. Full CSS support, smart page breaks, headers/footers with page numbers â€” all in under 3 seconds.
 
 ## Quick Start
 
@@ -17,30 +17,30 @@ const pdf = await df.generate({
 });
 
 console.log(pdf.url);
-// → https://cdn.getdocuforge.dev/gen_abc123.pdf
+// â†’ https://cdn.getdocuforge.dev/gen_abc123.pdf
 ```
 
 ## Features
 
-- **HTML → PDF** — Send any HTML, get a perfect PDF. CSS Grid, Flexbox, custom fonts all work.
-- **Templates** — Design once, merge data forever. Handlebars syntax for variables, loops, conditionals.
-- **Headers & Footers** — With `{{pageNumber}}` and `{{totalPages}}` interpolation.
-- **Smart Page Breaks** — No orphaned headings or split table rows.
-- **TypeScript & Python SDKs** — Install and generate in 4 lines of code.
-- **AI-Native** — llms.txt, Cursor rules, and framework guides from day one.
+- **HTML â†’ PDF** â€” Send any HTML, get a perfect PDF. CSS Grid, Flexbox, custom fonts all work.
+- **Templates** â€” Design once, merge data forever. Handlebars syntax for variables, loops, conditionals.
+- **Headers & Footers** â€” With `{{pageNumber}}` and `{{totalPages}}` interpolation.
+- **Smart Page Breaks** â€” No orphaned headings or split table rows.
+- **TypeScript & Python SDKs** â€” Install and generate in 4 lines of code.
+- **AI-Native** â€” llms.txt, Cursor rules, and framework guides from day one.
 
 ## Project Structure
 
 ```
 docuforge/
-├── apps/
-│   ├── api/          # Hono API server (Playwright rendering)
-│   └── dashboard/    # Next.js dashboard (Clerk auth)
-├── packages/
-│   ├── sdk-typescript/   # npm: docuforge
-│   └── sdk-python/       # pip: docuforge
-├── docs/             # Mintlify documentation
-└── public/           # llms.txt, Cursor rules
+â”œâ”€â”€ apps/
+â”‚   â”œâ”€â”€ api/          # Hono API server (Playwright rendering)
+â”‚   â””â”€â”€ dashboard/    # Next.js dashboard (Clerk auth)
+â”œâ”€â”€ packages/
+â”‚   â”œâ”€â”€ sdk-typescript/   # npm: docuforge
+â”‚   â””â”€â”€ sdk-python/       # pip: docuforge
+â”œâ”€â”€ docs/             # Mintlify documentation
+â””â”€â”€ public/           # llms.txt, Cursor rules
 ```
 
 ## Development
@@ -71,8 +71,8 @@ pnpm dev
 ### Environment Variables
 
 Copy `.env.example` to `.env` and fill in your values. At minimum, you need:
-- `DATABASE_URL` — PostgreSQL connection string
-- `REDIS_URL` — Redis connection string
+- `DATABASE_URL` â€” PostgreSQL connection string
+- `REDIS_URL` â€” Redis connection string
 
 For local development, the API server falls back to local filesystem storage when R2 is not configured.
 
@@ -90,7 +90,7 @@ npm install docuforge
 pip install docuforge
 ```
 
-See the [SDK documentation](https://fred-7da601c6.mintlify.app/quickstart) for full usage details.
+See the [SDK documentation](https://getdocuforge.dev/docs/quickstart) for full usage details.
 
 ## Deployment
 

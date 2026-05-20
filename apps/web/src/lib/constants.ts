@@ -32,7 +32,7 @@ export const features = [
     icon: Wrench,
     title: 'PDF Tools',
     description:
-      'Merge, split, protect, sign, and fill forms. A complete PDF toolkit in one API.',
+      'Merge, split, fill forms, add visual signature annotations, and convert to PDF/A. One API for the full PDF workflow.',
   },
   {
     icon: QrCode,
@@ -61,9 +61,9 @@ export const features = [
 ];
 
 export const codeExamples = {
-  html: `import DocuForge from 'docuforge';
+  html: `import { DocuForge } from 'docuforge';
 
-const client = new DocuForge('df_live_...');
+const client = new DocuForge(process.env.DOCUFORGE_API_KEY!);
 
 const pdf = await client.generate({
   html: \`
@@ -80,38 +80,48 @@ const pdf = await client.generate({
 
 console.log(pdf.url); // https://cdn.getdocuforge.dev/gen_abc123.pdf`,
 
-  react: `import DocuForge from 'docuforge';
-import { Document, Page, Table } from '@docuforge/react-pdf';
+  react: `import { DocuForge } from 'docuforge';
 
-const client = new DocuForge('df_live_...');
+const client = new DocuForge(process.env.DOCUFORGE_API_KEY!);
 
+// Pass a JSX string with a default export. Props arrive via \`data\`.
 const pdf = await client.fromReact({
-  component: \`
-    <Document title="Monthly Report">
-      <Page size="A4" margin="20mm">
-        <h1 style={{ fontSize: 24 }}>Monthly Report</h1>
-        <Table
-          data={data}
-          columns={[
-            { key: 'name', header: 'Product' },
-            { key: 'revenue', header: 'Revenue', align: 'right' },
-          ]}
-          striped
-        />
-      </Page>
-    </Document>
-  \`
+  react: \`
+    export default function Report({ title, rows }) {
+      return (
+        <div style={{ padding: 40, fontFamily: 'sans-serif' }}>
+          <h1>{title}</h1>
+          <table>
+            {rows.map((r) => (
+              <tr key={r.name}>
+                <td>{r.name}</td>
+                <td style={{ textAlign: 'right' }}>{r.revenue}</td>
+              </tr>
+            ))}
+          </table>
+        </div>
+      );
+    }
+  \`,
+  data: {
+    title: 'Monthly Report',
+    rows: [
+      { name: 'Widget Pro', revenue: '$49,990' },
+      { name: 'Support Plan', revenue: '$19,990' },
+    ],
+  },
+  options: { format: 'A4' }
 });
 
 console.log(pdf.url);`,
 
-  template: `import DocuForge from 'docuforge';
+  template: `import { DocuForge } from 'docuforge';
 
-const client = new DocuForge('df_live_...');
+const client = new DocuForge(process.env.DOCUFORGE_API_KEY!);
 
 // Use a stored template with dynamic data
 const pdf = await client.fromTemplate({
-  templateId: 'tmpl_invoice_v2',
+  template: 'tmpl_invoice_v2',
   data: {
     customerName: 'Acme Corp',
     items: [
@@ -157,36 +167,19 @@ export const sdks = [
 ];
 
 export const comparisonRows = [
-  { feature: 'Setup Time', docuforge: '30 seconds', puppeteer: '30+ minutes', wkhtmltopdf: '15 minutes', prince: '1 hour' },
+  { feature: 'Setup Time', docuforge: '5 minutes', puppeteer: '30+ minutes', wkhtmltopdf: '15 minutes', prince: '1 hour' },
   { feature: 'Maintenance', docuforge: 'Zero', puppeteer: 'High (browser updates)', wkhtmltopdf: 'Medium', prince: 'Low' },
   { feature: 'React Support', docuforge: 'Yes', puppeteer: 'Manual', wkhtmltopdf: 'No', prince: 'No' },
   { feature: 'Template Engine', docuforge: 'Built-in', puppeteer: 'DIY', wkhtmltopdf: 'No', prince: 'No' },
   { feature: 'Batch Processing', docuforge: 'Built-in queue', puppeteer: 'DIY', wkhtmltopdf: 'No', prince: 'No' },
   { feature: 'PDF Tools (merge, split)', docuforge: 'Yes', puppeteer: 'No', wkhtmltopdf: 'No', prince: 'No' },
-  { feature: 'Multi-language SDKs', docuforge: '5 languages', puppeteer: 'JS only', wkhtmltopdf: 'CLI', prince: 'CLI + Java' },
+  { feature: 'Multi-language SDKs', docuforge: 'TS, Python, Go, Ruby', puppeteer: 'JS only', wkhtmltopdf: 'CLI', prince: 'CLI + Java' },
   { feature: 'Self-hostable', docuforge: 'Yes', puppeteer: 'Yes', wkhtmltopdf: 'Yes', prince: 'Yes' },
 ];
 
-export const testimonials = [
-  {
-    quote:
-      'DocuForge replaced 200 lines of Puppeteer boilerplate with a single API call. Our invoice generation went from a maintenance nightmare to something we never think about.',
-    name: 'Sarah Chen',
-    title: 'CTO',
-    company: 'InvoiceStack',
-  },
-  {
-    quote:
-      'We switched from wkhtmltopdf and the difference in output quality is night and day. The template versioning means we can iterate on designs without breaking production.',
-    name: 'Marcus Rodriguez',
-    title: 'Senior Engineer',
-    company: 'ReportLab',
-  },
-  {
-    quote:
-      'The React-to-PDF feature is a game changer. We reuse our existing UI components and get pixel-perfect PDFs without maintaining separate templates.',
-    name: 'Priya Sharma',
-    title: 'Full-Stack Developer',
-    company: 'CourseHub',
-  },
-];
+export const testimonials: Array<{
+  quote: string;
+  name: string;
+  title: string;
+  company: string;
+}> = [];

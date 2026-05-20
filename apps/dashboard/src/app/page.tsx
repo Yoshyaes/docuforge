@@ -73,7 +73,7 @@ export default async function DashboardPage() {
               <h2 className="text-[28px] font-bold text-text-primary tracking-tight leading-tight mb-2">
                 Generate your first PDF
                 <br />
-                in under 60 seconds.
+                in under 5 minutes.
               </h2>
               <p className="text-sm text-text-muted max-w-lg mb-5">
                 No API key needed to start. Open the playground, pick a starter

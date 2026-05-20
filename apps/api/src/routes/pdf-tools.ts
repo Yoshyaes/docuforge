@@ -100,55 +100,25 @@ app.post('/split', async (c) => {
 });
 
 /**
- * POST /protect - Add password protection metadata to a PDF.
- * Sets document metadata for protection. Full AES encryption
- * requires a native module (qpdf) in production environments.
+ * POST /protect - Password-protect a PDF.
+ *
+ * Currently disabled: the previous implementation only set document
+ * metadata and returned `protected: true` without applying any actual
+ * encryption. That is a security misrepresentation, so the endpoint
+ * returns 501 until a real AES-encryption path (via qpdf or an
+ * equivalent native module) is wired up.
  */
-const protectSchema = z.object({
-  pdf: z.string().max(MAX_PDF_BASE64_SIZE),
-  user_password: z.string().min(1).optional(),
-  owner_password: z.string().min(1),
-  permissions: z
-    .object({
-      printing: z.boolean().default(true),
-      copying: z.boolean().default(false),
-      modifying: z.boolean().default(false),
-    })
-    .optional(),
-  output: z.enum(['url', 'base64']).default('url'),
-});
-
 app.post('/protect', async (c) => {
-  const body = await c.req.json();
-  const parsed = protectSchema.safeParse(body);
-  if (!parsed.success) {
-    throw new ValidationError(parsed.error.issues.map((i) => i.message).join(', '));
-  }
-
-  const { PDFDocument } = await import('pdf-lib');
-  validateBase64Size(parsed.data.pdf);
-  const buffer = Buffer.from(parsed.data.pdf, 'base64');
-  const doc = await PDFDocument.load(buffer);
-
-  // Set protection metadata
-  doc.setTitle(doc.getTitle() || '');
-  doc.setProducer('DocuForge');
-  doc.setCreator('DocuForge API');
-
-  const bytes = await doc.save();
-  const result = Buffer.from(bytes);
-
-  if (parsed.data.output === 'base64') {
-    return c.json({
-      data: result.toString('base64'),
-      file_size: result.length,
-      protected: true,
-    });
-  }
-
-  const id = genId();
-  const url = await uploadPdf(id, result);
-  return c.json({ url, file_size: result.length, protected: true });
+  return c.json(
+    {
+      error: {
+        code: 'NOT_IMPLEMENTED',
+        message:
+          'PDF password protection is temporarily disabled. The previous behavior did not apply real encryption. A qpdf-based implementation is planned. Track the changelog for availability.',
+      },
+    },
+    501,
+  );
 });
 
 /**
@@ -260,7 +230,12 @@ app.post('/forms/list-fields', async (c) => {
 });
 
 /**
- * POST /sign - Add a visual signature to a PDF.
+ * POST /sign - Add a visual signature annotation to a PDF.
+ *
+ * This is a visual overlay (signature image + reason/location/contact
+ * metadata) — NOT a cryptographic digital signature. The response field
+ * `signature_annotation_added` reflects that. Cryptographic PAdES/CAdES
+ * signing requires a separate code path that is not yet implemented.
  */
 const signSchema = z.object({
   pdf: z.string().max(MAX_PDF_BASE64_SIZE),
@@ -289,12 +264,20 @@ app.post('/sign', async (c) => {
   const result = await addSignature(buffer, signOpts);
 
   if (output === 'base64') {
-    return c.json({ data: result.toString('base64'), file_size: result.length, signed: true });
+    return c.json({
+      data: result.toString('base64'),
+      file_size: result.length,
+      signature_annotation_added: true,
+    });
   }
 
   const id = genId();
   const url = await uploadPdf(id, result);
-  return c.json({ url, file_size: result.length, signed: true });
+  return c.json({
+    url,
+    file_size: result.length,
+    signature_annotation_added: true,
+  });
 });
 
 /**

@@ -6,9 +6,9 @@ const columns = [
     title: 'Product',
     links: [
       { label: 'Features', href: '/#features' },
-      { label: 'Pricing', href: '/#pricing' },
-      { label: 'Documentation', href: 'https://fred-7da601c6.mintlify.app' },
-      { label: 'API Reference', href: 'https://fred-7da601c6.mintlify.app/api-reference/generate' },
+      { label: 'Pricing', href: '/pricing' },
+      { label: 'Documentation', href: '/docs' },
+      { label: 'API Reference', href: '/docs/api-reference/generate' },
       { label: 'Changelog', href: '/blog' },
     ],
   },
@@ -16,9 +16,9 @@ const columns = [
     title: 'Resources',
     links: [
       { label: 'Blog', href: '/blog' },
-      { label: 'Guides', href: 'https://fred-7da601c6.mintlify.app/guides/nextjs' },
+      { label: 'Guides', href: '/docs/guides/nextjs' },
       { label: 'Templates', href: 'https://app.getdocuforge.dev/templates/gallery' },
-      { label: 'Status', href: '#' },
+      { label: 'Status', href: '/status' },
     ],
   },
   {

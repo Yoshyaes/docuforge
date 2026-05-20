@@ -88,11 +88,11 @@ export function welcomeEmail(ctx: TemplateContext): EmailTemplate {
 
 export function nudge1Email(ctx: TemplateContext): EmailTemplate {
   return {
-    subject: 'Your first PDF in 60 seconds',
+    subject: 'Your first PDF in under 5 minutes',
     html: layout(
       `
       <h1 style="font-size:20px;font-weight:800;margin:0 0 12px 0;color:#FAFAFA;">Still on the fence?</h1>
-      <p style="margin:0 0 16px 0;">It takes about 60 seconds to see DocuForge in action. No code, no API key — the dashboard playground renders a real PDF live in the browser.</p>
+      <p style="margin:0 0 16px 0;">It takes about a minute to see DocuForge in action. No code, no API key — the dashboard playground renders a real PDF live in the browser.</p>
       <p style="margin:0 0 20px 0;">Pick any starter and click <strong>Generate</strong>:</p>
       <ul style="margin:0 0 20px 20px;padding:0;color:#FAFAFA;font-size:14px;line-height:1.8;">
         <li>Invoice (line items, tax, totals)</li>

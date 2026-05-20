@@ -13,7 +13,7 @@ export function FinalCta() {
             Ready to build?
           </h2>
           <p className="text-lg text-text-muted mb-8 max-w-lg mx-auto">
-            Get your API key and generate your first PDF in under 30 seconds.
+            Get your API key and generate your first PDF in under 5 minutes.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button size="lg" href="https://app.getdocuforge.dev/sign-up">
@@ -22,7 +22,7 @@ export function FinalCta() {
             <Button
               variant="secondary"
               size="lg"
-              href="https://fred-7da601c6.mintlify.app"
+              href="/docs"
             >
               Read the Docs
             </Button>

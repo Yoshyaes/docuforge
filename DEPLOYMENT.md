@@ -1,4 +1,4 @@
-# DocuForge Deployment Guide
+﻿# DocuForge Deployment Guide
 
 ## Table of Contents
 
@@ -15,8 +15,8 @@
 
 - **Node.js** 20+
 - **pnpm** 10+ (`npm install -g pnpm`)
-- **PostgreSQL** — use [Neon](https://neon.tech) free tier (serverless, no local install needed)
-- **Redis** (optional) — use [Upstash](https://upstash.com) free tier, or skip (rate limiting will passthrough)
+- **PostgreSQL** â€” use [Neon](https://neon.tech) free tier (serverless, no local install needed)
+- **Redis** (optional) â€” use [Upstash](https://upstash.com) free tier, or skip (rate limiting will passthrough)
 
 ### 1. Install Dependencies
 
@@ -42,8 +42,8 @@ Fill in the **minimum required** variables:
 
 | Variable | Where to get it |
 |----------|----------------|
-| `DATABASE_URL` | [Neon Console](https://console.neon.tech) — create a project, copy the connection string |
-| `CLERK_SECRET_KEY` | [Clerk Dashboard](https://dashboard.clerk.com) — create an app, copy from API Keys |
+| `DATABASE_URL` | [Neon Console](https://console.neon.tech) â€” create a project, copy the connection string |
+| `CLERK_SECRET_KEY` | [Clerk Dashboard](https://dashboard.clerk.com) â€” create an app, copy from API Keys |
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Same Clerk dashboard |
 
 Optional for full functionality:
@@ -55,7 +55,7 @@ Optional for full functionality:
 | `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` | Cloudflare R2 storage (without it, PDFs save to local `./storage/`) |
 | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, `S3_BUCKET_NAME` | AWS S3 storage (alternative to R2) |
 | `GOOGLE_ACCESS_KEY_ID`, `GOOGLE_SECRET_ACCESS_KEY`, `GCS_BUCKET_NAME` | Google Cloud Storage via S3-compatible interop |
-| `ANTHROPIC_API_KEY` | AI template generation (`POST /v1/ai/generate-template`) — optional |
+| `ANTHROPIC_API_KEY` | AI template generation (`POST /v1/ai/generate-template`) â€” optional |
 | `CLERK_WEBHOOK_SECRET` | Auto-create DB users on Clerk signup |
 | `WEBHOOK_SIGNING_SECRET` | HMAC signing for outbound webhooks |
 
@@ -127,8 +127,8 @@ cd packages/react && npm install && npm run build
 # MCP Server
 cd packages/mcp-server && npm install && npm run build
 
-# Go SDK — no build step, just `go mod tidy` from packages/sdk-go
-# Ruby SDK — no build step, just `bundle install` from packages/sdk-ruby
+# Go SDK â€” no build step, just `go mod tidy` from packages/sdk-go
+# Ruby SDK â€” no build step, just `bundle install` from packages/sdk-ruby
 ```
 
 ---
@@ -264,7 +264,7 @@ fly deploy
 ```
 
 The included `fly.toml` is pre-configured with:
-- **Region:** `iad` (US East) — change `primary_region` for your audience
+- **Region:** `iad` (US East) â€” change `primary_region` for your audience
 - **VM:** 2GB RAM, 2 shared CPUs (enough for Playwright)
 - **Health check:** HTTP on `/health`
 - **Auto-scaling:** Machines stop when idle, start on incoming requests
@@ -323,7 +323,7 @@ Add your domain in Vercel project settings > Domains (e.g., `app.yourdomain.com`
 
 #### Custom domain setup (`docs.getdocuforge.dev`)
 
-Mintlify custom domains require the **Startup plan** ($150/mo). If using the free tier, docs will be served at your Mintlify subdomain (e.g., `fred-7da601c6.mintlify.app`).
+Mintlify custom domains require the **Startup plan** ($150/mo). If using the free tier, docs will be served at your Mintlify preview subdomain (e.g., `<team>.mintlify.app`).
 
 To set up the custom domain:
 
@@ -338,7 +338,7 @@ To set up the custom domain:
 ```json
 {
   "rewrites": [
-    { "source": "/docs/:path*", "destination": "https://fred-7da601c6.mintlify.app/:path*" }
+    { "source": "/docs/:path*", "destination": "https://getdocuforge.dev/docs/:path*" }
   ]
 }
 ```

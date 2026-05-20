@@ -1,11 +1,19 @@
 ---
 title: POST /v1/pdf/protect
-description: Add password protection to a PDF document.
+description: Password-protect a PDF document. Currently disabled.
 ---
 
 # Protect PDF
 
 `POST https://api.getdocuforge.dev/v1/pdf/protect`
+
+<Warning>
+  **This endpoint is temporarily disabled.** Earlier behavior only set
+  document metadata and did not apply real AES encryption — that
+  misrepresentation has been removed. Calls now return `501 Not
+  Implemented` until a qpdf-backed encryption path is wired up. Watch the
+  changelog for availability.
+</Warning>
 
 Add password protection and permission controls to a PDF document.
 

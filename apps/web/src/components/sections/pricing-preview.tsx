@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
 
 const freeFeatures = [
-  '100 PDFs per month',
+  '1,000 PDFs per month',
   'All PDF generation features',
   'All SDK languages',
   'Template engine access',
-  'PDF tools (merge, split, protect)',
+  'PDF tools (merge, split, forms, PDF/A)',
   'Community support',
 ];
 
