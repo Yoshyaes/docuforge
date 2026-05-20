@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Trash2, Copy, Check, X, Key } from 'lucide-react';
-import { ConfirmDialog } from '@/components/ui/dialog';
+import { Plus, Trash2, Copy, Check, Key } from 'lucide-react';
+import { ConfirmDialog, Dialog } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/toast';
 
 interface ApiKey {
@@ -121,74 +121,79 @@ export function KeysClient({ initialKeys }: { initialKeys: ApiKey[] }) {
       </div>
 
       {/* Create Key Modal */}
-      {showCreate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-          <div className="bg-surface border border-border rounded-2xl w-full max-w-md p-6 shadow-xl">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
-                <Key size={18} /> {createdKey ? 'Key Created' : 'Create API Key'}
-              </h2>
-              <button onClick={handleCloseCreate} className="text-text-dim hover:text-text-primary">
-                <X size={18} />
+      <Dialog
+        open={showCreate}
+        onClose={handleCloseCreate}
+        title={createdKey ? 'Key created' : 'Create API key'}
+        description={
+          createdKey
+            ? 'Copy this key now. It will not be shown again.'
+            : 'Name this key so you can identify which service uses it later.'
+        }
+        blocking={createdKey !== null}
+        footer={
+          createdKey ? (
+            <button
+              type="button"
+              onClick={handleCloseCreate}
+              className="px-4 py-2 rounded-md bg-accent text-white text-sm font-semibold hover:bg-accent/90"
+            >
+              Done
+            </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={handleCloseCreate}
+                className="px-3 py-1.5 rounded-md text-sm font-medium text-text-muted hover:text-text-primary hover:bg-surface-hover"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleCreate}
+                disabled={creating}
+                className="px-3 py-1.5 rounded-md bg-accent text-white text-sm font-semibold hover:bg-accent/90 disabled:opacity-50"
+              >
+                {creating ? 'Creating…' : 'Create'}
+              </button>
+            </>
+          )
+        }
+      >
+        {createdKey ? (
+          <div>
+            <div className="flex items-center gap-2 bg-[#0D0D0F] border border-border-subtle rounded-lg p-3">
+              <code className="flex-1 text-sm font-mono text-accent break-all">
+                {createdKey}
+              </code>
+              <button
+                type="button"
+                onClick={handleCopyNewKey}
+                aria-label="Copy API key"
+                className="shrink-0 p-1.5 rounded-md hover:bg-surface-hover text-text-dim hover:text-text-primary"
+              >
+                {keyCopied ? <Check size={14} className="text-green" /> : <Copy size={14} />}
               </button>
             </div>
-
-            {createdKey ? (
-              <div>
-                <p className="text-xs text-text-muted mb-3">
-                  Copy this key now. It will not be shown again.
-                </p>
-                <div className="flex items-center gap-2 bg-[#0D0D0F] border border-border-subtle rounded-lg p-3">
-                  <code className="flex-1 text-sm font-mono text-accent break-all">
-                    {createdKey}
-                  </code>
-                  <button
-                    onClick={handleCopyNewKey}
-                    className="shrink-0 p-1.5 rounded-md hover:bg-surface-hover text-text-dim hover:text-text-primary"
-                  >
-                    {keyCopied ? <Check size={14} className="text-green" /> : <Copy size={14} />}
-                  </button>
-                </div>
-                <button
-                  onClick={handleCloseCreate}
-                  className="mt-4 w-full py-2 rounded-lg border border-border text-sm font-medium text-text-primary hover:bg-surface-hover transition-colors"
-                >
-                  Done
-                </button>
-              </div>
-            ) : (
-              <div>
-                <label className="block text-xs font-medium text-text-muted mb-1.5">
-                  Key Name
-                </label>
-                <input
-                  type="text"
-                  value={newKeyName}
-                  onChange={(e) => setNewKeyName(e.target.value)}
-                  placeholder="e.g. Production, Staging"
-                  className="w-full bg-[#0D0D0F] border border-border-subtle rounded-lg px-3 py-2 text-sm text-text-primary outline-none focus:border-accent/50"
-                />
-                {error && <p className="mt-2 text-xs text-red">{error}</p>}
-                <div className="flex gap-2 mt-4">
-                  <button
-                    onClick={handleCloseCreate}
-                    className="flex-1 py-2 rounded-lg border border-border text-sm font-medium text-text-muted hover:bg-surface-hover transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleCreate}
-                    disabled={creating}
-                    className="flex-1 py-2 rounded-lg bg-gradient-to-br from-accent to-orange-600 text-white text-sm font-semibold disabled:opacity-50 transition-opacity"
-                  >
-                    {creating ? 'Creating...' : 'Create'}
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
-        </div>
-      )}
+        ) : (
+          <div>
+            <label htmlFor="new-key-name" className="block text-xs font-medium text-text-muted mb-1.5">
+              Key name
+            </label>
+            <input
+              id="new-key-name"
+              type="text"
+              value={newKeyName}
+              onChange={(e) => setNewKeyName(e.target.value)}
+              placeholder="e.g. Production, Staging"
+              className="w-full bg-[#0D0D0F] border border-border-subtle rounded-lg px-3 py-2 text-sm text-text-primary outline-none focus:border-accent/50"
+            />
+            {error && <p className="mt-2 text-xs text-red">{error}</p>}
+          </div>
+        )}
+      </Dialog>
 
       {/* Error banner */}
       {error && !showCreate && (

@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import DOMPurify from 'dompurify';
 import { useToast } from '@/components/ui/toast';
-import { ArrowLeft, Copy, Eye, X, FileText, Receipt, BarChart3, Award, Package } from 'lucide-react';
+import { Dialog } from '@/components/ui/dialog';
+import { ArrowLeft, Copy, Eye, FileText, Receipt, BarChart3, Award, Package } from 'lucide-react';
 
 interface StarterTemplate {
   slug: string;
@@ -158,47 +159,52 @@ export function StarterGallery({ templates }: { templates: StarterTemplate[] }) 
         ))}
       </div>
 
-      {/* Preview Modal */}
-      {preview && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-          <div className="bg-surface border border-border rounded-2xl w-full max-w-3xl max-h-[85vh] flex flex-col shadow-xl">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border-subtle">
-              <div>
-                <h2 className="text-lg font-bold text-text-primary">{preview.name}</h2>
-                <p className="text-xs text-text-muted">{preview.description}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleClone(preview)}
-                  disabled={cloning === preview.slug}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-br from-accent to-orange-600 text-white text-xs font-semibold disabled:opacity-50"
-                >
-                  <Copy size={12} /> {cloning === preview.slug ? 'Cloning...' : 'Use Template'}
-                </button>
-                <button onClick={() => setPreview(null)} className="text-text-dim hover:text-text-primary">
-                  <X size={18} />
-                </button>
-              </div>
+      <Dialog
+        open={preview !== null}
+        onClose={() => setPreview(null)}
+        title={preview?.name ?? ''}
+        description={preview?.description}
+        footer={
+          preview ? (
+            <button
+              type="button"
+              onClick={() => handleClone(preview)}
+              disabled={cloning === preview.slug}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-accent text-white text-sm font-semibold hover:bg-accent/90 disabled:opacity-50"
+            >
+              <Copy size={12} /> {cloning === preview.slug ? 'Cloning…' : 'Use template'}
+            </button>
+          ) : null
+        }
+      >
+        <div className="max-h-[60vh] overflow-auto bg-white text-black p-6 rounded-md">
+          {previewHtml ? (
+            <div
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(
+                  previewHtml
+                    .replace(
+                      /\{\{([\w.]+)\}\}/g,
+                      '<span style="color:#f97316;background:#fff7ed;padding:0 4px;border-radius:3px;font-family:monospace;font-size:0.85em">$1</span>',
+                    )
+                    .replace(
+                      /\{\{#each (\w+)\}\}([\s\S]*?)\{\{\/each\}\}/g,
+                      '<div style="border:1px dashed #f97316;padding:8px;border-radius:4px;margin:4px 0"><span style="color:#f97316;font-size:0.75em;font-family:monospace">each: $1</span>$2</div>',
+                    )
+                    .replace(
+                      /\{\{#if (\w+)\}\}([\s\S]*?)\{\{\/if\}\}/g,
+                      '<div style="border:1px dashed #3b82f6;padding:8px;border-radius:4px;margin:4px 0"><span style="color:#3b82f6;font-size:0.75em;font-family:monospace">if: $1</span>$2</div>',
+                    ),
+                ),
+              }}
+            />
+          ) : (
+            <div className="flex items-center justify-center h-48 text-gray-400 text-sm">
+              Loading preview…
             </div>
-            <div className="flex-1 overflow-auto bg-white p-8">
-              {previewHtml ? (
-                <div dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(previewHtml
-                    .replace(/\{\{([\w.]+)\}\}/g, '<span style="color:#f97316;background:#fff7ed;padding:0 4px;border-radius:3px;font-family:monospace;font-size:0.85em">$1</span>')
-                    .replace(/\{\{#each (\w+)\}\}([\s\S]*?)\{\{\/each\}\}/g,
-                      '<div style="border:1px dashed #f97316;padding:8px;border-radius:4px;margin:4px 0"><span style="color:#f97316;font-size:0.75em;font-family:monospace">each: $1</span>$2</div>')
-                    .replace(/\{\{#if (\w+)\}\}([\s\S]*?)\{\{\/if\}\}/g,
-                      '<div style="border:1px dashed #3b82f6;padding:8px;border-radius:4px;margin:4px 0"><span style="color:#3b82f6;font-size:0.75em;font-family:monospace">if: $1</span>$2</div>')),
-                }} />
-              ) : (
-                <div className="flex items-center justify-center h-48 text-text-dim text-sm">
-                  Loading preview...
-                </div>
-              )}
-            </div>
-          </div>
+          )}
         </div>
-      )}
+      </Dialog>
     </>
   );
 }
