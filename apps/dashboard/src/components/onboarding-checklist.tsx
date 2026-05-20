@@ -34,7 +34,8 @@ const SDK_TABS = [
     install: 'npm install docuforge',
     code: `import { DocuForge } from 'docuforge';
 
-const df = new DocuForge({ apiKey: process.env.DOCUFORGE_API_KEY });
+// The constructor takes the API key as the first positional argument.
+const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
 
 const pdf = await df.generate({
   html: '<h1>Hello from DocuForge!</h1>',
@@ -45,9 +46,11 @@ console.log(pdf.url);`,
     id: 'python',
     label: 'Python',
     install: 'pip install docuforge',
-    code: `from docuforge import DocuForge
+    code: `import os
+from docuforge import DocuForge
 
-df = DocuForge(api_key=os.environ["DOCUFORGE_API_KEY"])
+# The constructor takes the API key as the first positional argument.
+df = DocuForge(os.environ["DOCUFORGE_API_KEY"])
 
 pdf = df.generate(html="<h1>Hello from DocuForge!</h1>")
 print(pdf.url)`,
@@ -59,7 +62,7 @@ print(pdf.url)`,
     code: `import "github.com/docuforge/docuforge-go"
 
 client := docuforge.NewClient(os.Getenv("DOCUFORGE_API_KEY"))
-pdf, err := client.Generate(ctx, &docuforge.GenerateRequest{
+pdf, err := client.Generate(ctx, docuforge.GenerateParams{
     HTML: "<h1>Hello from DocuForge!</h1>",
 })`,
   },
@@ -69,7 +72,7 @@ pdf, err := client.Generate(ctx, &docuforge.GenerateRequest{
     install: 'gem install docuforge',
     code: `require "docuforge"
 
-df = Docuforge::Client.new(api_key: ENV["DOCUFORGE_API_KEY"])
+df = DocuForge::Client.new(api_key: ENV["DOCUFORGE_API_KEY"])
 pdf = df.generate(html: "<h1>Hello from DocuForge!</h1>")
 puts pdf.url`,
   },

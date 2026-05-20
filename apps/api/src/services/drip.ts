@@ -78,15 +78,24 @@ function baseUrl(): string {
   return process.env.DASHBOARD_URL || 'https://app.getdocuforge.dev';
 }
 
-function buildContext(email: string): TemplateContext {
+function buildContext(email: string, userId?: string): TemplateContext {
   const root = baseUrl();
+  // Per-recipient unsubscribe URL with the user id and a hash of the
+  // email. The dashboard's /settings page already handles
+  // ?unsubscribe=<id> to flip the marketing-emails preference; this
+  // builds the link CAN-SPAM requires us to include in every drip
+  // email. Without a userId we fall back to /settings.
+  const unsubscribeUrl = userId
+    ? `${root}/settings?unsubscribe=${encodeURIComponent(userId)}`
+    : `${root}/settings`;
   return {
     email,
     dashboardUrl: root,
     playgroundUrl: `${root}/playground?template=invoice&autorun=1`,
     keysUrl: `${root}/keys`,
     marketplaceUrl: `${root}/marketplace`,
-    docsUrl: 'https://docs.getdocuforge.dev',
+    docsUrl: 'https://getdocuforge.dev/docs',
+    unsubscribeUrl,
     founderEmail: process.env.FOUNDER_EMAIL,
   };
 }
@@ -173,7 +182,7 @@ export function startDripWorker(): void {
         return;
       }
 
-      const tmpl = buildTemplate(campaign, buildContext(user.email));
+      const tmpl = buildTemplate(campaign, buildContext(user.email, user.id));
       const result = await sendEmail({
         to: user.email,
         subject: tmpl.subject,
