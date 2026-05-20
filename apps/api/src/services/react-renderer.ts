@@ -4,6 +4,18 @@
  * Accepts a JSX/TSX component string, transpiles it with esbuild,
  * then renders to static HTML with ReactDOMServer.
  *
+ * SECURITY NOTE — DISABLED BY DEFAULT.
+ *
+ * This module evaluates user-supplied JavaScript inside Node's `vm`
+ * module. Per Node's own documentation, `vm.createContext` is NOT a
+ * security boundary; well-known sandbox escapes can reach `process`,
+ * `require('child_process')`, and the host filesystem.
+ *
+ * The endpoint is disabled by default. To re-enable for local dev or
+ * tests, set `DOCUFORGE_ENABLE_REACT_RENDERER=true`. The proper fix
+ * tracked for a future release is to migrate this code path to
+ * `isolated-vm` (a real V8 isolate) so user code cannot reach the host.
+ *
  * The component string should export a default React component.
  * Example:
  *   export default function Invoice({ data }) {
@@ -17,6 +29,10 @@ import { Script, createContext } from 'vm';
 import { ValidationError } from '../lib/errors.js';
 
 const SANDBOX_TIMEOUT_MS = 5000; // 5 seconds max for component evaluation
+
+function reactRendererEnabled(): boolean {
+  return process.env.DOCUFORGE_ENABLE_REACT_RENDERER === 'true';
+}
 
 /**
  * Transpile JSX/TSX to plain JS then evaluate it in a hardened sandbox.
@@ -95,6 +111,14 @@ export function renderReactToHtml(
   props: Record<string, unknown> = {},
   styles?: string,
 ): string {
+  if (!reactRendererEnabled()) {
+    throw new ValidationError(
+      'React rendering is currently disabled. The previous Node `vm` ' +
+        'sandbox is not a security boundary and is being replaced with ' +
+        'an isolated-vm implementation. Use the `html` or `template` input ' +
+        'mode in the meantime.',
+    );
+  }
   if (componentSource.length > MAX_SOURCE_SIZE) {
     throw new ValidationError(`React component source exceeds maximum size of ${MAX_SOURCE_SIZE} bytes`);
   }

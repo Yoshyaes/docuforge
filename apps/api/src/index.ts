@@ -166,6 +166,9 @@ app.notFound((c) => {
 
 const port = parseInt(process.env.PORT || '3000');
 
+let httpServer: ReturnType<typeof serve> | null = null;
+let shuttingDown = false;
+
 // Initialize browser pool and job worker, then start server
 async function start() {
   await browserPool.initialize();
@@ -174,7 +177,7 @@ async function start() {
   startDripWorker();
   await scheduleDripTick();
 
-  serve(
+  httpServer = serve(
     { fetch: app.fetch, port },
     (info) => {
       logger.info(`DocuForge API running on http://localhost:${info.port}`);
@@ -187,17 +190,47 @@ start().catch((err) => {
   process.exit(1);
 });
 
-// Graceful shutdown
-const shutdown = async () => {
-  logger.info('Shutting down...');
+// Graceful shutdown: stop accepting new HTTP requests, drain in-flight
+// renders, then close DB/Redis. Bounded so a stuck request can't keep
+// the process alive forever.
+const SHUTDOWN_TIMEOUT_MS = 35_000;
+
+const shutdown = async (signal: string) => {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  logger.info({ signal }, 'Shutting down...');
+
+  const hardExit = setTimeout(() => {
+    logger.error('Graceful shutdown timed out; forcing exit');
+    process.exit(1);
+  }, SHUTDOWN_TIMEOUT_MS);
+  hardExit.unref();
+
+  // 1. Stop accepting new HTTP connections.
+  if (httpServer) {
+    await new Promise<void>((resolve) => {
+      httpServer!.close(() => resolve());
+    });
+  }
+
+  // 2. Stop BullMQ workers (drains in-flight jobs internally).
   await stopWorker();
   await stopDripWorker();
+
+  // 3. Drain in-flight Playwright renders, then close browsers.
   await browserPool.shutdown();
+
+  // 4. Close DB + Redis connections.
+  const { pool } = await import('./lib/db.js');
+  const { redis } = await import('./lib/redis.js');
+  await pool.end().catch((err) => logger.warn({ err }, 'pool.end() failed'));
+  await redis.quit().catch((err) => logger.warn({ err }, 'redis.quit() failed'));
+
   process.exit(0);
 };
 
-process.on('SIGTERM', shutdown);
-process.on('SIGINT', shutdown);
+process.on('SIGTERM', () => void shutdown('SIGTERM'));
+process.on('SIGINT', () => void shutdown('SIGINT'));
 
 process.on('unhandledRejection', (reason) => {
   logger.error({ err: reason }, 'Unhandled promise rejection');
@@ -205,5 +238,5 @@ process.on('unhandledRejection', (reason) => {
 
 process.on('uncaughtException', (err) => {
   logger.error({ err }, 'Uncaught exception');
-  shutdown();
+  void shutdown('uncaughtException');
 });

@@ -1,8 +1,33 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { renderReactToHtml } from '../services/react-renderer.js';
 import { ValidationError } from '../lib/errors.js';
 
-describe('React renderer', () => {
+describe('React renderer (disabled by default)', () => {
+  it('throws ValidationError when DOCUFORGE_ENABLE_REACT_RENDERER is unset', () => {
+    const prev = process.env.DOCUFORGE_ENABLE_REACT_RENDERER;
+    delete process.env.DOCUFORGE_ENABLE_REACT_RENDERER;
+    try {
+      const source = `
+        export default function Hello() {
+          return <div>hi</div>;
+        }
+      `;
+      expect(() => renderReactToHtml(source)).toThrow(ValidationError);
+      expect(() => renderReactToHtml(source)).toThrow(/disabled/);
+    } finally {
+      if (prev !== undefined) process.env.DOCUFORGE_ENABLE_REACT_RENDERER = prev;
+    }
+  });
+});
+
+describe('React renderer (opt-in enabled)', () => {
+  beforeAll(() => {
+    process.env.DOCUFORGE_ENABLE_REACT_RENDERER = 'true';
+  });
+  afterAll(() => {
+    delete process.env.DOCUFORGE_ENABLE_REACT_RENDERER;
+  });
+
   it('renders a valid component to HTML', () => {
     const source = `
       export default function Hello() {
