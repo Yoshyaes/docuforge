@@ -50,14 +50,23 @@ COPY tsconfig.json ./
 COPY apps/api/ apps/api/
 COPY packages/sdk-typescript/ packages/sdk-typescript/
 
+# Copy AI-discoverability assets — index.ts mounts them at /llms.txt
+# and /llms-full.txt via serveStatic({ root: '../../public' }). Without
+# this COPY the routes 404 (non-fatal, but the warning is noisy).
+COPY public/ public/
+
 # Build the API
 RUN pnpm --filter @docuforge/api build
 
-# Install Playwright Chromium
+# Install Playwright Chromium to a stable system path so it survives
+# the switch from the build-time root user to the runtime docuforge
+# user. Without PLAYWRIGHT_BROWSERS_PATH the install lands in
+# /root/.cache/ms-playwright, which docuforge (HOME=/app) cannot reach.
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 RUN cd apps/api && pnpm exec playwright install chromium
 
 RUN groupadd -r docuforge && useradd -r -g docuforge -d /app docuforge
-RUN chown -R docuforge:docuforge /app
+RUN chown -R docuforge:docuforge /app /ms-playwright
 USER docuforge
 
 EXPOSE 3000
