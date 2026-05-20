@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Card } from './ui/card';
 
 interface UsageChartProps {
   data?: number[];
@@ -12,7 +13,7 @@ export function UsageChart({ data }: UsageChartProps) {
   const maxVal = Math.max(...chartData, 1);
 
   return (
-    <div className="bg-surface border border-border rounded-[14px] p-6">
+    <Card padding="lg">
       <div className="flex items-center justify-between mb-5">
         <span className="text-sm font-semibold text-text-primary">
           Generation Volume
@@ -50,6 +51,6 @@ export function UsageChart({ data }: UsageChartProps) {
           />
         ))}
       </div>
-    </div>
+    </Card>
   );
 }

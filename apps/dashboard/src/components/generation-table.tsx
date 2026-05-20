@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Card } from './ui/card';
 
 interface Generation {
   id: string;
@@ -19,13 +20,14 @@ export function GenerationTable({
   title = 'Recent Generations',
 }: GenerationTableProps) {
   return (
-    <div className="bg-surface border border-border rounded-[14px] overflow-hidden">
+    <Card>
       <div className="px-5 py-4 border-b border-border-subtle">
         <span className="text-sm font-semibold text-text-primary">{title}</span>
       </div>
       {generations.length === 0 ? (
         <div className="px-5 py-8 text-center text-sm text-text-dim">
-          No generations yet. Generate your first PDF via the API.
+          No generations yet. Head to the playground or call{' '}
+          <code className="text-accent">POST /v1/generate</code> to make your first PDF.
         </div>
       ) : (
         generations.map((gen, i) => (
@@ -59,6 +61,6 @@ export function GenerationTable({
           </Link>
         ))
       )}
-    </div>
+    </Card>
   );
 }

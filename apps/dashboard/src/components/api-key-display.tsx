@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
+import { Card } from './ui/card';
 
 interface ApiKeyDisplayProps {
   keyPreview: string;
@@ -19,7 +20,7 @@ export function ApiKeyDisplay({ keyPreview, fullKey }: ApiKeyDisplayProps) {
   };
 
   return (
-    <div className="bg-surface border border-border rounded-[14px] p-5">
+    <Card padding="md">
       <div className="text-sm font-semibold text-text-primary mb-3">
         Your API Key
       </div>
@@ -27,11 +28,12 @@ export function ApiKeyDisplay({ keyPreview, fullKey }: ApiKeyDisplayProps) {
         <span className="text-text-muted flex-1">{keyPreview}</span>
         <button
           onClick={handleCopy}
+          aria-label="Copy API key"
           className="text-text-dim hover:text-text-primary transition-colors"
         >
           {copied ? <Check size={14} /> : <Copy size={14} />}
         </button>
       </div>
-    </div>
+    </Card>
   );
 }
