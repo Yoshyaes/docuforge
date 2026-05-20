@@ -22,8 +22,12 @@ const config: Config = {
         red: '#EF4444',
       },
       fontFamily: {
-        sans: ['DM Sans', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        // Reference the CSS variables that next/font sets on <html>
+        // (see apps/dashboard/src/app/layout.tsx). Without these, the
+        // dashboard renders in the browser's system fallback even
+        // though DM Sans + JetBrains Mono are loaded.
+        sans: ['var(--font-dm-sans)', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-jetbrains-mono)', 'monospace'],
       },
     },
   },

@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Trash2, Copy, Check, X, Key } from 'lucide-react';
+import { ConfirmDialog } from '@/components/ui/dialog';
+import { useToast } from '@/components/ui/toast';
 
 interface ApiKey {
   id: string;
@@ -14,6 +16,7 @@ interface ApiKey {
 
 export function KeysClient({ initialKeys }: { initialKeys: ApiKey[] }) {
   const router = useRouter();
+  const toast = useToast();
   const [keys, setKeys] = useState(initialKeys);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
@@ -23,6 +26,7 @@ export function KeysClient({ initialKeys }: { initialKeys: ApiKey[] }) {
   const [keyCopied, setKeyCopied] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [revokeTarget, setRevokeTarget] = useState<ApiKey | null>(null);
 
   const handleCopy = (id: string, prefix: string) => {
     navigator.clipboard.writeText(prefix);
@@ -83,7 +87,6 @@ export function KeysClient({ initialKeys }: { initialKeys: ApiKey[] }) {
   };
 
   const handleDelete = async (keyId: string) => {
-    if (!confirm('Are you sure you want to revoke this API key? This cannot be undone.')) return;
     setDeletingId(keyId);
     setError(null);
     try {
@@ -93,9 +96,13 @@ export function KeysClient({ initialKeys }: { initialKeys: ApiKey[] }) {
         throw new Error(data?.error?.message || 'Failed to delete key');
       }
       setKeys((prev) => prev.filter((k) => k.id !== keyId));
+      toast.success('API key revoked.');
+      setRevokeTarget(null);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete key');
+      const message = err instanceof Error ? err.message : 'Failed to delete key';
+      setError(message);
+      toast.error(message);
     } finally {
       setDeletingId(null);
     }
@@ -230,8 +237,9 @@ export function KeysClient({ initialKeys }: { initialKeys: ApiKey[] }) {
                 {key.lastUsed || 'Never'}
               </span>
               <button
-                onClick={() => handleDelete(key.id)}
+                onClick={() => setRevokeTarget(key)}
                 disabled={deletingId === key.id}
+                aria-label={`Revoke API key ${key.name}`}
                 className="text-text-dim hover:text-red transition-colors disabled:opacity-50"
               >
                 <Trash2 size={14} />
@@ -240,6 +248,21 @@ export function KeysClient({ initialKeys }: { initialKeys: ApiKey[] }) {
           ))
         )}
       </div>
+
+      <ConfirmDialog
+        open={revokeTarget !== null}
+        onClose={() => (deletingId ? null : setRevokeTarget(null))}
+        onConfirm={() => revokeTarget && handleDelete(revokeTarget.id)}
+        title="Revoke API key?"
+        description={
+          revokeTarget
+            ? `“${revokeTarget.name}” will stop working immediately. Any service using this key will start receiving 401 errors. This cannot be undone.`
+            : undefined
+        }
+        confirmLabel="Revoke key"
+        destructive
+        busy={deletingId !== null}
+      />
     </>
   );
 }

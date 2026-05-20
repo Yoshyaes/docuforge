@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
 import { DM_Sans, JetBrains_Mono } from 'next/font/google';
+import { ToastProvider } from '@/components/ui/toast';
 import './globals.css';
 
 const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-dm-sans' });
@@ -22,7 +23,7 @@ export default function RootLayout({
     return (
       <html lang="en" className={`${dmSans.variable} ${jetbrainsMono.variable}`}>
         <body className="font-sans antialiased">
-          {children}
+          <ToastProvider>{children}</ToastProvider>
         </body>
       </html>
     );
@@ -59,7 +60,7 @@ export default function RootLayout({
     >
       <html lang="en" className={`${dmSans.variable} ${jetbrainsMono.variable}`}>
         <body className="font-sans antialiased">
-          {children}
+          <ToastProvider>{children}</ToastProvider>
         </body>
       </html>
     </ClerkProvider>

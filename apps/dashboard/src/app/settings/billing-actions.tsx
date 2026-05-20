@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useToast } from '@/components/ui/toast';
 
 interface BillingActionsProps {
   currentPlan: string;
@@ -8,6 +9,7 @@ interface BillingActionsProps {
 
 export function BillingActions({ currentPlan }: BillingActionsProps) {
   const [loading, setLoading] = useState(false);
+  const toast = useToast();
 
   const handleUpgrade = async (plan: 'starter' | 'pro') => {
     setLoading(true);
@@ -21,10 +23,10 @@ export function BillingActions({ currentPlan }: BillingActionsProps) {
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert(data.error?.message || 'Failed to create checkout session');
+        toast.error(data.error?.message || 'Could not start the checkout. Please try again.');
       }
     } catch {
-      alert('Failed to initiate upgrade. Please try again.');
+      toast.error('Could not reach billing. Check your connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -42,10 +44,10 @@ export function BillingActions({ currentPlan }: BillingActionsProps) {
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert(data.error?.message || 'Failed to open billing portal');
+        toast.error(data.error?.message || 'Could not open the billing portal. Please try again.');
       }
     } catch {
-      alert('Failed to open billing portal. Please try again.');
+      toast.error('Could not reach billing. Check your connection and try again.');
     } finally {
       setLoading(false);
     }

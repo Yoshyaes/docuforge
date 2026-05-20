@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import DOMPurify from 'dompurify';
+import { useToast } from '@/components/ui/toast';
 import { ArrowLeft, Copy, Eye, X, FileText, Receipt, BarChart3, Award, Package } from 'lucide-react';
 
 interface StarterTemplate {
@@ -30,6 +31,7 @@ const categoryColors: Record<string, string> = {
 
 export function StarterGallery({ templates }: { templates: StarterTemplate[] }) {
   const router = useRouter();
+  const toast = useToast();
   const [preview, setPreview] = useState<StarterTemplate | null>(null);
   const [previewHtml, setPreviewHtml] = useState<string | null>(null);
   const [cloning, setCloning] = useState<string | null>(null);
@@ -47,7 +49,7 @@ export function StarterGallery({ templates }: { templates: StarterTemplate[] }) 
       }
     } catch (err) {
       console.error('Operation failed:', err);
-      alert('An error occurred. Please try again.');
+      toast.error('Could not load this starter template. Try again or refresh the page.');
     }
   };
 

@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { StatCard } from '@/components/stat-card';
+import { ConfirmDialog } from '@/components/ui/dialog';
+import { useToast } from '@/components/ui/toast';
 
 interface UserDetail {
   user: {
@@ -93,7 +95,10 @@ export function UserDetailClient({ userId }: { userId: string }) {
     last_occurrence: string;
   }[] | null>(null);
   const [apiErrorsData, setApiErrorsData] = useState<ApiErrorsPayload | null>(null);
+  const [showDeleteUser, setShowDeleteUser] = useState(false);
+  const [deletingUser, setDeletingUser] = useState(false);
   const router = useRouter();
+  const toast = useToast();
 
   useEffect(() => {
     fetch(`/api/admin/users/${userId}`)
@@ -135,9 +140,21 @@ export function UserDetailClient({ userId }: { userId: string }) {
   };
 
   const deleteUser = async () => {
-    if (!confirm(`Delete ${user.email}? This will delete all their data.`)) return;
-    await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
-    router.push('/admin/users');
+    setDeletingUser(true);
+    try {
+      const res = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error?.message || 'Failed to delete user');
+      }
+      toast.success(`Deleted ${user.email}.`);
+      router.push('/admin/users');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to delete user');
+    } finally {
+      setDeletingUser(false);
+      setShowDeleteUser(false);
+    }
   };
 
   return (
@@ -174,13 +191,24 @@ export function UserDetailClient({ userId }: { userId: string }) {
             <option value="enterprise">Enterprise</option>
           </select>
           <button
-            onClick={deleteUser}
+            onClick={() => setShowDeleteUser(true)}
             className="px-3 py-2 rounded-lg bg-red-500/10 text-red-400 text-sm hover:bg-red-500/20 transition-colors"
           >
             Delete User
           </button>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={showDeleteUser}
+        onClose={() => (deletingUser ? null : setShowDeleteUser(false))}
+        onConfirm={deleteUser}
+        title={`Delete ${user.email}?`}
+        description="This permanently removes the user and every generation, template, API key, font, billing record, and email event that belongs to them. This cannot be undone."
+        confirmLabel="Delete user"
+        destructive
+        busy={deletingUser}
+      />
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

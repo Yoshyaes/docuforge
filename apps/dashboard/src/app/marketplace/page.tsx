@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sidebar } from '@/components/sidebar';
+import { useToast } from '@/components/ui/toast';
 import { Search, Download, Eye, ExternalLink } from 'lucide-react';
 
 interface MarketplaceTemplate {
@@ -15,6 +16,7 @@ interface MarketplaceTemplate {
 
 export default function MarketplacePage() {
   const router = useRouter();
+  const toast = useToast();
   const [templates, setTemplates] = useState<MarketplaceTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -33,7 +35,7 @@ export default function MarketplacePage() {
       }
     } catch (err) {
       console.error('Operation failed:', err);
-      alert('An error occurred. Please try again.');
+      toast.error('Could not load the marketplace. Try refreshing the page.');
     } finally {
       setLoading(false);
     }
@@ -46,10 +48,15 @@ export default function MarketplacePage() {
       if (res.ok) {
         const data = await res.json();
         router.push(`/templates/${data.id}`);
+      } else {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error?.message || 'Clone failed');
       }
     } catch (err) {
       console.error('Operation failed:', err);
-      alert('An error occurred. Please try again.');
+      toast.error(
+        err instanceof Error ? err.message : 'Could not clone this template. Try again.',
+      );
     } finally {
       setCloning(null);
     }

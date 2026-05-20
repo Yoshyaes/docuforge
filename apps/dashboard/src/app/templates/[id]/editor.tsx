@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import DOMPurify from 'dompurify';
 import { Sidebar } from '@/components/sidebar';
+import { useToast } from '@/components/ui/toast';
 import { Save, ArrowLeft, Eye, History, RotateCcw, X, FileText } from 'lucide-react';
 import Link from 'next/link';
 
@@ -26,6 +27,7 @@ interface TemplateEditorProps {
 
 export function TemplateEditor({ template, usageCount, usageLimit }: TemplateEditorProps) {
   const router = useRouter();
+  const toast = useToast();
   const [html, setHtml] = useState(template.htmlContent);
   const [name, setName] = useState(template.name);
   const [saving, setSaving] = useState(false);
@@ -74,7 +76,7 @@ export function TemplateEditor({ template, usageCount, usageLimit }: TemplateEdi
       }
     } catch (err) {
       console.error('Operation failed:', err);
-      alert('An error occurred. Please try again.');
+      toast.error('Could not load version history. Try again or refresh the page.');
     } finally {
       setLoadingVersions(false);
     }
@@ -115,12 +117,18 @@ export function TemplateEditor({ template, usageCount, usageLimit }: TemplateEdi
         body: JSON.stringify({ version_id: versionId }),
       });
       if (res.ok) {
+        toast.success('Version restored.');
         router.refresh();
         setShowHistory(false);
+      } else {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error?.message || 'Restore failed');
       }
     } catch (err) {
       console.error('Operation failed:', err);
-      alert('An error occurred. Please try again.');
+      toast.error(
+        err instanceof Error ? err.message : 'Could not restore this version. Try again.',
+      );
     } finally {
       setRestoring(null);
     }
