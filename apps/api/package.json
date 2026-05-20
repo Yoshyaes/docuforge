@@ -28,6 +28,7 @@
     "handlebars": "^4",
     "hono": "^4",
     "ioredis": "^5",
+    "isolated-vm": "^6.1.2",
     "nanoid": "^5",
     "pdf-lib": "^1.17.1",
     "pg": "^8.18.0",

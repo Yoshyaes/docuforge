@@ -13,7 +13,13 @@
   },
   "devDependencies": {
     "turbo": "^2",
-    "typescript": "^5.4"
+    "typescript": "^5.4",
+    "vitest": "^4.0.18"
   },
-  "packageManager": "pnpm@10.30.2"
+  "packageManager": "pnpm@10.30.2",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "isolated-vm"
+    ]
+  }
 }

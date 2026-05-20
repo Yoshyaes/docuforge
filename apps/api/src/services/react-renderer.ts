@@ -1,135 +1,178 @@
 /**
- * React-to-HTML renderer.
+ * React-to-HTML renderer (isolated-vm sandbox).
  *
- * Accepts a JSX/TSX component string, transpiles it with esbuild,
- * then renders to static HTML with ReactDOMServer.
+ * User-supplied JSX/TSX is transpiled on the host, then evaluated
+ * inside a real V8 isolate via `isolated-vm`. Unlike Node's `vm`
+ * module — which is explicitly NOT a security boundary — an isolate
+ * has its own V8 heap and no reference to the host process: user
+ * code cannot reach `process`, `require`, the filesystem, the
+ * network, or any other host object.
  *
- * SECURITY NOTE — DISABLED BY DEFAULT.
+ * Pipeline per render:
+ *   1. Transpile JSX/TSX with esbuild (host, trusted)
+ *   2. Build wrapper script: polyfills + React/ReactDOMServer bundle
+ *      (cached) + user module IIFE + render call
+ *   3. Create isolate (128MB cap), inject `__props` via ExternalCopy,
+ *      compile + run with a 5s timeout, return the HTML string
+ *   4. Dispose the isolate
  *
- * This module evaluates user-supplied JavaScript inside Node's `vm`
- * module. Per Node's own documentation, `vm.createContext` is NOT a
- * security boundary; well-known sandbox escapes can reach `process`,
- * `require('child_process')`, and the host filesystem.
- *
- * The endpoint is disabled by default. To re-enable for local dev or
- * tests, set `DOCUFORGE_ENABLE_REACT_RENDERER=true`. The proper fix
- * tracked for a future release is to migrate this code path to
- * `isolated-vm` (a real V8 isolate) so user code cannot reach the host.
- *
- * The component string should export a default React component.
- * Example:
- *   export default function Invoice({ data }) {
- *     return <div><h1>Invoice #{data.id}</h1></div>;
- *   }
+ * Kill switch: `DOCUFORGE_DISABLE_REACT_RENDERER=true` returns a
+ * `ValidationError` before any isolate work happens.
  */
-import { transformSync } from 'esbuild';
-import React, { createElement } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
-import { Script, createContext } from 'vm';
+import { buildSync, transformSync } from 'esbuild';
+import ivm from 'isolated-vm';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { ValidationError } from '../lib/errors.js';
 
-const SANDBOX_TIMEOUT_MS = 5000; // 5 seconds max for component evaluation
+const MODULE_DIR = dirname(fileURLToPath(import.meta.url));
 
-function reactRendererEnabled(): boolean {
-  return process.env.DOCUFORGE_ENABLE_REACT_RENDERER === 'true';
+const MAX_SOURCE_BYTES = 1_048_576;
+const RENDER_TIMEOUT_MS = 5_000;
+const ISOLATE_MEMORY_MB = 128;
+
+function rendererDisabled(): boolean {
+  return process.env.DOCUFORGE_DISABLE_REACT_RENDERER === 'true';
 }
 
-/**
- * Transpile JSX/TSX to plain JS then evaluate it in a hardened sandbox.
- */
-function transpileComponent(source: string): (props: Record<string, unknown>) => React.ReactElement {
-  // Transpile JSX → JS using classic React.createElement transform
-  const result = transformSync(source, {
+// Minimal globals React 18's renderer touches but that aren't part of
+// a bare V8 isolate. `TextEncoder` is required by react-dom/server.browser;
+// the rest are stubbed because React calls them defensively.
+const POLYFILL_SCRIPT = `
+class TextEncoder {
+  encode(input) {
+    const str = String(input == null ? '' : input);
+    const bytes = [];
+    for (let i = 0; i < str.length; i++) {
+      let c = str.charCodeAt(i);
+      if (c < 0x80) bytes.push(c);
+      else if (c < 0x800) bytes.push(0xC0|(c>>6), 0x80|(c&0x3F));
+      else if (c >= 0xD800 && c < 0xDC00 && i + 1 < str.length) {
+        const c2 = str.charCodeAt(++i);
+        c = 0x10000 + ((c & 0x3FF) << 10) + (c2 & 0x3FF);
+        bytes.push(0xF0|(c>>18), 0x80|((c>>12)&0x3F), 0x80|((c>>6)&0x3F), 0x80|(c&0x3F));
+      } else bytes.push(0xE0|(c>>12), 0x80|((c>>6)&0x3F), 0x80|(c&0x3F));
+    }
+    return new Uint8Array(bytes);
+  }
+}
+globalThis.TextEncoder = TextEncoder;
+globalThis.console = { log(){}, warn(){}, error(){}, info(){}, debug(){}, trace(){} };
+globalThis.queueMicrotask = function(fn) { Promise.resolve().then(fn); };
+`;
+
+let cachedReactBundle: string | null = null;
+
+function getReactBundle(): string {
+  if (cachedReactBundle) return cachedReactBundle;
+  const result = buildSync({
+    stdin: {
+      contents:
+        "const React = require('react');" +
+        "const { renderToStaticMarkup } = require('react-dom/server.browser');" +
+        'globalThis.__DF_REACT__ = React;' +
+        'globalThis.__DF_RENDER__ = renderToStaticMarkup;',
+      loader: 'js',
+      resolveDir: MODULE_DIR,
+    },
+    bundle: true,
+    platform: 'browser',
+    format: 'iife',
+    target: 'es2020',
+    write: false,
+    minify: true,
+    define: { 'process.env.NODE_ENV': '"production"' },
+  });
+  cachedReactBundle = result.outputFiles[0].text;
+  return cachedReactBundle;
+}
+
+function transpileUserSource(source: string): string {
+  return transformSync(source, {
     loader: 'tsx',
     format: 'cjs',
     jsx: 'transform',
-    jsxFactory: 'React.createElement',
-    jsxFragment: 'React.Fragment',
+    jsxFactory: '__DF_REACT__.createElement',
+    jsxFragment: '__DF_REACT__.Fragment',
     target: 'es2020',
-  });
-
-  // Build a hardened sandbox that blocks access to Node.js internals.
-  // We explicitly null out dangerous globals and freeze the scope objects
-  // to prevent prototype chain traversal attacks.
-  const moduleExports: Record<string, unknown> = {};
-  const moduleObj = { exports: moduleExports };
-
-  const requireShim = (id: string) => {
-    if (id === 'react' || id === 'react/jsx-runtime' || id === 'react/jsx-dev-runtime') {
-      return React;
-    }
-    throw new Error(`Cannot require "${id}" in React component. Only react is available.`);
-  };
-
-  // Execute in a VM sandbox with a timeout to prevent infinite loops and
-  // block access to Node.js internals. The context only exposes the
-  // minimum required globals (module, exports, require shim, React).
-  const sandbox = createContext(
-    {
-      module: moduleObj,
-      exports: moduleExports,
-      require: requireShim,
-      React,
-      // Dangerous globals explicitly set to undefined
-      process: undefined,
-      global: undefined,
-      globalThis: undefined,
-      Buffer: undefined,
-      setTimeout: undefined,
-      setInterval: undefined,
-      setImmediate: undefined,
-      eval: undefined,
-      Function: undefined,
-    },
-    {
-      codeGeneration: { strings: false, wasm: false },
-    },
-  );
-
-  const script = new Script(result.code, { filename: 'user-component.tsx' });
-  script.runInContext(sandbox, { timeout: SANDBOX_TIMEOUT_MS });
-
-  const component = (moduleObj.exports as Record<string, unknown>).default || moduleObj.exports;
-
-  if (typeof component !== 'function') {
-    throw new ValidationError(
-      'React component must export a default function component. ' +
-      'Example: export default function MyDoc(props) { return <div>...</div>; }',
-    );
-  }
-
-  return component as (props: Record<string, unknown>) => React.ReactElement;
+  }).code;
 }
-
-/**
- * Render a React component string to full HTML document.
- */
-const MAX_SOURCE_SIZE = 1_048_576; // 1MB
 
 export function renderReactToHtml(
   componentSource: string,
   props: Record<string, unknown> = {},
   styles?: string,
 ): string {
-  if (!reactRendererEnabled()) {
+  if (rendererDisabled()) {
     throw new ValidationError(
-      'React rendering is currently disabled. The previous Node `vm` ' +
-        'sandbox is not a security boundary and is being replaced with ' +
-        'an isolated-vm implementation. Use the `html` or `template` input ' +
-        'mode in the meantime.',
+      'React rendering is currently disabled by configuration. Use the `html` or `template` input mode instead.',
     );
   }
-  if (componentSource.length > MAX_SOURCE_SIZE) {
-    throw new ValidationError('React component source exceeds 1MB. Move large data into the `data` field instead of embedding it in the JSX.');
+  if (componentSource.length > MAX_SOURCE_BYTES) {
+    throw new ValidationError(
+      'React component source exceeds 1MB. Move large data into the `data` field instead of embedding it in the JSX.',
+    );
   }
 
+  let isolate: ivm.Isolate | null = null;
   try {
-    const Component = transpileComponent(componentSource);
-    const element = createElement(Component, props);
-    const bodyHtml = renderToStaticMarkup(element);
+    const transpiled = transpileUserSource(componentSource);
+    const reactBundle = getReactBundle();
 
-    // Wrap in a full HTML document
-    return `<!DOCTYPE html>
+    const wrapper =
+      POLYFILL_SCRIPT +
+      ';\n' +
+      reactBundle +
+      ';\n' +
+      '(function () {\n' +
+      '  var __mod = { exports: {} };\n' +
+      '  (function (module, exports, require) {\n' +
+      transpiled +
+      '\n  })(__mod, __mod.exports, function (id) {\n' +
+      '    if (id === "react" || id === "react/jsx-runtime" || id === "react/jsx-dev-runtime") return __DF_REACT__;\n' +
+      '    throw new Error("Cannot require " + JSON.stringify(id) + " in React component sandbox. Only react is available.");\n' +
+      '  });\n' +
+      '  var Component = __mod.exports.default || __mod.exports;\n' +
+      '  if (typeof Component !== "function") {\n' +
+      '    throw new Error("React component must export a default function. Example: export default function MyDoc(props) { return <div>...</div>; }");\n' +
+      '  }\n' +
+      '  return __DF_RENDER__(__DF_REACT__.createElement(Component, __props));\n' +
+      '})()';
+
+    isolate = new ivm.Isolate({ memoryLimit: ISOLATE_MEMORY_MB });
+    const context = isolate.createContextSync();
+    const jail = context.global;
+    jail.setSync('global', jail.derefInto());
+    jail.setSync('__props', new ivm.ExternalCopy(props).copyInto({ release: true }));
+
+    const script = isolate.compileScriptSync(wrapper);
+    const bodyHtml = script.runSync(context, { timeout: RENDER_TIMEOUT_MS });
+    if (typeof bodyHtml !== 'string') {
+      throw new ValidationError('React component did not return renderable HTML.');
+    }
+
+    return wrapHtmlDocument(bodyHtml, styles);
+  } catch (err) {
+    if (err instanceof ValidationError) throw err;
+    const msg = err instanceof Error ? err.message : String(err);
+    const safeMsg =
+      process.env.NODE_ENV === 'production'
+        ? 'Failed to render the React component. Check for syntax errors or unsupported APIs (no useState/useEffect — render output must be static).'
+        : `Failed to render React component: ${msg}`;
+    throw new ValidationError(safeMsg);
+  } finally {
+    if (isolate) {
+      try {
+        isolate.dispose();
+      } catch {
+        // already disposed (e.g., on memory-limit kill)
+      }
+    }
+  }
+}
+
+function wrapHtmlDocument(body: string, styles?: string): string {
+  return `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -139,15 +182,6 @@ export function renderReactToHtml(
   ${styles || ''}
 </style>
 </head>
-<body>${bodyHtml}</body>
+<body>${body}</body>
 </html>`;
-  } catch (err) {
-    if (err instanceof ValidationError) throw err;
-    const msg = err instanceof Error ? err.message : String(err);
-    const safeMsg =
-      process.env.NODE_ENV === 'production'
-        ? 'Failed to render the React component. Check for syntax errors or unsupported APIs (no useState/useEffect — render output must be static).'
-        : `Failed to render React component: ${msg}`;
-    throw new ValidationError(safeMsg);
-  }
 }
