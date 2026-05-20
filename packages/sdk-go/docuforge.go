@@ -14,7 +14,7 @@ import (
 
 const (
 	defaultBaseURL = "https://api.getdocuforge.dev"
-	userAgent      = "docuforge-go/0.1.0"
+	userAgent      = "docuforge-go/0.2.0"
 )
 
 // --------------------------------------------------------------------------
@@ -392,6 +392,238 @@ func (c *Client) ListGenerations(ctx context.Context, limit, offset int) (*ListR
 func (c *Client) GetUsage(ctx context.Context) (*UsageStats, error) {
 	var result UsageStats
 	if err := c.doRequest(ctx, http.MethodGet, "/v1/usage", nil, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// --------------------------------------------------------------------------
+// PDF tools
+//
+// NOTE: Protect is intentionally NOT exposed — the API endpoint currently
+// returns 501 because the previous implementation did not apply real
+// encryption. SignAnnotation is exposed (the response is named
+// SignatureAnnotationAdded, not Signed) so it's clear that this is a
+// visual annotation, not a cryptographic signature.
+// --------------------------------------------------------------------------
+
+// PdfMerge merges multiple base64-encoded PDFs into one. Requires >= 2 inputs.
+func (c *Client) PdfMerge(ctx context.Context, pdfs []string, output string) (*PdfBlobResponse, error) {
+	if output == "" {
+		output = "url"
+	}
+	var result PdfBlobResponse
+	body := map[string]interface{}{"pdfs": pdfs, "output": output}
+	if err := c.doRequest(ctx, http.MethodPost, "/v1/pdf/merge", body, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// PdfSplit splits a PDF by page ranges. Pass nil ranges to split every page.
+func (c *Client) PdfSplit(ctx context.Context, pdf string, ranges [][]int, output string) (*PdfSplitResponse, error) {
+	if output == "" {
+		output = "url"
+	}
+	body := map[string]interface{}{"pdf": pdf, "output": output}
+	if ranges != nil {
+		body["ranges"] = ranges
+	}
+	var result PdfSplitResponse
+	if err := c.doRequest(ctx, http.MethodPost, "/v1/pdf/split", body, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// PdfInfo returns metadata about a PDF (page count, title, author, etc.).
+func (c *Client) PdfInfo(ctx context.Context, pdf string) (*PdfInfoResponse, error) {
+	var result PdfInfoResponse
+	body := map[string]string{"pdf": pdf}
+	if err := c.doRequest(ctx, http.MethodPost, "/v1/pdf/info", body, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// PdfFillForm fills named form fields in an existing AcroForm PDF.
+func (c *Client) PdfFillForm(ctx context.Context, params PdfFillFormParams) (*PdfBlobResponse, error) {
+	if params.Output == "" {
+		params.Output = "url"
+	}
+	var result PdfBlobResponse
+	if err := c.doRequest(ctx, http.MethodPost, "/v1/pdf/forms/fill", params, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// PdfAddFormFields adds text / checkbox / dropdown fields to a PDF.
+func (c *Client) PdfAddFormFields(ctx context.Context, params PdfAddFormFieldsParams) (*PdfBlobResponse, error) {
+	if params.Output == "" {
+		params.Output = "url"
+	}
+	var result PdfBlobResponse
+	if err := c.doRequest(ctx, http.MethodPost, "/v1/pdf/forms/add-fields", params, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// PdfListFormFields lists the form fields on a PDF.
+func (c *Client) PdfListFormFields(ctx context.Context, pdf string) (*PdfListFormFieldsResponse, error) {
+	var result PdfListFormFieldsResponse
+	body := map[string]string{"pdf": pdf}
+	if err := c.doRequest(ctx, http.MethodPost, "/v1/pdf/forms/list-fields", body, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// PdfToPdfA converts a PDF to PDF/A-1b archival format.
+func (c *Client) PdfToPdfA(ctx context.Context, params PdfToPdfAParams) (*PdfBlobResponse, error) {
+	if params.Output == "" {
+		params.Output = "url"
+	}
+	var result PdfBlobResponse
+	if err := c.doRequest(ctx, http.MethodPost, "/v1/pdf/pdfa", params, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// PdfSignAnnotation adds a VISUAL signature annotation (image overlay +
+// reason / location / contact metadata). This is NOT a cryptographic
+// signature — the resulting PDF is not tamper-evident. The response
+// field is SignatureAnnotationAdded, not Signed, to reflect that.
+func (c *Client) PdfSignAnnotation(ctx context.Context, params PdfSignAnnotationParams) (*PdfSignAnnotationResponse, error) {
+	if params.Output == "" {
+		params.Output = "url"
+	}
+	var result PdfSignAnnotationResponse
+	if err := c.doRequest(ctx, http.MethodPost, "/v1/pdf/sign", params, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// --------------------------------------------------------------------------
+// Marketplace
+// --------------------------------------------------------------------------
+
+// ListMarketplace returns a page of public marketplace templates.
+func (c *Client) ListMarketplace(ctx context.Context) (*MarketplaceListResponse, error) {
+	var result MarketplaceListResponse
+	if err := c.doRequest(ctx, http.MethodGet, "/v1/marketplace", nil, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// GetMarketplaceTemplate fetches one marketplace template's full content.
+func (c *Client) GetMarketplaceTemplate(ctx context.Context, id string) (*Template, error) {
+	var result Template
+	if err := c.doRequest(ctx, http.MethodGet, "/v1/marketplace/"+id, nil, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// CloneMarketplaceTemplate copies a public marketplace template into your account.
+func (c *Client) CloneMarketplaceTemplate(ctx context.Context, id string) (*CloneTemplateResponse, error) {
+	var result CloneTemplateResponse
+	if err := c.doRequest(ctx, http.MethodPost, "/v1/marketplace/"+id+"/clone", nil, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// PublishMarketplaceTemplate marks one of your templates as publicly cloneable.
+func (c *Client) PublishMarketplaceTemplate(ctx context.Context, id string) error {
+	return c.doRequest(ctx, http.MethodPost, "/v1/marketplace/"+id+"/publish", nil, nil)
+}
+
+// UnpublishMarketplaceTemplate removes one of your templates from the public marketplace.
+func (c *Client) UnpublishMarketplaceTemplate(ctx context.Context, id string) error {
+	return c.doRequest(ctx, http.MethodPost, "/v1/marketplace/"+id+"/unpublish", nil, nil)
+}
+
+// --------------------------------------------------------------------------
+// Starter templates
+// --------------------------------------------------------------------------
+
+// ListStarterTemplates returns the pre-built starter templates (no auth required).
+func (c *Client) ListStarterTemplates(ctx context.Context) (*StarterTemplatesListResponse, error) {
+	var result StarterTemplatesListResponse
+	if err := c.doRequest(ctx, http.MethodGet, "/v1/starter-templates", nil, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// GetStarterTemplate fetches one starter template's full content.
+func (c *Client) GetStarterTemplate(ctx context.Context, slug string) (*StarterTemplate, error) {
+	var result StarterTemplate
+	if err := c.doRequest(ctx, http.MethodGet, "/v1/starter-templates/"+slug, nil, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// CloneStarterTemplate clones a starter template into your account.
+func (c *Client) CloneStarterTemplate(ctx context.Context, slug string) (*CloneTemplateResponse, error) {
+	var result CloneTemplateResponse
+	if err := c.doRequest(ctx, http.MethodPost, "/v1/starter-templates/"+slug+"/clone", nil, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// --------------------------------------------------------------------------
+// Template versions
+// --------------------------------------------------------------------------
+
+// ListTemplateVersions returns the version history for a template you own.
+func (c *Client) ListTemplateVersions(ctx context.Context, templateID string) (*TemplateVersionsResponse, error) {
+	var result TemplateVersionsResponse
+	if err := c.doRequest(ctx, http.MethodGet, "/v1/templates/"+templateID+"/versions", nil, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// GetTemplateVersion fetches the content of one specific version.
+func (c *Client) GetTemplateVersion(ctx context.Context, templateID, versionID string) (*TemplateVersion, error) {
+	var result TemplateVersion
+	path := "/v1/templates/" + templateID + "/versions/" + versionID
+	if err := c.doRequest(ctx, http.MethodGet, path, nil, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// RestoreTemplateVersion restores a template to a previous version. Creates a new bump.
+func (c *Client) RestoreTemplateVersion(ctx context.Context, templateID, versionID string) (*Template, error) {
+	var result Template
+	body := map[string]string{"version_id": versionID}
+	if err := c.doRequest(ctx, http.MethodPost, "/v1/templates/"+templateID+"/restore", body, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// --------------------------------------------------------------------------
+// AI template generation
+// --------------------------------------------------------------------------
+
+// GenerateTemplateFromPrompt generates a template from a natural-language
+// prompt. The server-side handler sanitizes the LLM output before
+// returning it, so the resulting HTML is safe to render.
+//
+// Requires the server to be configured with ANTHROPIC_API_KEY.
+func (c *Client) GenerateTemplateFromPrompt(ctx context.Context, params AiGenerateTemplateParams) (*AiGenerateTemplateResponse, error) {
+	var result AiGenerateTemplateResponse
+	if err := c.doRequest(ctx, http.MethodPost, "/v1/ai/generate-template", params, &result); err != nil {
 		return nil, err
 	}
 	return &result, nil

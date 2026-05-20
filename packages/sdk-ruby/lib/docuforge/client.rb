@@ -121,6 +121,146 @@ module DocuForge
       request(:get, "/v1/usage")
     end
 
+    # ── PDF tools ──────────────────────────────────────────────────
+    #
+    # NOTE: `protect` is intentionally NOT exposed — the API endpoint
+    # currently returns 501 because the previous implementation did
+    # not apply real encryption. `sign_annotation` is exposed (and
+    # returns `signature_annotation_added: true`, not `signed`) so
+    # it's clear that this is a visual annotation, not a cryptographic
+    # signature.
+
+    # Merge multiple base64-encoded PDFs into one. Requires >= 2 inputs.
+    def pdf_merge(pdfs:, output: "url")
+      request(:post, "/v1/pdf/merge", body: { "pdfs" => pdfs, "output" => output })
+    end
+
+    # Split a PDF by page ranges. Pass nil ranges to split every page.
+    def pdf_split(pdf:, ranges: nil, output: "url")
+      body = { "pdf" => pdf, "output" => output }
+      body["ranges"] = ranges if ranges
+      request(:post, "/v1/pdf/split", body: body)
+    end
+
+    # Get metadata about a PDF (page count, title, author, etc.).
+    def pdf_info(pdf:)
+      request(:post, "/v1/pdf/info", body: { "pdf" => pdf })
+    end
+
+    # Fill named form fields in an existing AcroForm PDF.
+    def pdf_fill_form(pdf:, fields:, flatten: false, output: "url")
+      request(:post, "/v1/pdf/forms/fill", body: {
+        "pdf" => pdf,
+        "fields" => fields,
+        "flatten" => flatten,
+        "output" => output
+      })
+    end
+
+    # Add text / checkbox / dropdown form fields to a PDF.
+    def pdf_add_form_fields(pdf:, fields:, output: "url")
+      request(:post, "/v1/pdf/forms/add-fields", body: {
+        "pdf" => pdf,
+        "fields" => fields,
+        "output" => output
+      })
+    end
+
+    # List the form fields on a PDF.
+    def pdf_list_form_fields(pdf:)
+      request(:post, "/v1/pdf/forms/list-fields", body: { "pdf" => pdf })
+    end
+
+    # Convert a PDF to PDF/A-1b archival format.
+    def pdf_to_pdfa(pdf:, title: nil, author: nil, subject: nil, output: "url")
+      body = { "pdf" => pdf, "output" => output }
+      body["title"] = title if title
+      body["author"] = author if author
+      body["subject"] = subject if subject
+      request(:post, "/v1/pdf/pdfa", body: body)
+    end
+
+    # Add a VISUAL signature annotation. Not a cryptographic signature
+    # — the resulting PDF is not tamper-evident. Cryptographic signing
+    # is on the roadmap.
+    def pdf_sign_annotation(pdf:, name:, reason: nil, location: nil, contact: nil,
+                            page: nil, x: nil, y: nil, width: nil, height: nil,
+                            output: "url")
+      body = { "pdf" => pdf, "name" => name, "output" => output }
+      body["reason"]   = reason   unless reason.nil?
+      body["location"] = location unless location.nil?
+      body["contact"]  = contact  unless contact.nil?
+      body["page"]     = page     unless page.nil?
+      body["x"]        = x        unless x.nil?
+      body["y"]        = y        unless y.nil?
+      body["width"]    = width    unless width.nil?
+      body["height"]   = height   unless height.nil?
+      request(:post, "/v1/pdf/sign", body: body)
+    end
+
+    # ── Marketplace ────────────────────────────────────────────────
+
+    def marketplace_list
+      request(:get, "/v1/marketplace")
+    end
+
+    def marketplace_get(id)
+      request(:get, "/v1/marketplace/#{id}")
+    end
+
+    def marketplace_clone(id)
+      request(:post, "/v1/marketplace/#{id}/clone")
+    end
+
+    def marketplace_publish(id)
+      request(:post, "/v1/marketplace/#{id}/publish")
+    end
+
+    def marketplace_unpublish(id)
+      request(:post, "/v1/marketplace/#{id}/unpublish")
+    end
+
+    # ── Starter templates ──────────────────────────────────────────
+
+    def starter_templates_list
+      request(:get, "/v1/starter-templates")
+    end
+
+    def starter_templates_get(slug)
+      request(:get, "/v1/starter-templates/#{slug}")
+    end
+
+    def starter_templates_clone(slug)
+      request(:post, "/v1/starter-templates/#{slug}/clone")
+    end
+
+    # ── Template versions ─────────────────────────────────────────
+
+    def list_template_versions(template_id)
+      request(:get, "/v1/templates/#{template_id}/versions")
+    end
+
+    def get_template_version(template_id, version_id)
+      request(:get, "/v1/templates/#{template_id}/versions/#{version_id}")
+    end
+
+    def restore_template_version(template_id, version_id)
+      request(:post, "/v1/templates/#{template_id}/restore",
+              body: { "version_id" => version_id })
+    end
+
+    # ── AI ────────────────────────────────────────────────────────
+
+    # Generate a template from a natural-language prompt. The HTML
+    # returned has been server-sanitized so it's safe to render.
+    # Requires the server to be configured with ANTHROPIC_API_KEY.
+    def generate_template_from_prompt(prompt:, variables: nil,
+                                      template_type: "other", style: "professional")
+      body = { "prompt" => prompt, "type" => template_type, "style" => style }
+      body["variables"] = variables if variables
+      request(:post, "/v1/ai/generate-template", body: body)
+    end
+
     # Make an HTTP request and handle errors. Retries on 429/5xx with
     # exponential backoff.
     #

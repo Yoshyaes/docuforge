@@ -259,3 +259,207 @@ type ListResponse struct {
 	Data    []Generation `json:"data"`
 	HasMore bool         `json:"has_more"`
 }
+
+// --------------------------------------------------------------------------
+// PDF tools
+// --------------------------------------------------------------------------
+
+// PdfBlobResponse is the common shape for endpoints that return either a
+// hosted URL or base64 bytes plus the file size.
+type PdfBlobResponse struct {
+	URL      string `json:"url,omitempty"`
+	Data     string `json:"data,omitempty"`
+	FileSize int64  `json:"file_size"`
+}
+
+// PdfSplitPart is one part of a split result.
+type PdfSplitPart struct {
+	URL      string `json:"url,omitempty"`
+	Data     string `json:"data,omitempty"`
+	FileSize int64  `json:"file_size"`
+}
+
+// PdfSplitResponse is the response from /v1/pdf/split.
+type PdfSplitResponse struct {
+	Parts []PdfSplitPart `json:"parts"`
+	Total int            `json:"total"`
+}
+
+// PdfInfoResponse is the response from /v1/pdf/info.
+type PdfInfoResponse struct {
+	Pages            int    `json:"pages"`
+	FileSize         int64  `json:"fileSize,omitempty"`
+	Title            string `json:"title,omitempty"`
+	Author           string `json:"author,omitempty"`
+	Subject          string `json:"subject,omitempty"`
+	Keywords         string `json:"keywords,omitempty"`
+	Creator          string `json:"creator,omitempty"`
+	Producer         string `json:"producer,omitempty"`
+	CreationDate     string `json:"creationDate,omitempty"`
+	ModificationDate string `json:"modificationDate,omitempty"`
+}
+
+// PdfFormField is a name/value pair used by PdfFillForm.
+type PdfFormField struct {
+	Name  string      `json:"name"`
+	Value interface{} `json:"value"`
+}
+
+// PdfFillFormParams configures /v1/pdf/forms/fill.
+type PdfFillFormParams struct {
+	PDF     string         `json:"pdf"`
+	Fields  []PdfFormField `json:"fields"`
+	Flatten bool           `json:"flatten,omitempty"`
+	Output  string         `json:"output,omitempty"`
+}
+
+// PdfFormFieldDef describes a new form field for /v1/pdf/forms/add-fields.
+type PdfFormFieldDef struct {
+	Name         string      `json:"name"`
+	Type         string      `json:"type"`
+	Page         int         `json:"page"`
+	X            float64     `json:"x"`
+	Y            float64     `json:"y"`
+	Width        float64     `json:"width,omitempty"`
+	Height       float64     `json:"height,omitempty"`
+	Options      []string    `json:"options,omitempty"`
+	DefaultValue interface{} `json:"defaultValue,omitempty"`
+}
+
+// PdfAddFormFieldsParams configures /v1/pdf/forms/add-fields.
+type PdfAddFormFieldsParams struct {
+	PDF    string            `json:"pdf"`
+	Fields []PdfFormFieldDef `json:"fields"`
+	Output string            `json:"output,omitempty"`
+}
+
+// PdfListFormFieldsResponse is the response from /v1/pdf/forms/list-fields.
+type PdfListFormFieldsResponse struct {
+	Fields []struct {
+		Name  string      `json:"name"`
+		Type  string      `json:"type"`
+		Value interface{} `json:"value,omitempty"`
+	} `json:"fields"`
+	Total int `json:"total"`
+}
+
+// PdfToPdfAParams configures /v1/pdf/pdfa.
+type PdfToPdfAParams struct {
+	PDF     string `json:"pdf"`
+	Title   string `json:"title,omitempty"`
+	Author  string `json:"author,omitempty"`
+	Subject string `json:"subject,omitempty"`
+	Output  string `json:"output,omitempty"`
+}
+
+// PdfSignAnnotationParams configures /v1/pdf/sign.
+type PdfSignAnnotationParams struct {
+	PDF      string  `json:"pdf"`
+	Name     string  `json:"name"`
+	Reason   string  `json:"reason,omitempty"`
+	Location string  `json:"location,omitempty"`
+	Contact  string  `json:"contact,omitempty"`
+	Page     *int    `json:"page,omitempty"`
+	X        *float64 `json:"x,omitempty"`
+	Y        *float64 `json:"y,omitempty"`
+	Width    *float64 `json:"width,omitempty"`
+	Height   *float64 `json:"height,omitempty"`
+	Output   string  `json:"output,omitempty"`
+}
+
+// PdfSignAnnotationResponse is returned by /v1/pdf/sign. The
+// SignatureAnnotationAdded field reflects the fact that this is a
+// visual annotation only, not a cryptographic signature.
+type PdfSignAnnotationResponse struct {
+	URL                       string `json:"url,omitempty"`
+	Data                      string `json:"data,omitempty"`
+	FileSize                  int64  `json:"file_size"`
+	SignatureAnnotationAdded  bool   `json:"signature_annotation_added"`
+}
+
+// --------------------------------------------------------------------------
+// Marketplace + starter templates
+// --------------------------------------------------------------------------
+
+// MarketplaceTemplate is a public template returned by /v1/marketplace.
+type MarketplaceTemplate struct {
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	Version   int    `json:"version"`
+	UserID    string `json:"user_id"`
+	IsPublic  bool   `json:"is_public"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+}
+
+// MarketplaceListResponse wraps the /v1/marketplace listing.
+type MarketplaceListResponse struct {
+	Data    []MarketplaceTemplate `json:"data"`
+	HasMore bool                  `json:"has_more"`
+}
+
+// CloneTemplateResponse is the response from cloning a marketplace or
+// starter template.
+type CloneTemplateResponse struct {
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	Version   int    `json:"version"`
+	CreatedAt string `json:"created_at"`
+}
+
+// StarterTemplate is a pre-built template returned by /v1/starter-templates.
+type StarterTemplate struct {
+	Slug        string                 `json:"slug"`
+	Name        string                 `json:"name"`
+	Description string                 `json:"description"`
+	Category    string                 `json:"category"`
+	SampleData  map[string]interface{} `json:"sample_data,omitempty"`
+	HTMLContent string                 `json:"html_content,omitempty"`
+}
+
+// StarterTemplatesListResponse wraps the starter-templates listing.
+type StarterTemplatesListResponse struct {
+	Data    []StarterTemplate `json:"data"`
+	HasMore bool              `json:"has_more"`
+}
+
+// --------------------------------------------------------------------------
+// AI template generation
+// --------------------------------------------------------------------------
+
+// AiGenerateTemplateParams is the request shape for /v1/ai/generate-template.
+type AiGenerateTemplateParams struct {
+	Prompt    string   `json:"prompt"`
+	Type      string   `json:"type,omitempty"`
+	Style     string   `json:"style,omitempty"`
+	Variables []string `json:"variables,omitempty"`
+}
+
+// AiGenerateTemplateResponse is the response from the AI endpoint. The
+// HTML field is server-sanitized.
+type AiGenerateTemplateResponse struct {
+	HTML        string   `json:"html"`
+	HTMLContent string   `json:"html_content"`
+	Variables   []string `json:"variables"`
+	Type        string   `json:"type,omitempty"`
+	Style       string   `json:"style,omitempty"`
+}
+
+// --------------------------------------------------------------------------
+// Template versions
+// --------------------------------------------------------------------------
+
+// TemplateVersion is one row in a template's version history.
+type TemplateVersion struct {
+	ID          string                 `json:"id"`
+	Version     int                    `json:"version"`
+	CreatedAt   string                 `json:"created_at"`
+	HTMLContent string                 `json:"html_content,omitempty"`
+	Schema      map[string]interface{} `json:"schema,omitempty"`
+}
+
+// TemplateVersionsResponse is the response from /v1/templates/:id/versions.
+type TemplateVersionsResponse struct {
+	CurrentVersion int               `json:"current_version"`
+	Data           []TemplateVersion `json:"data"`
+}

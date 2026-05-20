@@ -300,6 +300,202 @@ class DocuForge:
         resp = self._request("GET", "/v1/usage")
         return UsageStats(**resp)
 
+    # ── PDF tools ──────────────────────────────────────────────────
+    #
+    # NOTE: `protect` is intentionally NOT exposed — the API endpoint
+    # currently returns 501 because the previous implementation did
+    # not apply real encryption. `sign` is exposed as
+    # `sign_annotation` (and returns `signature_annotation_added`,
+    # not `signed`) so it's clear that this is a visual annotation,
+    # not a cryptographic PAdES/CAdES signature.
+
+    def pdf_merge(
+        self,
+        pdfs: List[str],
+        output: str = "url",
+    ) -> Dict[str, Any]:
+        """Merge multiple PDFs into one. `pdfs` is a list of base64 strings."""
+        return self._request("POST", "/v1/pdf/merge", json={"pdfs": pdfs, "output": output})
+
+    def pdf_split(
+        self,
+        pdf: str,
+        ranges: Optional[List[List[int]]] = None,
+        output: str = "url",
+    ) -> Dict[str, Any]:
+        """Split a PDF by page ranges. Omit ranges to split every page."""
+        body: Dict[str, Any] = {"pdf": pdf, "output": output}
+        if ranges is not None:
+            body["ranges"] = ranges
+        return self._request("POST", "/v1/pdf/split", json=body)
+
+    def pdf_info(self, pdf: str) -> Dict[str, Any]:
+        """Get metadata about a PDF."""
+        return self._request("POST", "/v1/pdf/info", json={"pdf": pdf})
+
+    def pdf_fill_form(
+        self,
+        pdf: str,
+        fields: List[Dict[str, Any]],
+        flatten: bool = False,
+        output: str = "url",
+    ) -> Dict[str, Any]:
+        """Fill named form fields in an existing AcroForm PDF."""
+        return self._request(
+            "POST",
+            "/v1/pdf/forms/fill",
+            json={"pdf": pdf, "fields": fields, "flatten": flatten, "output": output},
+        )
+
+    def pdf_add_form_fields(
+        self,
+        pdf: str,
+        fields: List[Dict[str, Any]],
+        output: str = "url",
+    ) -> Dict[str, Any]:
+        """Add text/checkbox/dropdown fields to a PDF."""
+        return self._request(
+            "POST",
+            "/v1/pdf/forms/add-fields",
+            json={"pdf": pdf, "fields": fields, "output": output},
+        )
+
+    def pdf_list_form_fields(self, pdf: str) -> Dict[str, Any]:
+        """List the form fields on a PDF."""
+        return self._request("POST", "/v1/pdf/forms/list-fields", json={"pdf": pdf})
+
+    def pdf_to_pdfa(
+        self,
+        pdf: str,
+        title: Optional[str] = None,
+        author: Optional[str] = None,
+        subject: Optional[str] = None,
+        output: str = "url",
+    ) -> Dict[str, Any]:
+        """Convert a PDF to PDF/A-1b archival format."""
+        body: Dict[str, Any] = {"pdf": pdf, "output": output}
+        if title:
+            body["title"] = title
+        if author:
+            body["author"] = author
+        if subject:
+            body["subject"] = subject
+        return self._request("POST", "/v1/pdf/pdfa", json=body)
+
+    def pdf_sign_annotation(
+        self,
+        pdf: str,
+        name: str,
+        reason: Optional[str] = None,
+        location: Optional[str] = None,
+        contact: Optional[str] = None,
+        page: Optional[int] = None,
+        x: Optional[float] = None,
+        y: Optional[float] = None,
+        width: Optional[float] = None,
+        height: Optional[float] = None,
+        output: str = "url",
+    ) -> Dict[str, Any]:
+        """Add a VISUAL signature annotation (not a cryptographic signature).
+
+        Returns a payload with ``signature_annotation_added: True``.
+        Cryptographic signing is on the roadmap.
+        """
+        body: Dict[str, Any] = {"pdf": pdf, "name": name, "output": output}
+        for k, v in [
+            ("reason", reason),
+            ("location", location),
+            ("contact", contact),
+            ("page", page),
+            ("x", x),
+            ("y", y),
+            ("width", width),
+            ("height", height),
+        ]:
+            if v is not None:
+                body[k] = v
+        return self._request("POST", "/v1/pdf/sign", json=body)
+
+    # ── Marketplace ────────────────────────────────────────────────
+    def marketplace_list(self) -> Dict[str, Any]:
+        """List public marketplace templates."""
+        return self._request("GET", "/v1/marketplace")
+
+    def marketplace_get(self, template_id: str) -> Dict[str, Any]:
+        """Get a marketplace template's full content."""
+        return self._request("GET", f"/v1/marketplace/{template_id}")
+
+    def marketplace_clone(self, template_id: str) -> Dict[str, Any]:
+        """Clone a public marketplace template into your account."""
+        return self._request("POST", f"/v1/marketplace/{template_id}/clone")
+
+    def marketplace_publish(self, template_id: str) -> Dict[str, Any]:
+        """Publish one of your templates to the public marketplace."""
+        return self._request("POST", f"/v1/marketplace/{template_id}/publish")
+
+    def marketplace_unpublish(self, template_id: str) -> Dict[str, Any]:
+        """Remove one of your templates from the public marketplace."""
+        return self._request("POST", f"/v1/marketplace/{template_id}/unpublish")
+
+    # ── Starter templates ──────────────────────────────────────────
+    def starter_templates_list(self) -> Dict[str, Any]:
+        """List the pre-built starter templates (public)."""
+        return self._request("GET", "/v1/starter-templates")
+
+    def starter_templates_get(self, slug: str) -> Dict[str, Any]:
+        """Get a starter template's full content (public)."""
+        return self._request("GET", f"/v1/starter-templates/{slug}")
+
+    def starter_templates_clone(self, slug: str) -> Dict[str, Any]:
+        """Clone a starter template into your account."""
+        return self._request("POST", f"/v1/starter-templates/{slug}/clone")
+
+    # ── Template versions ─────────────────────────────────────────
+    def list_template_versions(self, template_id: str) -> Dict[str, Any]:
+        """List version history for one of your templates."""
+        return self._request("GET", f"/v1/templates/{template_id}/versions")
+
+    def get_template_version(
+        self, template_id: str, version_id: str
+    ) -> Dict[str, Any]:
+        """Get the content of a specific version."""
+        return self._request(
+            "GET", f"/v1/templates/{template_id}/versions/{version_id}"
+        )
+
+    def restore_template_version(
+        self, template_id: str, version_id: str
+    ) -> Dict[str, Any]:
+        """Restore a template to a previous version (creates a new bump)."""
+        return self._request(
+            "POST",
+            f"/v1/templates/{template_id}/restore",
+            json={"version_id": version_id},
+        )
+
+    # ── AI ────────────────────────────────────────────────────────
+    def generate_template_from_prompt(
+        self,
+        prompt: str,
+        variables: Optional[List[str]] = None,
+        template_type: str = "other",
+        style: str = "professional",
+    ) -> Dict[str, Any]:
+        """Generate a template from a natural-language prompt.
+
+        Requires the server to be configured with ANTHROPIC_API_KEY.
+        The HTML returned has been server-sanitized (script/iframe/link
+        prefetch/meta-refresh stripped) so it's safe to render.
+        """
+        body: Dict[str, Any] = {
+            "prompt": prompt,
+            "type": template_type,
+            "style": style,
+        }
+        if variables:
+            body["variables"] = variables
+        return self._request("POST", "/v1/ai/generate-template", json=body)
+
     def close(self) -> None:
         """Close the HTTP client."""
         self._client.close()
