@@ -54,8 +54,6 @@ app.use('*', securityHeadersMiddleware);
 
 // IP-based rate limiting for public routes
 app.use('/v1/starter-templates/*', ipRateLimitMiddleware);
-app.use('/llms.txt', ipRateLimitMiddleware);
-app.use('/llms-full.txt', ipRateLimitMiddleware);
 
 // Public routes
 app.route('/health', healthRoutes);
@@ -97,10 +95,6 @@ if (process.env.NODE_ENV !== 'production') {
     }),
   );
 }
-
-// Serve AI discoverability assets
-app.use('/llms.txt', serveStatic({ root: '../../public', path: '/llms.txt' }));
-app.use('/llms-full.txt', serveStatic({ root: '../../public', path: '/llms-full.txt' }));
 
 // Public starter templates browser
 app.route('/v1/starter-templates', starterTemplatesRoutes);

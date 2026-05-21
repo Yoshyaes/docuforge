@@ -50,11 +50,6 @@ COPY tsconfig.json ./
 COPY apps/api/ apps/api/
 COPY packages/sdk-typescript/ packages/sdk-typescript/
 
-# Copy AI-discoverability assets — index.ts mounts them at /llms.txt
-# and /llms-full.txt via serveStatic({ root: '../../public' }). Without
-# this COPY the routes 404 (non-fatal, but the warning is noisy).
-COPY public/ public/
-
 # Build the API
 RUN pnpm --filter @deckle/api build
 
