@@ -1,13 +1,13 @@
-﻿---
-title: "Build an Invoice System with Stripe + DocuForge"
+---
+title: "Build an Invoice System with Stripe + Deckle"
 description: "Create a complete invoice generation system that listens to Stripe webhooks and automatically generates pixel-perfect PDF invoices."
 date: "2026-03-02"
-author: "DocuForge Team"
+author: "Deckle Team"
 category: "Integration"
 readingTime: 8
 ---
 
-Every SaaS needs invoices. Stripe handles payments, but generating beautiful PDF invoices from payment data? That's where DocuForge comes in.
+Every SaaS needs invoices. Stripe handles payments, but generating beautiful PDF invoices from payment data? That's where Deckle comes in.
 
 ## What We're Building
 
@@ -16,23 +16,23 @@ A system that automatically generates a PDF invoice every time a Stripe payment 
 1. Customer pays via Stripe Checkout
 2. Stripe fires a `payment_intent.succeeded` webhook
 3. Your server catches the webhook
-4. DocuForge generates a branded PDF invoice
+4. Deckle generates a branded PDF invoice
 5. The PDF URL is stored and emailed to the customer
 
 ## Setup
 
 ```bash
-npm install docuforge stripe
+npm install deckle stripe
 ```
 
 ## The Webhook Handler
 
 ```typescript
-import DocuForge from 'docuforge';
+import Deckle from 'deckle';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-const docuforge = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const deckle = new Deckle(process.env.DECKLE_API_KEY!);
 
 export async function POST(request: Request) {
   const body = await request.text();
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
   if (event.type === 'payment_intent.succeeded') {
     const payment = event.data.object;
 
-    const pdf = await docuforge.generate({
+    const pdf = await deckle.generate({
       html: buildInvoiceHtml(payment),
       options: { format: 'A4', margin: '20mm' },
     });
@@ -60,14 +60,14 @@ export async function POST(request: Request) {
 
 ## The Invoice Template
 
-Design your invoice once as HTML and reuse it for every payment. DocuForge renders it with pixel-perfect fidelity including your brand colors, logo, and typography.
+Design your invoice once as HTML and reuse it for every payment. Deckle renders it with pixel-perfect fidelity including your brand colors, logo, and typography.
 
 ## Using Stored Templates
 
-For production, store your invoice template in DocuForge and pass data dynamically:
+For production, store your invoice template in Deckle and pass data dynamically:
 
 ```typescript
-const pdf = await docuforge.fromTemplate({
+const pdf = await deckle.fromTemplate({
   templateId: 'tmpl_stripe_invoice',
   data: {
     invoiceNumber: `INV-${payment.id.slice(-8)}`,
@@ -84,5 +84,5 @@ This approach separates your invoice design from your business logic, making it 
 ## Next Steps
 
 - Add email delivery with [Resend](https://resend.com) or SendGrid
-- Set up [batch generation](https://getdocuforge.dev/docs/api-reference/generate) for monthly invoice runs
+- Set up [batch generation](https://getdeckle.dev/docs/api-reference/generate) for monthly invoice runs
 - Build a customer-facing invoice history page in your dashboard

@@ -13,13 +13,13 @@
  *
  * Connection strategy:
  *   1. `TEST_DATABASE_URL` if set — full URL including database name.
- *   2. Else the local dev compose stack (`postgresql://docuforge:
- *      docuforge_local@localhost:5432/postgres`) which is created by
+ *   2. Else the local dev compose stack (`postgresql://deckle:
+ *      deckle_local@localhost:5432/postgres`) which is created by
  *      the project's `docker-compose.yml`.
  *   3. If neither reaches a server, `setupTestDatabase()` throws a
  *      tagged error so the caller can mark its tests `it.skipIf(...)`.
  *
- * The database name is always `docuforge_test`. We DROP + CREATE it
+ * The database name is always `deckle_test`. We DROP + CREATE it
  * on each suite startup so every run begins from a clean slate.
  */
 import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
@@ -30,7 +30,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as schema from '../../schema/db.js';
 
-const DEFAULT_TEST_DB_NAME = 'docuforge_test';
+const DEFAULT_TEST_DB_NAME = 'deckle_test';
 
 const moduleDir = dirname(fileURLToPath(import.meta.url));
 const MIGRATIONS_FOLDER = resolve(moduleDir, '../../../drizzle');
@@ -44,7 +44,7 @@ function getAdminUrl(): string {
     u.pathname = '/postgres';
     return u.toString();
   }
-  return 'postgresql://docuforge:docuforge_local@localhost:5432/postgres';
+  return 'postgresql://deckle:deckle_local@localhost:5432/postgres';
 }
 
 function getTestDbUrl(dbName: string): string {
@@ -54,7 +54,7 @@ function getTestDbUrl(dbName: string): string {
     u.pathname = `/${dbName}`;
     return u.toString();
   }
-  return `postgresql://docuforge:docuforge_local@localhost:5432/${dbName}`;
+  return `postgresql://deckle:deckle_local@localhost:5432/${dbName}`;
 }
 
 export interface TestDatabase {

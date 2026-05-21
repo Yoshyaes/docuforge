@@ -1,9 +1,9 @@
-﻿---
-title: "Build an Invoice System with Stripe + DocuForge"
-description: "Wire up Stripe payment events to automatically generate professional PDF invoices with DocuForge. Complete webhook handler and template included."
-slug: "invoice-system-stripe-docuforge"
+---
+title: "Build an Invoice System with Stripe + Deckle"
+description: "Wire up Stripe payment events to automatically generate professional PDF invoices with Deckle. Complete webhook handler and template included."
+slug: "invoice-system-stripe-deckle"
 date: "2026-03-14"
-author: "DocuForge Team"
+author: "Deckle Team"
 authorRole: "Developer Advocate"
 tags: ["stripe", "invoices", "typescript", "templates", "tutorial"]
 readingTime: "12 min read"
@@ -13,14 +13,14 @@ readingTime: "12 min read"
 
 Stripe is the de facto standard for processing payments online. It handles charges, subscriptions, refunds, and dozens of other financial operations with remarkable reliability. But when a payment succeeds, your customers expect a proper invoice -- a formatted PDF they can download, forward to their accountant, or file away for tax season. Stripe's built-in invoices cover the basics, but they offer limited control over branding, layout, and the finer details that make your business look polished.
 
-That is where DocuForge comes in. DocuForge is a PDF generation API that accepts HTML templates and structured data, then returns pixel-perfect PDFs. By wiring Stripe payment events to DocuForge templates, you get a fully automated invoice pipeline: a customer pays, Stripe fires a webhook, your server maps the payment data into a Handlebars template, DocuForge renders the PDF, and you email it to the customer. No manual steps, no cron jobs, no brittle HTML-to-PDF libraries running on your own infrastructure.
+That is where Deckle comes in. Deckle is a PDF generation API that accepts HTML templates and structured data, then returns pixel-perfect PDFs. By wiring Stripe payment events to Deckle templates, you get a fully automated invoice pipeline: a customer pays, Stripe fires a webhook, your server maps the payment data into a Handlebars template, Deckle renders the PDF, and you email it to the customer. No manual steps, no cron jobs, no brittle HTML-to-PDF libraries running on your own infrastructure.
 
-In this tutorial, you will build exactly that system. By the end, you will have a production-ready webhook handler that listens for `invoice.payment_succeeded` events from Stripe, generates a branded PDF invoice through DocuForge, and emails it to the customer using Resend. You will also learn how to use batch generation for monthly billing runs. The full source code is included at the end.
+In this tutorial, you will build exactly that system. By the end, you will have a production-ready webhook handler that listens for `invoice.payment_succeeded` events from Stripe, generates a branded PDF invoice through Deckle, and emails it to the customer using Resend. You will also learn how to use batch generation for monthly billing runs. The full source code is included at the end.
 
 **What you will need:**
 
 - A Stripe account with a webhook endpoint configured
-- A DocuForge API key (sign up at docuforge.com)
+- A Deckle API key (sign up at deckle.com)
 - Node.js 18+ and TypeScript
 - A Resend API key for sending emails
 
@@ -41,7 +41,7 @@ Stripe Payment Succeeded
   Extract Invoice Data (line items, customer, amounts)
         |
         v
-  DocuForge fromTemplate() --> PDF URL
+  Deckle fromTemplate() --> PDF URL
         |
         v
   Store PDF URL in Database
@@ -50,26 +50,26 @@ Stripe Payment Succeeded
   Email Invoice to Customer (Resend)
 ```
 
-The tech stack is deliberately minimal. You will use Next.js API routes for the webhook handler, the official Stripe Node SDK for signature verification and data extraction, the DocuForge TypeScript SDK for PDF generation, and Resend for transactional email. If you prefer Express or Fastify, the core logic is identical -- only the route definition changes.
+The tech stack is deliberately minimal. You will use Next.js API routes for the webhook handler, the official Stripe Node SDK for signature verification and data extraction, the Deckle TypeScript SDK for PDF generation, and Resend for transactional email. If you prefer Express or Fastify, the core logic is identical -- only the route definition changes.
 
-All communication is synchronous except for the optional batch generation path, which uses DocuForge's async queue and webhook callbacks.
+All communication is synchronous except for the optional batch generation path, which uses Deckle's async queue and webhook callbacks.
 
 ## Step 1: Create the Invoice Template
 
-Before handling any Stripe events, you need an invoice template stored in DocuForge. Templates use Handlebars syntax for dynamic data and standard HTML/CSS for layout. Once created, you reference the template by ID and pass in different data for each invoice.
+Before handling any Stripe events, you need an invoice template stored in Deckle. Templates use Handlebars syntax for dynamic data and standard HTML/CSS for layout. Once created, you reference the template by ID and pass in different data for each invoice.
 
 Install the dependencies first:
 
 ```bash
-npm install docuforge stripe resend
+npm install deckle stripe resend
 ```
 
 Here is a complete invoice template with professional styling:
 
 ```typescript
-import DocuForge from "docuforge";
+import Deckle from "deckle";
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const df = new Deckle(process.env.DECKLE_API_KEY!);
 
 const invoiceTemplate = await df.templates.create({
   name: "Stripe Invoice",
@@ -454,9 +454,9 @@ The mapping function handles the common edge cases: missing customer names, null
 With the template created and the Stripe data mapped, generating the PDF is a single SDK call. The `fromTemplate` method accepts the template ID and a data object that fills in the Handlebars placeholders.
 
 ```typescript
-import DocuForge from "docuforge";
+import Deckle from "deckle";
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const df = new Deckle(process.env.DECKLE_API_KEY!);
 
 async function generateInvoicePdf(data: InvoiceTemplateData): Promise<string> {
   const pdf = await df.fromTemplate({
@@ -496,9 +496,9 @@ async function generateInvoicePdf(data: InvoiceTemplateData): Promise<string> {
 }
 ```
 
-The response includes everything you need: a hosted URL where the PDF can be downloaded, the page count, file size, and how long the render took. DocuForge hosts the file for you, so there is no need to set up your own storage bucket unless you want to.
+The response includes everything you need: a hosted URL where the PDF can be downloaded, the page count, file size, and how long the render took. Deckle hosts the file for you, so there is no need to set up your own storage bucket unless you want to.
 
-The footer uses the `{{pageNumber}}` and `{{totalPages}}` interpolation variables that DocuForge injects automatically. These work independently of the Handlebars template variables in the body -- they are processed by the PDF renderer at print time.
+The footer uses the `{{pageNumber}}` and `{{totalPages}}` interpolation variables that Deckle injects automatically. These work independently of the Handlebars template variables in the body -- they are processed by the PDF renderer at print time.
 
 If you want to store the PDF yourself rather than using the hosted URL, pass `output: 'base64'` and the response will include the raw PDF bytes instead of a URL. This is useful if you need to upload to your own S3 bucket or attach directly to an email.
 
@@ -572,7 +572,7 @@ Choose whichever approach fits your customers. The hosted URL is simpler and kee
 
 ## Step 5: Batch Invoices for Monthly Billing
 
-If you run a subscription business, you might need to generate dozens or hundreds of invoices at the end of each billing cycle. Generating them one by one would be slow and wasteful. DocuForge's batch endpoint handles this efficiently -- you submit all invoices in a single request, and they are processed concurrently on DocuForge's infrastructure.
+If you run a subscription business, you might need to generate dozens or hundreds of invoices at the end of each billing cycle. Generating them one by one would be slow and wasteful. Deckle's batch endpoint handles this efficiently -- you submit all invoices in a single request, and they are processed concurrently on Deckle's infrastructure.
 
 ```typescript
 async function generateMonthlyInvoices(
@@ -595,7 +595,7 @@ async function generateMonthlyInvoices(
 
   const batch = await df.batch({
     items: batchItems,
-    webhook: "https://your-app.com/api/webhooks/docuforge-batch",
+    webhook: "https://your-app.com/api/webhooks/deckle-batch",
   });
 
   console.log(`Batch submitted: ${batch.batch_id}`);
@@ -613,7 +613,7 @@ async function generateMonthlyInvoices(
 
 The batch endpoint returns HTTP 202 with a `batch_id` and the status `"queued"`. Each item in the batch gets its own generation ID that you can use to track progress.
 
-There are two ways to know when the batch is complete. The recommended approach is the webhook callback -- DocuForge will POST to your webhook URL when all items are finished. Alternatively, you can poll individual generations:
+There are two ways to know when the batch is complete. The recommended approach is the webhook callback -- Deckle will POST to your webhook URL when all items are finished. Alternatively, you can poll individual generations:
 
 ```typescript
 async function pollGeneration(generationId: string): Promise<string> {
@@ -648,7 +648,7 @@ Here is the consolidated code for the entire invoice system. This is a single Ne
 // app/api/webhooks/stripe/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import DocuForge from "docuforge";
+import Deckle from "deckle";
 import { Resend } from "resend";
 
 // --- Clients ---
@@ -657,7 +657,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-12-18.acacia",
 });
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const df = new Deckle(process.env.DECKLE_API_KEY!);
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
 // --- Types ---
@@ -845,8 +845,8 @@ export async function POST(req: NextRequest) {
 STRIPE_SECRET_KEY=sk_live_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 
-# DocuForge
-DOCUFORGE_API_KEY=df_live_...
+# Deckle
+DECKLE_API_KEY=dk_live_...
 INVOICE_TEMPLATE_ID=tmpl_...
 
 # Resend
@@ -865,8 +865,8 @@ A few production considerations worth noting. First, return 500 from the webhook
 
 This tutorial covered the core flow: Stripe payment to PDF invoice to customer email. There are several directions you can take it from here.
 
-For **reporting**, look at our guide on [generating Supabase reports with DocuForge](https://getdocuforge.dev/blog/generate-report-pdfs-supabase-data) -- the same template and batch patterns apply to monthly financial summaries.
+For **reporting**, look at our guide on [generating Supabase reports with Deckle](https://getdeckle.dev/blog/generate-report-pdfs-supabase-data) -- the same template and batch patterns apply to monthly financial summaries.
 
-If you want more control over **page layout** -- custom headers per page, landscape tables, or page break control -- the [page layout and headers guide](https://getdocuforge.dev/blog/pdf-page-breaks-headers-footers-guide) covers all the options available in the `PDFOptions` object.
+If you want more control over **page layout** -- custom headers per page, landscape tables, or page break control -- the [page layout and headers guide](https://getdeckle.dev/blog/pdf-page-breaks-headers-footers-guide) covers all the options available in the `PDFOptions` object.
 
-For teams building a full SaaS billing portal, the [Next.js integration guide](https://getdocuforge.dev/docs/guides/nextjs) shows how to add a customer-facing invoice history page with on-demand PDF regeneration.
+For teams building a full SaaS billing portal, the [Next.js integration guide](https://getdeckle.dev/docs/guides/nextjs) shows how to add a customer-facing invoice history page with on-demand PDF regeneration.

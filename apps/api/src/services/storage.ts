@@ -58,13 +58,13 @@ const s3 = createS3Client();
 function getBucket(): string {
   switch (provider) {
     case 'r2':
-      return process.env.R2_BUCKET_NAME || 'docuforge-pdfs';
+      return process.env.R2_BUCKET_NAME || 'deckle-pdfs';
     case 's3':
-      return process.env.S3_BUCKET_NAME || 'docuforge-pdfs';
+      return process.env.S3_BUCKET_NAME || 'deckle-pdfs';
     case 'gcs':
-      return process.env.GCS_BUCKET_NAME || 'docuforge-pdfs';
+      return process.env.GCS_BUCKET_NAME || 'deckle-pdfs';
     default:
-      return 'docuforge-pdfs';
+      return 'deckle-pdfs';
   }
 }
 

@@ -1,4 +1,4 @@
-"""DocuForge Python SDK — request shape, error mapping, and the post-Sprint-17
+"""Deckle Python SDK — request shape, error mapping, and the post-Sprint-17
 namespace coverage. Mirrors packages/sdk-typescript/src/client.test.ts.
 
 Real network is never touched: httpx requests are intercepted by respx
@@ -13,17 +13,17 @@ import httpx
 import pytest
 import respx
 
-from docuforge import DocuForge
-from docuforge.errors import AuthenticationError, DocuForgeError, RateLimitError
+from deckle import Deckle
+from deckle.errors import AuthenticationError, DeckleError, RateLimitError
 
 
 BASE_URL = "https://api.test.local"
 
 
-def client(**kwargs) -> DocuForge:
+def client(**kwargs) -> Deckle:
     """Construct a client pointed at the mock transport with retries
     off so tests don't burn wall-clock time on backoff sleeps."""
-    return DocuForge(api_key="df_live_test", base_url=BASE_URL, max_retries=0, **kwargs)
+    return Deckle(api_key="dk_live_test", base_url=BASE_URL, max_retries=0, **kwargs)
 
 
 def usage_payload(**overrides):
@@ -46,7 +46,7 @@ def usage_payload(**overrides):
 class TestConstructor:
     def test_refuses_empty_api_key(self):
         with pytest.raises(ValueError, match="required"):
-            DocuForge(api_key="")
+            Deckle(api_key="")
 
     @respx.mock
     def test_normalizes_trailing_slash_on_base_url(self):
@@ -55,7 +55,7 @@ class TestConstructor:
         route = respx.get("https://api.example.com/v1/usage").mock(
             return_value=httpx.Response(200, json=usage_payload())
         )
-        c = DocuForge(api_key="k", base_url="https://api.example.com/", max_retries=0)
+        c = Deckle(api_key="k", base_url="https://api.example.com/", max_retries=0)
         c.get_usage()
         assert route.called
 
@@ -83,7 +83,7 @@ class TestRequestShape:
         assert route.called
         req = route.calls[0].request
         assert req.method == "POST"
-        assert req.headers["authorization"] == "Bearer df_live_test"
+        assert req.headers["authorization"] == "Bearer dk_live_test"
         assert req.headers["content-type"] == "application/json"
         body = json.loads(req.content)
         assert body["html"] == "<h1>hi</h1>"
@@ -144,13 +144,13 @@ class TestErrorHandling:
         assert info.value.retry_after == 11
 
     @respx.mock
-    def test_raises_docuforge_error_on_generic_4xx(self):
+    def test_raises_deckle_error_on_generic_4xx(self):
         respx.post(f"{BASE_URL}/v1/generate").mock(
             return_value=httpx.Response(
                 400, json={"error": {"code": "VALIDATION_ERROR", "message": "bad input"}}
             )
         )
-        with pytest.raises(DocuForgeError) as info:
+        with pytest.raises(DeckleError) as info:
             client().generate(html="")
         assert info.value.status_code == 400
         assert info.value.code == "VALIDATION_ERROR"
@@ -160,7 +160,7 @@ class TestErrorHandling:
         route = respx.get(f"{BASE_URL}/v1/usage").mock(
             return_value=httpx.Response(500, json={"error": {}})
         )
-        with pytest.raises(DocuForgeError):
+        with pytest.raises(DeckleError):
             client().get_usage()
         # Exactly one call — no retries because we set max_retries=0.
         assert route.call_count == 1

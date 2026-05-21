@@ -2,19 +2,19 @@
 title: "Generate PDF Certificates for Your Online Course"
 description: "Automatically generate and deliver personalized PDF certificates when students complete your online course."
 date: "2026-03-07"
-author: "DocuForge Team"
+author: "Deckle Team"
 category: "Tutorial"
 readingTime: 5
 ---
 
-Completion certificates add real value to online courses. They motivate students, provide social proof, and make your course feel professional. Here's how to generate them automatically with DocuForge.
+Completion certificates add real value to online courses. They motivate students, provide social proof, and make your course feel professional. Here's how to generate them automatically with Deckle.
 
 ## The Template Approach
 
 Create a certificate template once, then fill it with student data for every completion:
 
 ```typescript
-const certificate = await docuforge.fromTemplate({
+const certificate = await deckle.fromTemplate({
   templateId: 'tmpl_certificate',
   data: {
     studentName: 'Jane Doe',
@@ -28,7 +28,7 @@ const certificate = await docuforge.fromTemplate({
 
 ## Designing the Certificate
 
-Use HTML and CSS to design a certificate that matches your brand. DocuForge supports landscape orientation, custom fonts, background images, and QR codes for verification:
+Use HTML and CSS to design a certificate that matches your brand. Deckle supports landscape orientation, custom fonts, background images, and QR codes for verification:
 
 ```html
 <div style="text-align: center; padding: 60px;">
@@ -43,10 +43,10 @@ Use HTML and CSS to design a certificate that matches your brand. DocuForge supp
 
 ## Batch Generation
 
-For course cohorts, use DocuForge's batch API to generate all certificates at once:
+For course cohorts, use Deckle's batch API to generate all certificates at once:
 
 ```typescript
-const batch = await docuforge.batch({
+const batch = await deckle.batch({
   templateId: 'tmpl_certificate',
   items: students.map(s => ({
     data: { studentName: s.name, courseName, completionDate, certificateId: s.certId },

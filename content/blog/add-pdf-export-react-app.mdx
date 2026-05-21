@@ -1,9 +1,9 @@
-﻿---
+---
 title: "How to Add PDF Export to Any React App"
-description: "Add a 'Download as PDF' button to your React app using DocuForge's fromReact() API and @docuforge/react component library."
+description: "Add a 'Download as PDF' button to your React app using Deckle's fromReact() API and @deckle/react component library."
 slug: "add-pdf-export-react-app"
 date: "2026-03-28"
-author: "DocuForge Team"
+author: "Deckle Team"
 authorRole: "Developer Advocate"
 tags: ["react", "typescript", "pdf-generation", "tutorial"]
 readingTime: "10 min read"
@@ -13,26 +13,26 @@ readingTime: "10 min read"
 
 Every data-heavy React application eventually gets the same feature request: "Can I download this as a PDF?" Whether it is an analytics dashboard, an invoice screen, or a student report card, users expect a clean, one-click export that looks just as polished on paper as it does on screen.
 
-DocuForge gives you three ways to satisfy that request, and you can mix them within the same project:
+Deckle gives you three ways to satisfy that request, and you can mix them within the same project:
 
 1. **HTML string generation** -- capture rendered HTML from the DOM and send it to `df.generate()`. Fastest to wire up, best for simple pages.
-2. **React component to PDF with `fromReact()`** -- send a JSX/TSX source string along with data as props. The component is rendered server-side by DocuForge, giving you full control over the PDF layout without coupling it to your UI.
-3. **`@docuforge/react` component library** -- purpose-built components like `Document`, `Page`, `Table`, and `Watermark` that map directly to PDF concepts. Combine them with `fromReact()` for pixel-perfect results.
+2. **React component to PDF with `fromReact()`** -- send a JSX/TSX source string along with data as props. The component is rendered server-side by Deckle, giving you full control over the PDF layout without coupling it to your UI.
+3. **`@deckle/react` component library** -- purpose-built components like `Document`, `Page`, `Table`, and `Watermark` that map directly to PDF concepts. Combine them with `fromReact()` for pixel-perfect results.
 
 This tutorial walks through all three approaches, building up to a complete dashboard export feature you can drop into any React app.
 
 ## Approach 1: HTML String Generation
 
-The simplest path is to grab HTML that is already on the page and send it to DocuForge. This works well when your existing UI is close to what you want the PDF to look like.
+The simplest path is to grab HTML that is already on the page and send it to Deckle. This works well when your existing UI is close to what you want the PDF to look like.
 
 ### Server API Route
 
 Create an API route that accepts an HTML string and returns a PDF URL:
 
 ```ts title="app/api/pdf/route.ts"
-import { DocuForge } from "docuforge";
+import { Deckle } from "deckle";
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const df = new Deckle(process.env.DECKLE_API_KEY!);
 
 export async function POST(req: Request) {
   const { html } = await req.json();
@@ -90,7 +90,7 @@ This approach has limitations. The captured HTML will not include your bundled C
 
 ## Approach 2: React Component to PDF with fromReact()
 
-The `fromReact()` method takes a JSX/TSX source string containing an `export default function` component. DocuForge transpiles the component server-side, injects the `data` object you provide as props, renders it to static HTML, and converts the result to PDF. This means you can write a dedicated PDF layout component that is completely independent of your screen UI.
+The `fromReact()` method takes a JSX/TSX source string containing an `export default function` component. Deckle transpiles the component server-side, injects the `data` object you provide as props, renders it to static HTML, and converts the result to PDF. This means you can write a dedicated PDF layout component that is completely independent of your screen UI.
 
 ### Define the PDF Component
 
@@ -141,10 +141,10 @@ export default function SalesReport({ data }) {
 Pass the component source and data to `fromReact()`:
 
 ```ts title="app/api/report/route.ts"
-import { DocuForge } from "docuforge";
+import { Deckle } from "deckle";
 import { salesReportComponent } from "@/lib/pdf-templates/sales-report";
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const df = new Deckle(process.env.DECKLE_API_KEY!);
 
 export async function POST(req: Request) {
   const { rows } = await req.json();
@@ -176,14 +176,14 @@ export async function POST(req: Request) {
 
 The key advantage is separation of concerns. Your screen UI can use any component library and layout system you like, while the PDF component is purpose-built for a printed page. You also get server-side rendering out of the box -- no browser required on your end.
 
-## Using @docuforge/react Components
+## Using @deckle/react Components
 
-For structured documents with recurring elements like headers, footers, tables, and watermarks, the `@docuforge/react` component library provides pre-built primitives that handle PDF-specific concerns for you.
+For structured documents with recurring elements like headers, footers, tables, and watermarks, the `@deckle/react` component library provides pre-built primitives that handle PDF-specific concerns for you.
 
 Install the package:
 
 ```bash
-npm install @docuforge/react
+npm install @deckle/react
 ```
 
 ### Building a Document
@@ -200,7 +200,7 @@ import {
   Footer,
   Table,
   Watermark,
-} from "@docuforge/react";
+} from "@deckle/react";
 
 export default function Invoice({ data }) {
   const { invoiceNumber, customer, items, total, isPaid } = data;
@@ -369,11 +369,11 @@ Usage in a page component is straightforward:
 </DownloadPDFButton>
 ```
 
-The button handles the loading state, error handling, and download trigger. When the user clicks, it sends the data to your API route, receives the PDF URL from DocuForge, and initiates the browser download.
+The button handles the loading state, error handling, and download trigger. When the user clicks, it sends the data to your API route, receives the PDF URL from Deckle, and initiates the browser download.
 
 ## Styling for PDF
 
-PDF rendering differs from screen rendering in a few important ways. DocuForge uses Chromium under the hood, so standard CSS works, but there are guidelines to follow for reliable output.
+PDF rendering differs from screen rendering in a few important ways. Deckle uses Chromium under the hood, so standard CSS works, but there are guidelines to follow for reliable output.
 
 ### The `styles` Prop
 
@@ -415,14 +415,14 @@ const result = await df.fromReact({
 
 ## Complete Example: Dashboard Report Export
 
-Here is a full working example that ties everything together. A dashboard page displays metrics and a data table on screen, and a button exports the same data as a professionally formatted PDF using `@docuforge/react` components.
+Here is a full working example that ties everything together. A dashboard page displays metrics and a data table on screen, and a button exports the same data as a professionally formatted PDF using `@deckle/react` components.
 
 ### The PDF Template
 
 ```ts title="lib/pdf-templates/dashboard-report.ts"
 export const dashboardReportComponent = `
 import React from "react";
-import { Document, Page, Header, Footer, Table, Grid } from "@docuforge/react";
+import { Document, Page, Header, Footer, Table, Grid } from "@deckle/react";
 
 export default function DashboardReport({ data }) {
   const { title, period, metrics, transactions } = data;
@@ -503,7 +503,7 @@ export default function DashboardReport({ data }) {
         <Footer style={{ borderTop: "1px solid #e5e5e5", paddingTop: "8px", fontSize: "10px", color: "#999" }}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span>Confidential -- Internal Use Only</span>
-            <span>DocuForge Dashboard Export</span>
+            <span>Deckle Dashboard Export</span>
           </div>
         </Footer>
       </Page>
@@ -516,10 +516,10 @@ export default function DashboardReport({ data }) {
 ### The API Route
 
 ```ts title="app/api/dashboard-report/route.ts"
-import { DocuForge } from "docuforge";
+import { Deckle } from "deckle";
 import { dashboardReportComponent } from "@/lib/pdf-templates/dashboard-report";
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const df = new Deckle(process.env.DECKLE_API_KEY!);
 
 export async function POST(req: Request) {
   const { title, period, metrics, transactions } = await req.json();
@@ -591,15 +591,15 @@ export default function DashboardPage() {
 }
 ```
 
-When the user clicks "Export Report," the button component sends the metrics and transaction data to the API route, which passes everything to DocuForge via `fromReact()`. DocuForge renders the `@docuforge/react` components into a structured PDF with a branded header, metric cards in a grid, a striped and bordered data table, and a footer -- all generated in under two seconds.
+When the user clicks "Export Report," the button component sends the metrics and transaction data to the API route, which passes everything to Deckle via `fromReact()`. Deckle renders the `@deckle/react` components into a structured PDF with a branded header, metric cards in a grid, a striped and bordered data table, and a footer -- all generated in under two seconds.
 
 ## Going Further
 
-You now have the tools to add PDF export to any React application, from a quick HTML capture to a fully designed document with `@docuforge/react` components. Here are some next steps to explore:
+You now have the tools to add PDF export to any React application, from a quick HTML capture to a fully designed document with `@deckle/react` components. Here are some next steps to explore:
 
-- **[Generating PDFs in Next.js with Server Actions](https://getdocuforge.dev/blog/generate-pdfs-nextjs-docuforge)** -- deeper integration with the App Router and Server Actions pattern.
-- **[Page Layout and Multi-Page Documents](https://getdocuforge.dev/blog/pdf-page-breaks-headers-footers-guide)** -- advanced control over page breaks, headers that repeat across pages, and landscape orientation.
+- **[Generating PDFs in Next.js with Server Actions](https://getdeckle.dev/blog/generate-pdfs-nextjs-deckle)** -- deeper integration with the App Router and Server Actions pattern.
+- **[Page Layout and Multi-Page Documents](https://getdeckle.dev/blog/pdf-page-breaks-headers-footers-guide)** -- advanced control over page breaks, headers that repeat across pages, and landscape orientation.
 - **Batch generation** -- use `df.batch()` to generate hundreds of PDFs asynchronously when you need to export reports for every customer at once.
 - **Webhook notifications** -- pass a `webhook` URL to `df.generate()` or `df.fromReact()` to receive a callback when long-running generations complete.
 
-Check out the [DocuForge documentation](https://getdocuforge.dev/docs) for the full API reference and more examples.
+Check out the [Deckle documentation](https://getdeckle.dev/docs) for the full API reference and more examples.

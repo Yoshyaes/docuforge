@@ -1,4 +1,4 @@
-package docuforge
+package deckle
 
 import (
 	"bytes"
@@ -13,15 +13,15 @@ import (
 )
 
 const (
-	defaultBaseURL = "https://api.getdocuforge.dev"
-	userAgent      = "docuforge-go/0.2.0"
+	defaultBaseURL = "https://api.getdeckle.dev"
+	userAgent      = "deckle-go/0.2.0"
 )
 
 // --------------------------------------------------------------------------
 // Error types
 // --------------------------------------------------------------------------
 
-// APIError represents a generic error response from the DocuForge API.
+// APIError represents a generic error response from the Deckle API.
 type APIError struct {
 	// StatusCode is the HTTP status code returned by the API.
 	StatusCode int
@@ -33,7 +33,7 @@ type APIError struct {
 
 // Error implements the error interface.
 func (e *APIError) Error() string {
-	return fmt.Sprintf("docuforge: %s (status %d, code %s)", e.Message, e.StatusCode, e.Code)
+	return fmt.Sprintf("deckle: %s (status %d, code %s)", e.Message, e.StatusCode, e.Code)
 }
 
 // AuthenticationError is returned when the API key is invalid or missing (HTTP 401).
@@ -44,7 +44,7 @@ type AuthenticationError struct {
 
 // Error implements the error interface.
 func (e *AuthenticationError) Error() string {
-	return fmt.Sprintf("docuforge: authentication failed: %s", e.Message)
+	return fmt.Sprintf("deckle: authentication failed: %s", e.Message)
 }
 
 // RateLimitError is returned when the API rate limit has been exceeded (HTTP 429).
@@ -57,7 +57,7 @@ type RateLimitError struct {
 
 // Error implements the error interface.
 func (e *RateLimitError) Error() string {
-	return fmt.Sprintf("docuforge: rate limit exceeded, retry after %ds: %s", e.RetryAfter, e.Message)
+	return fmt.Sprintf("deckle: rate limit exceeded, retry after %ds: %s", e.RetryAfter, e.Message)
 }
 
 // --------------------------------------------------------------------------
@@ -100,7 +100,7 @@ func WithMaxRetries(n int) Option {
 // Client
 // --------------------------------------------------------------------------
 
-// Client is the DocuForge API client. Create one with NewClient and use its
+// Client is the Deckle API client. Create one with NewClient and use its
 // methods to generate PDFs, manage templates, and query usage.
 type Client struct {
 	apiKey     string
@@ -112,17 +112,17 @@ type Client struct {
 	Templates *Templates
 }
 
-// NewClient creates a new DocuForge API client.
+// NewClient creates a new Deckle API client.
 //
-// The apiKey is required and must be a valid DocuForge API key. Use functional
+// The apiKey is required and must be a valid Deckle API key. Use functional
 // options to customise the base URL, HTTP client, or request timeout.
 //
-//	client := docuforge.NewClient("df_live_...",
-//	    docuforge.WithTimeout(60 * time.Second),
+//	client := deckle.NewClient("dk_live_...",
+//	    deckle.WithTimeout(60 * time.Second),
 //	)
 func NewClient(apiKey string, opts ...Option) *Client {
 	if apiKey == "" {
-		panic("docuforge: API key is required")
+		panic("deckle: API key is required")
 	}
 	c := &Client{
 		apiKey:     apiKey,
@@ -171,7 +171,7 @@ func (c *Client) doRequest(ctx context.Context, method, path string, body interf
 	if body != nil {
 		b, err := json.Marshal(body)
 		if err != nil {
-			return fmt.Errorf("docuforge: failed to marshal request body: %w", err)
+			return fmt.Errorf("deckle: failed to marshal request body: %w", err)
 		}
 		bodyBytes = b
 	}
@@ -185,7 +185,7 @@ func (c *Client) doRequest(ctx context.Context, method, path string, body interf
 
 		req, err := http.NewRequestWithContext(ctx, method, reqURL, reqBody)
 		if err != nil {
-			return fmt.Errorf("docuforge: failed to create request: %w", err)
+			return fmt.Errorf("deckle: failed to create request: %w", err)
 		}
 
 		req.Header.Set("Authorization", "Bearer "+c.apiKey)
@@ -196,7 +196,7 @@ func (c *Client) doRequest(ctx context.Context, method, path string, body interf
 
 		resp, err := c.httpClient.Do(req)
 		if err != nil {
-			lastErr = fmt.Errorf("docuforge: request failed: %w", err)
+			lastErr = fmt.Errorf("deckle: request failed: %w", err)
 			if attempt < c.maxRetries {
 				delay := time.Duration(1<<uint(attempt)) * time.Second
 				select {
@@ -212,7 +212,7 @@ func (c *Client) doRequest(ctx context.Context, method, path string, body interf
 		respBytes, err := io.ReadAll(io.LimitReader(resp.Body, 50*1024*1024))
 		resp.Body.Close()
 		if err != nil {
-			return fmt.Errorf("docuforge: failed to read response body: %w", err)
+			return fmt.Errorf("deckle: failed to read response body: %w", err)
 		}
 
 		if resp.StatusCode >= 400 {
@@ -243,7 +243,7 @@ func (c *Client) doRequest(ctx context.Context, method, path string, body interf
 
 		if dest != nil && len(respBytes) > 0 {
 			if err := json.Unmarshal(respBytes, dest); err != nil {
-				return fmt.Errorf("docuforge: failed to decode response: %w", err)
+				return fmt.Errorf("deckle: failed to decode response: %w", err)
 			}
 		}
 
@@ -298,9 +298,9 @@ func (c *Client) handleErrorResponse(resp *http.Response, body []byte) error {
 
 // Generate creates a PDF from raw HTML.
 //
-//	resp, err := client.Generate(ctx, docuforge.GenerateParams{
+//	resp, err := client.Generate(ctx, deckle.GenerateParams{
 //	    HTML: "<h1>Invoice #1234</h1>",
-//	    Options: &docuforge.PDFOptions{Format: docuforge.FormatPreset("A4")},
+//	    Options: &deckle.PDFOptions{Format: deckle.FormatPreset("A4")},
 //	})
 func (c *Client) Generate(ctx context.Context, params GenerateParams) (*GenerateResponse, error) {
 	var result GenerateResponse
@@ -312,7 +312,7 @@ func (c *Client) Generate(ctx context.Context, params GenerateParams) (*Generate
 
 // FromTemplate generates a PDF by merging data into a saved template.
 //
-//	resp, err := client.FromTemplate(ctx, docuforge.TemplateParams{
+//	resp, err := client.FromTemplate(ctx, deckle.TemplateParams{
 //	    Template: "tmpl_abc123",
 //	    Data:     map[string]interface{}{"name": "Acme Corp", "amount": 500},
 //	})
@@ -329,7 +329,7 @@ func (c *Client) FromTemplate(ctx context.Context, params TemplateParams) (*Gene
 // Pass a JSX/TSX source with a default-exported function component. Props
 // are supplied via the Data field.
 //
-//	resp, err := client.FromReact(ctx, docuforge.ReactParams{
+//	resp, err := client.FromReact(ctx, deckle.ReactParams{
 //	    React: `export default function Invoice({ company }) { return <h1>{company}</h1>; }`,
 //	    Data:  map[string]interface{}{"company": "Acme Corp"},
 //	})
@@ -343,8 +343,8 @@ func (c *Client) FromReact(ctx context.Context, params ReactParams) (*GenerateRe
 
 // Batch submits multiple PDF generation jobs for asynchronous processing.
 //
-//	resp, err := client.Batch(ctx, docuforge.BatchParams{
-//	    Items: []docuforge.BatchItem{
+//	resp, err := client.Batch(ctx, deckle.BatchParams{
+//	    Items: []deckle.BatchItem{
 //	        {HTML: "<h1>Doc 1</h1>"},
 //	        {Template: "tmpl_xxx", Data: map[string]interface{}{"name": "Acme"}},
 //	    },
@@ -515,7 +515,7 @@ func (c *Client) PdfProtect(ctx context.Context, params PdfProtectParams) (*PdfP
 		params.Output = "url"
 	}
 	if params.UserPassword == "" && params.OwnerPassword == "" {
-		return nil, fmt.Errorf("docuforge: PdfProtect requires UserPassword or OwnerPassword")
+		return nil, fmt.Errorf("deckle: PdfProtect requires UserPassword or OwnerPassword")
 	}
 	var result PdfProtectResponse
 	if err := c.doRequest(ctx, http.MethodPost, "/v1/pdf/protect", params, &result); err != nil {
@@ -571,7 +571,7 @@ func (c *Client) UnpublishMarketplaceTemplate(ctx context.Context, id string) er
 // (3 independent reports).
 func (c *Client) ReportMarketplaceTemplate(ctx context.Context, id string, params MarketplaceReportParams) (*MarketplaceReportResponse, error) {
 	if params.Reason == "" {
-		return nil, fmt.Errorf("docuforge: ReportMarketplaceTemplate requires Reason")
+		return nil, fmt.Errorf("deckle: ReportMarketplaceTemplate requires Reason")
 	}
 	var result MarketplaceReportResponse
 	if err := c.doRequest(ctx, http.MethodPost, "/v1/marketplace/"+id+"/report", params, &result); err != nil {

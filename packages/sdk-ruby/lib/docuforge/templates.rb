@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module DocuForge
+module Deckle
   class Templates
     def initialize(client)
       @client = client

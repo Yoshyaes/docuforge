@@ -1,16 +1,16 @@
 ---
 title: Next.js Guide
-description: Generate PDFs in your Next.js app with DocuForge.
+description: Generate PDFs in your Next.js app with Deckle.
 ---
 
 # Generate PDFs in Next.js
 
-This guide shows you how to add PDF generation to a Next.js application using DocuForge.
+This guide shows you how to add PDF generation to a Next.js application using Deckle.
 
 ## 1. Install the SDK
 
 ```bash
-npm install docuforge
+npm install deckle
 ```
 
 ## 2. Set Up Environment Variables
@@ -18,7 +18,7 @@ npm install docuforge
 Add your API key to `.env.local`:
 
 ```bash
-DOCUFORGE_API_KEY=df_live_sk_...
+DECKLE_API_KEY=dk_live_sk_...
 ```
 
 ## 3. Create an API Route
@@ -27,10 +27,10 @@ Create a server-side API route to generate PDFs. Never expose your API key to th
 
 ```typescript
 // app/api/generate-pdf/route.ts
-import { DocuForge } from 'docuforge';
+import { Deckle } from 'deckle';
 import { NextResponse } from 'next/server';
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const df = new Deckle(process.env.DECKLE_API_KEY!);
 
 export async function POST(request: Request) {
   const { html, options } = await request.json();
@@ -98,10 +98,10 @@ For production invoices, use templates:
 
 ```typescript
 // app/api/generate-invoice/route.ts
-import { DocuForge } from 'docuforge';
+import { Deckle } from 'deckle';
 import { NextResponse } from 'next/server';
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const df = new Deckle(process.env.DECKLE_API_KEY!);
 
 export async function POST(request: Request) {
   const invoiceData = await request.json();

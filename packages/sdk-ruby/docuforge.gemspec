@@ -1,21 +1,21 @@
 # frozen_string_literal: true
 
-require_relative "lib/docuforge/version"
+require_relative "lib/deckle/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "docuforge"
-  spec.version = DocuForge::VERSION
-  spec.authors = ["DocuForge"]
-  spec.email = ["support@docuforge.dev"]
+  spec.name = "deckle"
+  spec.version = Deckle::VERSION
+  spec.authors = ["Deckle"]
+  spec.email = ["support@deckle.dev"]
 
-  spec.summary = "Ruby SDK for the DocuForge PDF generation API"
-  spec.description = "Generate PDFs from HTML, templates, and React components using the DocuForge API."
-  spec.homepage = "https://docuforge.dev"
+  spec.summary = "Ruby SDK for the Deckle PDF generation API"
+  spec.description = "Generate PDFs from HTML, templates, and React components using the Deckle API."
+  spec.homepage = "https://deckle.dev"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/docuforge/docuforge-ruby"
+  spec.metadata["source_code_uri"] = "https://github.com/Yoshyaes/deckle/deckle-ruby"
 
   spec.files = Dir["lib/**/*.rb", "LICENSE", "README.md"]
   spec.test_files = Dir["spec/**/*.rb"]

@@ -1,4 +1,4 @@
-# Self-hosted DocuForge stack
+# Self-hosted Deckle stack
 # Usage: docker compose -f docker-compose.selfhost.yml up -d
 
 services:
@@ -10,7 +10,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://docuforge:${POSTGRES_PASSWORD:-please_change_me}@postgres:5432/docuforge
+      - DATABASE_URL=postgresql://deckle:${POSTGRES_PASSWORD:-please_change_me}@postgres:5432/deckle
       - REDIS_URL=redis://redis:6379
       - NODE_ENV=production
       - PORT=3000
@@ -36,7 +36,7 @@ services:
       context: .
       dockerfile: Dockerfile.migrate
     environment:
-      - DATABASE_URL=postgresql://docuforge:${POSTGRES_PASSWORD:-please_change_me}@postgres:5432/docuforge
+      - DATABASE_URL=postgresql://deckle:${POSTGRES_PASSWORD:-please_change_me}@postgres:5432/deckle
     depends_on:
       postgres:
         condition: service_healthy
@@ -51,13 +51,13 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: docuforge
-      POSTGRES_USER: docuforge
+      POSTGRES_DB: deckle
+      POSTGRES_USER: deckle
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-please_change_me}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U docuforge"]
+      test: ["CMD-SHELL", "pg_isready -U deckle"]
       interval: 5s
       timeout: 5s
       retries: 5

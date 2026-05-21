@@ -13,7 +13,7 @@ function getFontUrlSecret(): string {
   // Reuse WEBHOOK_SIGNING_SECRET so we don't introduce yet another
   // env var. In dev (no secret set) we fall back to a stable but
   // process-local secret so dev rendering still works.
-  return process.env.WEBHOOK_SIGNING_SECRET || 'docuforge-dev-font-secret';
+  return process.env.WEBHOOK_SIGNING_SECRET || 'deckle-dev-font-secret';
 }
 
 function signFontUrlPath(path: string, expires: string): string {
@@ -192,7 +192,7 @@ async function getS3Uploader() {
         secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
       },
     });
-    bucket = process.env.R2_BUCKET_NAME || 'docuforge-pdfs';
+    bucket = process.env.R2_BUCKET_NAME || 'deckle-pdfs';
   } else if (provider === 's3') {
     client = new S3Client({
       region: process.env.AWS_REGION || 'us-east-1',
@@ -201,7 +201,7 @@ async function getS3Uploader() {
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
       },
     });
-    bucket = process.env.S3_BUCKET_NAME || 'docuforge-pdfs';
+    bucket = process.env.S3_BUCKET_NAME || 'deckle-pdfs';
   } else {
     client = new S3Client({
       region: 'auto',
@@ -211,7 +211,7 @@ async function getS3Uploader() {
         secretAccessKey: process.env.GOOGLE_SECRET_ACCESS_KEY!,
       },
     });
-    bucket = process.env.GCS_BUCKET_NAME || 'docuforge-pdfs';
+    bucket = process.env.GCS_BUCKET_NAME || 'deckle-pdfs';
   }
 
   return {

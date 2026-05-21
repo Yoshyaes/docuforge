@@ -1,4 +1,4 @@
-﻿# DocuForge
+# Deckle
 
 **PDF generation API for developers. HTML in, pixel-perfect PDF out.**
 
@@ -7,9 +7,9 @@ Generate pixel-perfect PDFs from HTML or reusable templates. Full CSS support, s
 ## Quick Start
 
 ```typescript
-import { DocuForge } from 'docuforge';
+import { Deckle } from 'deckle';
 
-const df = new DocuForge('df_live_...');
+const df = new Deckle('dk_live_...');
 
 const pdf = await df.generate({
   html: '<h1>Invoice #1234</h1><p>Amount: $500</p>',
@@ -17,7 +17,7 @@ const pdf = await df.generate({
 });
 
 console.log(pdf.url);
-// â†’ https://cdn.getdocuforge.dev/gen_abc123.pdf
+// â†’ https://cdn.getdeckle.dev/gen_abc123.pdf
 ```
 
 ## Features
@@ -32,13 +32,13 @@ console.log(pdf.url);
 ## Project Structure
 
 ```
-docuforge/
+deckle/
 â”œâ”€â”€ apps/
 â”‚   â”œâ”€â”€ api/          # Hono API server (Playwright rendering)
 â”‚   â””â”€â”€ dashboard/    # Next.js dashboard (Clerk auth)
 â”œâ”€â”€ packages/
-â”‚   â”œâ”€â”€ sdk-typescript/   # npm: docuforge
-â”‚   â””â”€â”€ sdk-python/       # pip: docuforge
+â”‚   â”œâ”€â”€ sdk-typescript/   # npm: deckle
+â”‚   â””â”€â”€ sdk-python/       # pip: deckle
 â”œâ”€â”€ docs/             # Mintlify documentation
 â””â”€â”€ public/           # llms.txt, Cursor rules
 ```
@@ -81,16 +81,16 @@ For local development, the API server falls back to local filesystem storage whe
 ### TypeScript
 
 ```bash
-npm install docuforge
+npm install deckle
 ```
 
 ### Python
 
 ```bash
-pip install docuforge
+pip install deckle
 ```
 
-See the [SDK documentation](https://getdocuforge.dev/docs/quickstart) for full usage details.
+See the [SDK documentation](https://getdeckle.dev/docs/quickstart) for full usage details.
 
 ## Deployment
 

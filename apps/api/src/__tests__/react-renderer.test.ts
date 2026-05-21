@@ -3,16 +3,16 @@ import { renderReactToHtml } from '../services/react-renderer.js';
 import { ValidationError } from '../lib/errors.js';
 
 describe('React renderer (kill switch)', () => {
-  it('throws ValidationError when DOCUFORGE_DISABLE_REACT_RENDERER=true', () => {
-    const prev = process.env.DOCUFORGE_DISABLE_REACT_RENDERER;
-    process.env.DOCUFORGE_DISABLE_REACT_RENDERER = 'true';
+  it('throws ValidationError when DECKLE_DISABLE_REACT_RENDERER=true', () => {
+    const prev = process.env.DECKLE_DISABLE_REACT_RENDERER;
+    process.env.DECKLE_DISABLE_REACT_RENDERER = 'true';
     try {
       const source = `export default function Hello() { return <div>hi</div>; }`;
       expect(() => renderReactToHtml(source)).toThrow(ValidationError);
       expect(() => renderReactToHtml(source)).toThrow(/disabled by configuration/);
     } finally {
-      if (prev === undefined) delete process.env.DOCUFORGE_DISABLE_REACT_RENDERER;
-      else process.env.DOCUFORGE_DISABLE_REACT_RENDERER = prev;
+      if (prev === undefined) delete process.env.DECKLE_DISABLE_REACT_RENDERER;
+      else process.env.DECKLE_DISABLE_REACT_RENDERER = prev;
     }
   });
 });
@@ -20,10 +20,10 @@ describe('React renderer (kill switch)', () => {
 describe('React renderer (isolated-vm sandbox)', () => {
   beforeAll(() => {
     // Ensure kill switch is off so the sandbox runs.
-    delete process.env.DOCUFORGE_DISABLE_REACT_RENDERER;
+    delete process.env.DECKLE_DISABLE_REACT_RENDERER;
   });
   afterAll(() => {
-    delete process.env.DOCUFORGE_DISABLE_REACT_RENDERER;
+    delete process.env.DECKLE_DISABLE_REACT_RENDERER;
   });
 
   it('renders a valid component to HTML', () => {
@@ -121,7 +121,7 @@ describe('React renderer (isolated-vm sandbox)', () => {
 
 describe('React renderer sandbox isolation', () => {
   beforeAll(() => {
-    delete process.env.DOCUFORGE_DISABLE_REACT_RENDERER;
+    delete process.env.DECKLE_DISABLE_REACT_RENDERER;
   });
 
   it('process is undefined inside the isolate', () => {

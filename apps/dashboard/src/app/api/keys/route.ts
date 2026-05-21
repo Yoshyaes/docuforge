@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}));
   const name = body.name || 'Default';
 
-  const rawKey = `df_live_${nanoid(32)}`;
+  const rawKey = `dk_live_${nanoid(32)}`;
   // bcrypt cost 12 matches the API key path in apps/api/src/services/apikeys.ts
   const keyHash = await bcrypt.hash(rawKey, 12);
   const keyPrefix = rawKey.slice(0, 16);

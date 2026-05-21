@@ -1,15 +1,15 @@
 ---
-title: "DocuForge vs DocRaptor"
-description: "Compare DocuForge and DocRaptor for PDF generation"
+title: "Deckle vs DocRaptor"
+description: "Compare Deckle and DocRaptor for PDF generation"
 ---
 
-# DocuForge vs DocRaptor
+# Deckle vs DocRaptor
 
-DocRaptor is one of the longest-running PDF generation APIs, powered by the PrinceXML engine. DocuForge uses headless Chromium for rendering, giving you full CSS3 support with a modern developer experience.
+DocRaptor is one of the longest-running PDF generation APIs, powered by the PrinceXML engine. Deckle uses headless Chromium for rendering, giving you full CSS3 support with a modern developer experience.
 
 ## Feature Comparison
 
-| Feature | DocuForge | DocRaptor |
+| Feature | Deckle | DocRaptor |
 |---------|-----------|-----------|
 | **Rendering engine** | Chromium (Playwright) | PrinceXML |
 | **CSS support** | Full CSS3 (Grid, Flexbox, variables) | CSS3 (some limitations with Grid) |
@@ -27,7 +27,7 @@ DocRaptor is one of the longest-running PDF generation APIs, powered by the Prin
 
 ## Pricing Comparison
 
-| Volume | DocuForge | DocRaptor |
+| Volume | Deckle | DocRaptor |
 |--------|-----------|-----------|
 | 1,000 PDFs/mo | **Free** | $15/mo |
 | 5,000 PDFs/mo | **$29/mo** | $59/mo |
@@ -51,11 +51,11 @@ const response = await client.createDoc({
 });
 ```
 
-### DocuForge
+### Deckle
 
 ```typescript
-import { DocuForge } from 'docuforge';
-const df = new DocuForge('df_live_...');
+import { Deckle } from 'deckle';
+const df = new Deckle('dk_live_...');
 
 const pdf = await df.generate({
   html: htmlContent,
@@ -71,7 +71,7 @@ console.log(pdf.url); // CDN-hosted PDF URL
 - You're already using DocRaptor and migration cost is high
 - You need PDF/A compliance (DocRaptor has mature support)
 
-## When to Choose DocuForge
+## When to Choose Deckle
 
 - You want modern CSS3 support (Grid, Flexbox, CSS variables)
 - You need React-to-PDF or template engine support

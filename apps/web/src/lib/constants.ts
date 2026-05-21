@@ -61,9 +61,9 @@ export const features = [
 ];
 
 export const codeExamples = {
-  html: `import { DocuForge } from 'docuforge';
+  html: `import { Deckle } from 'deckle';
 
-const client = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const client = new Deckle(process.env.DECKLE_API_KEY!);
 
 const pdf = await client.generate({
   html: \`
@@ -78,11 +78,11 @@ const pdf = await client.generate({
   options: { format: 'A4', margin: '20mm' }
 });
 
-console.log(pdf.url); // https://cdn.getdocuforge.dev/gen_abc123.pdf`,
+console.log(pdf.url); // https://cdn.getdeckle.dev/gen_abc123.pdf`,
 
-  react: `import { DocuForge } from 'docuforge';
+  react: `import { Deckle } from 'deckle';
 
-const client = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const client = new Deckle(process.env.DECKLE_API_KEY!);
 
 // Pass a JSX string with a default export. Props arrive via \`data\`.
 const pdf = await client.fromReact({
@@ -115,9 +115,9 @@ const pdf = await client.fromReact({
 
 console.log(pdf.url);`,
 
-  template: `import { DocuForge } from 'docuforge';
+  template: `import { Deckle } from 'deckle';
 
-const client = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const client = new Deckle(process.env.DECKLE_API_KEY!);
 
 // Use a stored template with dynamic data
 const pdf = await client.fromTemplate({
@@ -135,11 +135,11 @@ const pdf = await client.fromTemplate({
 
 console.log(pdf.url);`,
 
-  curl: `curl -X POST https://api.getdocuforge.dev/v1/generate \\
-  -H "Authorization: Bearer df_live_..." \\
+  curl: `curl -X POST https://api.getdeckle.dev/v1/generate \\
+  -H "Authorization: Bearer dk_live_..." \\
   -H "Content-Type: application/json" \\
   -d '{
-    "html": "<h1>Hello from DocuForge</h1><p>This is a PDF.</p>",
+    "html": "<h1>Hello from Deckle</h1><p>This is a PDF.</p>",
     "options": {
       "format": "A4",
       "margin": "20mm",
@@ -151,7 +151,7 @@ console.log(pdf.url);`,
 # {
 #   "id": "gen_abc123",
 #   "status": "completed",
-#   "url": "https://cdn.getdocuforge.dev/gen_abc123.pdf",
+#   "url": "https://cdn.getdeckle.dev/gen_abc123.pdf",
 #   "pages": 1,
 #   "file_size": 24531,
 #   "generation_time_ms": 342
@@ -159,22 +159,22 @@ console.log(pdf.url);`,
 };
 
 export const sdks = [
-  { name: 'TypeScript', package: 'npm i docuforge', color: '#3178C6' },
-  { name: 'Python', package: 'pip install docuforge', color: '#3776AB' },
-  { name: 'Go', package: 'go get github.com/docuforge/docuforge-go', color: '#00ADD8' },
-  { name: 'Ruby', package: 'gem install docuforge', color: '#CC342D' },
-  { name: 'React', package: 'npm i @docuforge/react-pdf', color: '#61DAFB' },
+  { name: 'TypeScript', package: 'npm i deckle', color: '#3178C6' },
+  { name: 'Python', package: 'pip install deckle', color: '#3776AB' },
+  { name: 'Go', package: 'go get github.com/Yoshyaes/deckle/packages/sdk-go', color: '#00ADD8' },
+  { name: 'Ruby', package: 'gem install deckle', color: '#CC342D' },
+  { name: 'React', package: 'npm i @deckle/react-pdf', color: '#61DAFB' },
 ];
 
 export const comparisonRows = [
-  { feature: 'Setup Time', docuforge: '5 minutes', puppeteer: '30+ minutes', wkhtmltopdf: '15 minutes', prince: '1 hour' },
-  { feature: 'Maintenance', docuforge: 'Zero', puppeteer: 'High (browser updates)', wkhtmltopdf: 'Medium', prince: 'Low' },
-  { feature: 'React Support', docuforge: 'Yes', puppeteer: 'Manual', wkhtmltopdf: 'No', prince: 'No' },
-  { feature: 'Template Engine', docuforge: 'Built-in', puppeteer: 'DIY', wkhtmltopdf: 'No', prince: 'No' },
-  { feature: 'Batch Processing', docuforge: 'Built-in queue', puppeteer: 'DIY', wkhtmltopdf: 'No', prince: 'No' },
-  { feature: 'PDF Tools (merge, split)', docuforge: 'Yes', puppeteer: 'No', wkhtmltopdf: 'No', prince: 'No' },
-  { feature: 'Multi-language SDKs', docuforge: 'TS, Python, Go, Ruby', puppeteer: 'JS only', wkhtmltopdf: 'CLI', prince: 'CLI + Java' },
-  { feature: 'Self-hostable', docuforge: 'Yes', puppeteer: 'Yes', wkhtmltopdf: 'Yes', prince: 'Yes' },
+  { feature: 'Setup Time', deckle: '5 minutes', puppeteer: '30+ minutes', wkhtmltopdf: '15 minutes', prince: '1 hour' },
+  { feature: 'Maintenance', deckle: 'Zero', puppeteer: 'High (browser updates)', wkhtmltopdf: 'Medium', prince: 'Low' },
+  { feature: 'React Support', deckle: 'Yes', puppeteer: 'Manual', wkhtmltopdf: 'No', prince: 'No' },
+  { feature: 'Template Engine', deckle: 'Built-in', puppeteer: 'DIY', wkhtmltopdf: 'No', prince: 'No' },
+  { feature: 'Batch Processing', deckle: 'Built-in queue', puppeteer: 'DIY', wkhtmltopdf: 'No', prince: 'No' },
+  { feature: 'PDF Tools (merge, split)', deckle: 'Yes', puppeteer: 'No', wkhtmltopdf: 'No', prince: 'No' },
+  { feature: 'Multi-language SDKs', deckle: 'TS, Python, Go, Ruby', puppeteer: 'JS only', wkhtmltopdf: 'CLI', prince: 'CLI + Java' },
+  { feature: 'Self-hostable', deckle: 'Yes', puppeteer: 'Yes', wkhtmltopdf: 'Yes', prince: 'Yes' },
 ];
 
 export const testimonials: Array<{

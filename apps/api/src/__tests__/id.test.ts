@@ -5,7 +5,7 @@ describe('ID generation', () => {
   it('generates IDs with correct prefixes', () => {
     expect(genId()).toMatch(/^gen_/);
     expect(tmplId()).toMatch(/^tmpl_/);
-    expect(apiKeyId()).toMatch(/^df_live_/);
+    expect(apiKeyId()).toMatch(/^dk_live_/);
     expect(userId()).toMatch(/^usr_/);
   });
 
@@ -19,9 +19,9 @@ describe('ID generation', () => {
     expect(id).toHaveLength(5 + 16); // prefix + nanoid
   });
 
-  it('apiKeyId is 40 chars (df_live_ prefix + 32 chars)', () => {
+  it('apiKeyId is 40 chars (dk_live_ prefix + 32 chars)', () => {
     const key = apiKeyId();
-    expect(key.startsWith('df_live_')).toBe(true);
-    expect(key.length).toBe(8 + 32); // df_live_ = 8 chars + 32 nanoid
+    expect(key.startsWith('dk_live_')).toBe(true);
+    expect(key.length).toBe(8 + 32); // dk_live_ = 8 chars + 32 nanoid
   });
 });

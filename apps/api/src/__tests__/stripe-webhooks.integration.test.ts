@@ -2,7 +2,7 @@
  * Stripe webhook integration tests.
  *
  * The unit tests in `stripe-dedup.test.ts` mock Redis and exercise pure
- * functions. These ones spin up a real Postgres (docuforge_test) and
+ * functions. These ones spin up a real Postgres (deckle_test) and
  * call `handleWebhookEvent` end-to-end so the transactions, FK
  * cascades, and ON CONFLICT clauses are actually exercised.
  *

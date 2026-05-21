@@ -23,20 +23,20 @@ export async function makePdfA(buffer: Buffer, options?: {
 
   // Set document metadata
   doc.setTitle(options?.title || doc.getTitle() || 'Document');
-  doc.setAuthor(options?.author || doc.getAuthor() || 'DocuForge');
+  doc.setAuthor(options?.author || doc.getAuthor() || 'Deckle');
   doc.setSubject(options?.subject || doc.getSubject() || '');
-  doc.setCreator('DocuForge API');
-  doc.setProducer('DocuForge PDF/A Generator');
+  doc.setCreator('Deckle API');
+  doc.setProducer('Deckle PDF/A Generator');
   doc.setCreationDate(new Date());
   doc.setModificationDate(new Date());
 
   // Add XMP metadata for PDF/A-1b conformance
   const xmpMetadata = generatePdfAXmp({
     title: doc.getTitle() || 'Document',
-    author: doc.getAuthor() || 'DocuForge',
+    author: doc.getAuthor() || 'Deckle',
     subject: doc.getSubject() || '',
-    creator: 'DocuForge API',
-    producer: 'DocuForge PDF/A Generator',
+    creator: 'Deckle API',
+    producer: 'Deckle PDF/A Generator',
   });
 
   // Attach XMP metadata stream to the document catalog

@@ -60,7 +60,7 @@ const TopNav = ({ currentView, setCurrentView }) => (
       <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <div style={{ width: 24, height: 24, borderRadius: "6px", background: `linear-gradient(135deg, ${colors.accent}, #EA580C)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "13px", fontWeight: 800, color: "#fff" }}>D</div>
-          <span style={{ fontSize: "15px", fontWeight: 700, color: colors.text, letterSpacing: "-0.3px" }}>DocuForge</span>
+          <span style={{ fontSize: "15px", fontWeight: 700, color: colors.text, letterSpacing: "-0.3px" }}>Deckle</span>
         </div>
         <div style={{ display: "flex", background: colors.surface, borderRadius: "8px", padding: "3px", border: `1px solid ${colors.borderSubtle}` }}>
           {[{ id: VIEWS.LIBRARY, label: "Component Library" }, { id: VIEWS.PRODUCT, label: "Product Landing" }, { id: VIEWS.DASHBOARD, label: "Dashboard" }, { id: VIEWS.DOCS, label: "Docs" }].map(tab => (
@@ -419,9 +419,9 @@ const ProductLandingView = () => (
     </section>
 
     <section style={{ padding: "0 32px 80px", maxWidth: 720, margin: "0 auto" }}>
-      <CodeBlock title="invoice.ts" code={`${IM} { DocuForge } from '${PKG}';
+      <CodeBlock title="invoice.ts" code={`${IM} { Deckle } from '${PKG}';
 
-const df = new DocuForge('df_live_...');
+const df = new Deckle('dk_live_...');
 
 const pdf = await df.generate({
   html: invoiceHTML,
@@ -433,7 +433,7 @@ const pdf = await df.generate({
   }
 });
 
-// pdf.url \u2192 https://cdn.getdocuforge.dev/gen_k8x92m.pdf
+// pdf.url \u2192 https://cdn.getdeckle.dev/gen_k8x92m.pdf
 // pdf.pages \u2192 2
 // pdf.generation_time_ms \u2192 1,240`} />
     </section>
@@ -484,14 +484,14 @@ const pdf = await df.generate({
       <Badge color={colors.purple}>AI-Native</Badge>
       <h2 style={{ fontSize: "28px", fontWeight: 700, color: colors.text, letterSpacing: "-0.5px", margin: "16px 0 12px" }}>Built for the vibe coding era</h2>
       <p style={{ fontSize: "15px", color: colors.textMuted, lineHeight: 1.6, maxWidth: 500, margin: "0 auto 32px" }}>
-        MCP server for Cursor & Claude Code. llms.txt for every AI model. Your AI assistant already knows how to use DocuForge.
+        MCP server for Cursor & Claude Code. llms.txt for every AI model. Your AI assistant already knows how to use Deckle.
       </p>
       <CodeBlock title="Cursor / Claude Code" code={`> "Generate an invoice PDF for $1,500 to Acme Corp
    for 10 hours of consulting at $150/hr"
 
-\u2713 Using DocuForge MCP server...
+\u2713 Using Deckle MCP server...
 \u2713 Template: invoice_standard
-\u2713 Generated: https://cdn.getdocuforge.dev/gen_m3kx9.pdf (2 pages, 1.2s)`} compact />
+\u2713 Generated: https://cdn.getdeckle.dev/gen_m3kx9.pdf (2 pages, 1.2s)`} compact />
     </section>
   </div>
 );
@@ -563,7 +563,7 @@ const DashboardView = () => {
         <div style={{ background: colors.surface, border: `1px solid ${colors.border}`, borderRadius: "14px", padding: "20px", marginTop: "24px" }}>
           <div style={{ fontSize: "14px", fontWeight: 600, color: colors.text, marginBottom: "12px" }}>Your API Key</div>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", background: "#0D0D0F", border: `1px solid ${colors.border}`, borderRadius: "8px", padding: "10px 16px", fontFamily: "'JetBrains Mono', monospace", fontSize: "13px" }}>
-            <span style={{ color: colors.textMuted, flex: 1 }}>df_live_sk_\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022k8x9</span>
+            <span style={{ color: colors.textMuted, flex: 1 }}>dk_live_sk_\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022k8x9</span>
             <span style={{ color: colors.textDim, cursor: "pointer" }}>{"\u{1F4CB}"}</span>
           </div>
         </div>
@@ -594,7 +594,7 @@ const DocsView = () => (
       <Badge>Docs</Badge>
       <h1 style={{ fontSize: "32px", fontWeight: 800, color: colors.text, letterSpacing: "-1px", margin: "16px 0 12px" }}>Introduction</h1>
       <p style={{ fontSize: "15px", color: colors.textMuted, lineHeight: 1.7, margin: "0 0 28px" }}>
-        DocuForge is a PDF generation API for developers. Send HTML, React components, or template data \u2014 get pixel-perfect PDFs back. No headless browsers to manage, no rendering bugs to chase.
+        Deckle is a PDF generation API for developers. Send HTML, React components, or template data \u2014 get pixel-perfect PDFs back. No headless browsers to manage, no rendering bugs to chase.
       </p>
 
       <h2 style={{ fontSize: "18px", fontWeight: 700, color: colors.text, margin: "0 0 16px", paddingTop: "8px", borderTop: `1px solid ${colors.borderSubtle}` }}>Quick Start</h2>
@@ -604,20 +604,20 @@ const DocsView = () => (
       </div>
       <div style={{ marginBottom: "20px" }}>
         <div style={{ fontSize: "13px", color: colors.textMuted, marginBottom: "8px" }}>2. Generate your first PDF</div>
-        <CodeBlock title="generate.ts" code={`${IM} { DocuForge } from '${PKG}';
+        <CodeBlock title="generate.ts" code={`${IM} { Deckle } from '${PKG}';
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY);
+const df = new Deckle(process.env.DECKLE_API_KEY);
 
 const pdf = await df.generate({
   html: \`
-    <h1>Hello from DocuForge</h1>
+    <h1>Hello from Deckle</h1>
     <p>This took 30 seconds, not 3 days.</p>
   \`,
   options: { format: 'A4' }
 });
 
 console.log(pdf.url);
-// \u2192 https://cdn.getdocuforge.dev/gen_abc123.pdf`} />
+// \u2192 https://cdn.getdeckle.dev/gen_abc123.pdf`} />
       </div>
       <div style={{ marginBottom: "20px" }}>
         <div style={{ fontSize: "13px", color: colors.textMuted, marginBottom: "8px" }}>3. Use with templates</div>
@@ -671,7 +671,7 @@ console.log(pdf.url);
 );
 
 // ─── MAIN ───
-export default function DocuForgeMockups() {
+export default function DeckleMockups() {
   const [currentView, setCurrentView] = useState(VIEWS.LIBRARY);
   return (
     <div style={{ fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", background: colors.bg, color: colors.text, minHeight: "100vh" }}>

@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 /**
- * DocuForge MCP Server
+ * Deckle MCP Server
  *
- * Exposes DocuForge PDF generation tools to AI agents via the
+ * Exposes Deckle PDF generation tools to AI agents via the
  * Model Context Protocol (MCP). Works with Claude Desktop, Cursor,
  * and any MCP-compatible client.
  *
  * Environment variables:
- *   DOCUFORGE_API_KEY  - Your DocuForge API key (required)
- *   DOCUFORGE_API_URL  - API base URL (default: https://api.getdocuforge.dev)
+ *   DECKLE_API_KEY  - Your Deckle API key (required)
+ *   DECKLE_API_URL  - API base URL (default: https://api.getdeckle.dev)
  */
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 
-const API_KEY = process.env.DOCUFORGE_API_KEY;
-const API_URL = (process.env.DOCUFORGE_API_URL || 'https://api.getdocuforge.dev').replace(/\/$/, '');
+const API_KEY = process.env.DECKLE_API_KEY;
+const API_URL = (process.env.DECKLE_API_URL || 'https://api.getdeckle.dev').replace(/\/$/, '');
 
 async function apiRequest(method: string, path: string, body?: unknown) {
   const controller = new AbortController();
@@ -27,7 +27,7 @@ async function apiRequest(method: string, path: string, body?: unknown) {
       headers: {
         Authorization: `Bearer ${API_KEY}`,
         'Content-Type': 'application/json',
-        'User-Agent': 'docuforge-mcp/0.1.0',
+        'User-Agent': 'deckle-mcp/0.1.0',
       },
       body: body ? JSON.stringify(body) : undefined,
       signal: controller.signal,
@@ -47,7 +47,7 @@ async function apiRequest(method: string, path: string, body?: unknown) {
 }
 
 const server = new McpServer({
-  name: 'docuforge',
+  name: 'deckle',
   version: '0.1.0',
 });
 
@@ -175,7 +175,7 @@ server.tool(
 // Tool: List templates
 server.tool(
   'list_templates',
-  'List all saved PDF templates in your DocuForge account.',
+  'List all saved PDF templates in your Deckle account.',
   {},
   async () => {
     try {
@@ -239,7 +239,7 @@ server.tool(
 // Tool: Get usage stats
 server.tool(
   'get_usage',
-  'Get your DocuForge API usage statistics for the current billing period.',
+  'Get your Deckle API usage statistics for the current billing period.',
   {},
   async () => {
     try {
@@ -293,7 +293,7 @@ server.tool(
 // Start the server
 async function main() {
   if (!API_KEY) {
-    console.error('Error: DOCUFORGE_API_KEY environment variable is required.');
+    console.error('Error: DECKLE_API_KEY environment variable is required.');
     console.error('Set it in your MCP client config or shell environment.');
     process.exit(1);
   }
@@ -302,7 +302,7 @@ async function main() {
   try {
     await apiRequest('GET', '/health');
   } catch (err) {
-    console.warn(`Warning: DocuForge API health check failed (${(err as Error).message}). Continuing anyway — the API may not be reachable yet.`);
+    console.warn(`Warning: Deckle API health check failed (${(err as Error).message}). Continuing anyway — the API may not be reachable yet.`);
   }
 
   const transport = new StdioServerTransport();

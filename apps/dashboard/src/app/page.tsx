@@ -68,7 +68,7 @@ export default async function DashboardPage() {
             <div className="absolute top-0 right-0 w-48 h-48 rounded-full bg-accent/10 blur-3xl -mr-24 -mt-24 pointer-events-none" />
             <div className="relative">
               <div className="text-[11px] uppercase tracking-widest text-accent font-bold mb-2">
-                Welcome to DocuForge
+                Welcome to Deckle
               </div>
               <h2 className="text-[28px] font-bold text-text-primary tracking-tight leading-tight mb-2">
                 Generate your first PDF

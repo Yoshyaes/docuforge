@@ -9,11 +9,11 @@ Templates let you design reusable PDF layouts with variable slots. Use Handlebar
 
 ## Create a Template
 
-`POST https://api.getdocuforge.dev/v1/templates`
+`POST https://api.getdeckle.dev/v1/templates`
 
 ```bash
-curl -X POST https://api.getdocuforge.dev/v1/templates \
-  -H "Authorization: Bearer df_live_sk_..." \
+curl -X POST https://api.getdeckle.dev/v1/templates \
+  -H "Authorization: Bearer dk_live_sk_..." \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Invoice",
@@ -38,21 +38,21 @@ curl -X POST https://api.getdocuforge.dev/v1/templates \
 
 ## List Templates
 
-`GET https://api.getdocuforge.dev/v1/templates`
+`GET https://api.getdeckle.dev/v1/templates`
 
 ## Get a Template
 
-`GET https://api.getdocuforge.dev/v1/templates/:id`
+`GET https://api.getdeckle.dev/v1/templates/:id`
 
 ## Update a Template
 
-`PUT https://api.getdocuforge.dev/v1/templates/:id`
+`PUT https://api.getdeckle.dev/v1/templates/:id`
 
 Updates increment the `version` field when `html_content` changes.
 
 ## Delete a Template
 
-`DELETE https://api.getdocuforge.dev/v1/templates/:id`
+`DELETE https://api.getdeckle.dev/v1/templates/:id`
 
 ## Template Syntax
 

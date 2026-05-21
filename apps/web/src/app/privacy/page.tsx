@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { SectionWrapper } from '@/components/ui/section-wrapper';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — DocuForge',
-  description: 'How DocuForge handles your data.',
+  title: 'Privacy Policy — Deckle',
+  description: 'How Deckle handles your data.',
 };
 
 const LAST_UPDATED = '2026-05-20';

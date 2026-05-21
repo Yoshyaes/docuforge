@@ -116,7 +116,7 @@ describe('Auth middleware', () => {
     expect(res.status).toBe(401);
   });
 
-  it('returns 401 when token does not start with df_live_', async () => {
+  it('returns 401 when token does not start with dk_live_', async () => {
     const app = createApp();
     const res = await app.request('/test', {
       headers: { Authorization: 'Bearer invalid_token_here' },
@@ -128,7 +128,7 @@ describe('Auth middleware', () => {
     (mockLimit as any)._returnValue = Promise.resolve([]);
     const app = createApp();
     const res = await app.request('/test', {
-      headers: { Authorization: 'Bearer df_live_abcdefgh12345678rest' },
+      headers: { Authorization: 'Bearer dk_live_abcdefgh12345678rest' },
     });
     expect(res.status).toBe(401);
   });
@@ -141,7 +141,7 @@ describe('Auth middleware', () => {
 
     const app = createApp();
     const res = await app.request('/test', {
-      headers: { Authorization: 'Bearer df_live_abcdefgh12345678rest' },
+      headers: { Authorization: 'Bearer dk_live_abcdefgh12345678rest' },
     });
     expect(res.status).toBe(401);
   });
@@ -154,7 +154,7 @@ describe('Auth middleware', () => {
 
     const app = createApp();
     const res = await app.request('/test', {
-      headers: { Authorization: 'Bearer df_live_abcdefgh12345678rest' },
+      headers: { Authorization: 'Bearer dk_live_abcdefgh12345678rest' },
     });
     expect(res.status).toBe(200);
     const body = await res.json();

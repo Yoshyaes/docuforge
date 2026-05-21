@@ -17,7 +17,7 @@ export interface DocumentProps {
  * Renders a full HTML structure (`<html>`, `<head>`, `<body>`) that wraps the
  * provided children. Includes charset and viewport meta tags, an optional
  * `<title>`, and an optional `<style>` block. Use this as the outermost
- * component when composing a PDF template with DocuForge.
+ * component when composing a PDF template with Deckle.
  */
 export const Document: React.FC<DocumentProps> = ({
   children,

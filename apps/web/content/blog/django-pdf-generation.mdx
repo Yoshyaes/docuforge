@@ -1,27 +1,27 @@
-﻿---
+---
 title: "Django PDF Generation Made Simple"
-description: "Add PDF generation to your Django application with the DocuForge Python SDK. No wkhtmltopdf, no ReportLab, no complexity."
+description: "Add PDF generation to your Django application with the Deckle Python SDK. No wkhtmltopdf, no ReportLab, no complexity."
 date: "2026-02-28"
-author: "DocuForge Team"
+author: "Deckle Team"
 category: "Python"
 readingTime: 5
 ---
 
-Django developers have suffered with wkhtmltopdf and ReportLab for too long. DocuForge's Python SDK makes PDF generation as simple as calling an API.
+Django developers have suffered with wkhtmltopdf and ReportLab for too long. Deckle's Python SDK makes PDF generation as simple as calling an API.
 
 ## Install
 
 ```bash
-pip install docuforge
+pip install deckle
 ```
 
 ## Add to Your Django View
 
 ```python
 from django.http import JsonResponse
-from docuforge import DocuForge
+from deckle import Deckle
 
-client = DocuForge(settings.DOCUFORGE_API_KEY)
+client = Deckle(settings.DECKLE_API_KEY)
 
 def generate_invoice(request, order_id):
     order = Order.objects.get(id=order_id)
@@ -36,11 +36,11 @@ def generate_invoice(request, order_id):
 
 ## Using Django Templates
 
-The best part: you can use your existing Django templates. Render them to HTML with `render_to_string`, then pass the HTML to DocuForge. Your existing template tags, filters, and includes all work.
+The best part: you can use your existing Django templates. Render them to HTML with `render_to_string`, then pass the HTML to Deckle. Your existing template tags, filters, and includes all work.
 
-## Using DocuForge Templates
+## Using Deckle Templates
 
-For production, store templates in DocuForge and pass data directly:
+For production, store templates in Deckle and pass data directly:
 
 ```python
 pdf = client.from_template(
@@ -54,17 +54,17 @@ pdf = client.from_template(
 )
 ```
 
-## Comparison: DocuForge vs wkhtmltopdf
+## Comparison: Deckle vs wkhtmltopdf
 
-| Aspect | wkhtmltopdf | DocuForge |
+| Aspect | wkhtmltopdf | Deckle |
 |--------|-------------|-----------|
-| Install | System binary, version conflicts | `pip install docuforge` |
+| Install | System binary, version conflicts | `pip install deckle` |
 | CSS support | Webkit circa 2012 | Modern Chromium |
 | Maintenance | Abandoned project | Actively maintained |
 | Scaling | Single process | API scales automatically |
 
 ## Next Steps
 
-- Read the [Django guide](https://getdocuforge.dev/docs/guides/django)
-- Explore [template management](https://getdocuforge.dev/docs/api-reference/templates)
-- Set up a [Django management command](https://getdocuforge.dev/docs) for batch report generation
+- Read the [Django guide](https://getdeckle.dev/docs/guides/django)
+- Explore [template management](https://getdeckle.dev/docs/api-reference/templates)
+- Set up a [Django management command](https://getdeckle.dev/docs) for batch report generation

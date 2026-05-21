@@ -1,8 +1,8 @@
-﻿---
+---
 title: "Express.js PDF API: From HTML to PDF in 30 Seconds"
-description: "Build a PDF generation endpoint in Express.js with DocuForge. Three lines of code, zero infrastructure."
+description: "Build a PDF generation endpoint in Express.js with Deckle. Three lines of code, zero infrastructure."
 date: "2026-02-26"
-author: "DocuForge Team"
+author: "Deckle Team"
 category: "Node.js"
 readingTime: 4
 ---
@@ -12,22 +12,22 @@ You need a PDF endpoint in your Express app. Here's the fastest way to build one
 ## Install
 
 ```bash
-npm install docuforge express
+npm install deckle express
 ```
 
 ## The Entire Implementation
 
 ```typescript
 import express from 'express';
-import DocuForge from 'docuforge';
+import Deckle from 'deckle';
 
 const app = express();
-const docuforge = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const deckle = new Deckle(process.env.DECKLE_API_KEY!);
 
 app.use(express.json());
 
 app.post('/api/pdf', async (req, res) => {
-  const pdf = await docuforge.generate({
+  const pdf = await deckle.generate({
     html: req.body.html,
     options: req.body.options || { format: 'A4' },
   });
@@ -53,7 +53,7 @@ For production use, store your HTML templates and pass dynamic data:
 
 ```typescript
 app.post('/api/invoice', async (req, res) => {
-  const pdf = await docuforge.fromTemplate({
+  const pdf = await deckle.fromTemplate({
     templateId: 'tmpl_invoice',
     data: req.body,
   });
@@ -65,7 +65,7 @@ app.post('/api/invoice', async (req, res) => {
 
 ```typescript
 app.post('/api/report', async (req, res) => {
-  const pdf = await docuforge.fromReact({
+  const pdf = await deckle.fromReact({
     component: req.body.component,
     props: req.body.props,
   });
@@ -75,12 +75,12 @@ app.post('/api/report', async (req, res) => {
 
 ## Error Handling
 
-DocuForge throws typed errors you can catch:
+Deckle throws typed errors you can catch:
 
 ```typescript
 app.post('/api/pdf', async (req, res) => {
   try {
-    const pdf = await docuforge.generate({ html: req.body.html });
+    const pdf = await deckle.generate({ html: req.body.html });
     res.json(pdf);
   } catch (error) {
     res.status(error.status || 500).json({ error: error.message });
@@ -90,6 +90,6 @@ app.post('/api/pdf', async (req, res) => {
 
 ## Next Steps
 
-- Read the [Express guide](https://getdocuforge.dev/docs/guides/express)
-- Add [rate limiting](https://getdocuforge.dev/docs) to your endpoint
-- Set up [batch generation](https://getdocuforge.dev/docs/api-reference/generate) for bulk operations
+- Read the [Express guide](https://getdeckle.dev/docs/guides/express)
+- Add [rate limiting](https://getdeckle.dev/docs) to your endpoint
+- Set up [batch generation](https://getdeckle.dev/docs/api-reference/generate) for bulk operations

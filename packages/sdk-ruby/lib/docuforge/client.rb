@@ -3,21 +3,21 @@
 require "faraday"
 require "json"
 
-module DocuForge
+module Deckle
   class Client
     attr_reader :templates
 
     # Status codes that are safe to retry.
     RETRYABLE_STATUS_CODES = [429, 500, 502, 503, 504].freeze
 
-    # Create a new DocuForge client.
+    # Create a new Deckle client.
     #
-    # @param api_key [String] Your DocuForge API key.
+    # @param api_key [String] Your Deckle API key.
     # @param base_url [String] API base URL.
     # @param timeout [Integer] Request timeout in seconds.
     # @param max_retries [Integer] Maximum number of retries for failed requests (default 3).
-    def initialize(api_key:, base_url: "https://api.getdocuforge.dev", timeout: 30, max_retries: 3)
-      raise ArgumentError, "DocuForge API key is required" if api_key.nil? || api_key.empty?
+    def initialize(api_key:, base_url: "https://api.getdeckle.dev", timeout: 30, max_retries: 3)
+      raise ArgumentError, "Deckle API key is required" if api_key.nil? || api_key.empty?
 
       @api_key = api_key
       @base_url = base_url.chomp("/")
@@ -29,7 +29,7 @@ module DocuForge
         f.options.open_timeout = @timeout
         f.headers["Authorization"] = "Bearer #{@api_key}"
         f.headers["Content-Type"] = "application/json"
-        f.headers["User-Agent"] = "docuforge-ruby/#{DocuForge::VERSION}"
+        f.headers["User-Agent"] = "deckle-ruby/#{Deckle::VERSION}"
         f.adapter Faraday.default_adapter
       end
 
@@ -252,7 +252,7 @@ module DocuForge
     # Returns { "report_id" => ..., "auto_actioned" => bool }.
     # auto_actioned is true when this report tripped the auto-hide
     # threshold (3 independent reports). Re-reporting the same template
-    # from the same user yields a 409 (DocuForge::Error).
+    # from the same user yields a 409 (Deckle::Error).
     def marketplace_report(id, reason:, notes: nil)
       body = { "reason" => reason }
       body["notes"] = notes unless notes.nil?

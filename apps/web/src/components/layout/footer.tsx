@@ -7,8 +7,8 @@ const columns = [
     links: [
       { label: 'Features', href: '/#features' },
       { label: 'Pricing', href: '/pricing' },
-      { label: 'Documentation', href: 'https://docs.getdocuforge.dev' },
-      { label: 'API Reference', href: 'https://docs.getdocuforge.dev/api-reference/generate' },
+      { label: 'Documentation', href: 'https://docs.getdeckle.dev' },
+      { label: 'API Reference', href: 'https://docs.getdeckle.dev/api-reference/generate' },
       { label: 'Changelog', href: '/blog' },
     ],
   },
@@ -16,8 +16,8 @@ const columns = [
     title: 'Resources',
     links: [
       { label: 'Blog', href: '/blog' },
-      { label: 'Guides', href: 'https://docs.getdocuforge.dev/guides/nextjs' },
-      { label: 'Templates', href: 'https://app.getdocuforge.dev/templates/gallery' },
+      { label: 'Guides', href: 'https://docs.getdeckle.dev/guides/nextjs' },
+      { label: 'Templates', href: 'https://app.getdeckle.dev/templates/gallery' },
       { label: 'Status', href: '/status' },
     ],
   },
@@ -26,7 +26,7 @@ const columns = [
     links: [
       { label: 'Contact', href: '/contact' },
       { label: 'Security', href: '/security' },
-      { label: 'GitHub', href: 'https://github.com/docuforge' },
+      { label: 'GitHub', href: 'https://github.com/Yoshyaes/deckle' },
     ],
   },
   {
@@ -49,7 +49,7 @@ export function Footer() {
             <div className="mb-4">
               <Image
                 src="/logo.png"
-                alt="DocuForge"
+                alt="Deckle"
                 width={140}
                 height={35}
                 className="h-7 w-auto"
@@ -81,7 +81,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-border-subtle text-xs text-text-dim">
-          &copy; {new Date().getFullYear()} DocuForge. All rights reserved.
+          &copy; {new Date().getFullYear()} Deckle. All rights reserved.
         </div>
       </div>
     </footer>

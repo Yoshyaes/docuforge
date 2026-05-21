@@ -10,7 +10,7 @@ export interface PageNumberProps {
 }
 
 /**
- * Renders page number placeholders that the DocuForge API replaces
+ * Renders page number placeholders that the Deckle API replaces
  * with actual values during PDF generation.
  */
 export const PageNumber: React.FC<PageNumberProps> = ({

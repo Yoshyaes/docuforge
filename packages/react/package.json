@@ -1,7 +1,7 @@
 {
-  "name": "@docuforge/react-pdf",
+  "name": "@deckle/react-pdf",
   "version": "0.1.0",
-  "description": "React components for building pixel-perfect PDF documents with DocuForge",
+  "description": "React components for building pixel-perfect PDF documents with Deckle",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -23,7 +23,7 @@
     "react",
     "pdf",
     "pdf-generation",
-    "docuforge",
+    "deckle",
     "document",
     "invoice",
     "report",
@@ -36,11 +36,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Yoshyaes/docuforge",
+    "url": "https://github.com/Yoshyaes/deckle",
     "directory": "packages/react"
   },
-  "homepage": "https://getdocuforge.dev/docs/react-components",
-  "bugs": "https://github.com/Yoshyaes/docuforge/issues",
+  "homepage": "https://getdeckle.dev/docs/react-components",
+  "bugs": "https://github.com/Yoshyaes/deckle/issues",
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch"

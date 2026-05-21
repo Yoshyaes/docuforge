@@ -1,15 +1,15 @@
 ---
-title: "DocuForge vs Gotenberg"
-description: "Compare DocuForge's managed API against self-hosted Gotenberg"
+title: "Deckle vs Gotenberg"
+description: "Compare Deckle's managed API against self-hosted Gotenberg"
 ---
 
-# DocuForge vs Gotenberg
+# Deckle vs Gotenberg
 
-Gotenberg is an open-source, self-hosted document conversion API using Docker. DocuForge is a managed API that eliminates the need to run and scale your own infrastructure.
+Gotenberg is an open-source, self-hosted document conversion API using Docker. Deckle is a managed API that eliminates the need to run and scale your own infrastructure.
 
 ## Feature Comparison
 
-| Feature | DocuForge | Gotenberg |
+| Feature | Deckle | Gotenberg |
 |---------|-----------|-----------|
 | **Hosting** | Managed (cloud) | Self-hosted (Docker) |
 | **Setup** | 5 minutes (API key) | 30-60 min (Docker + config) |
@@ -49,11 +49,11 @@ curl -X POST http://localhost:3000/forms/chromium/convert/html \
   -o output.pdf
 ```
 
-### DocuForge
+### Deckle
 
 ```typescript
-import { DocuForge } from 'docuforge';
-const df = new DocuForge('df_live_...');
+import { Deckle } from 'deckle';
+const df = new Deckle('dk_live_...');
 
 const pdf = await df.generate({
   html: '<h1>Hello World</h1>',
@@ -68,7 +68,7 @@ const pdf = await df.generate({
 - You want a free, self-hosted solution and can manage Docker infrastructure
 - You're already running Kubernetes and can auto-scale Docker containers
 
-## When to Choose DocuForge
+## When to Choose Deckle
 
 - You don't want to manage Docker infrastructure
 - You need templates, React support, or batch generation

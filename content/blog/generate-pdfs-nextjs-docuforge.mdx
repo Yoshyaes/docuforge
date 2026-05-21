@@ -1,15 +1,15 @@
-﻿---
-title: "How to Generate PDFs in Next.js with DocuForge"
+---
+title: "How to Generate PDFs in Next.js with Deckle"
 description: "Learn to add PDF generation to your Next.js app in under 10 minutes. Build an API route, generate from HTML and templates, and add a download button."
-slug: "generate-pdfs-nextjs-docuforge"
+slug: "generate-pdfs-nextjs-deckle"
 date: "2026-03-10"
-author: "DocuForge Team"
+author: "Deckle Team"
 authorRole: "Developer Advocate"
 tags: ["next.js", "typescript", "pdf-generation", "tutorial"]
 readingTime: "9 min read"
 ---
 
-# How to Generate PDFs in Next.js with DocuForge
+# How to Generate PDFs in Next.js with Deckle
 
 If you have built anything beyond a toy Next.js application, you have probably run into the need to generate PDFs. Invoices after a successful checkout. Monthly reports for a dashboard. Receipts emailed to customers. Shipping labels. The list goes on.
 
@@ -17,30 +17,30 @@ The naive approach is to reach for a browser-based library and render PDFs on th
 
 Server-side PDF generation solves all of that. Your API keys stay on the server. You get pixel-perfect output from a headless Chromium instance. And you can generate PDFs asynchronously without blocking the UI.
 
-In this tutorial, you will build a complete PDF generation flow in a Next.js 14 application using DocuForge. By the end, you will have an API route that generates PDFs from raw HTML, a reusable template system with Handlebars, headers and footers with page numbers, and a clean client-side download button.
+In this tutorial, you will build a complete PDF generation flow in a Next.js 14 application using Deckle. By the end, you will have an API route that generates PDFs from raw HTML, a reusable template system with Handlebars, headers and footers with page numbers, and a clean client-side download button.
 
 ## Prerequisites
 
 Before you start, make sure you have the following:
 
 - **Next.js 14+** with the App Router enabled
-- A **DocuForge account** and API key (grab one from the [dashboard](https://app.getdocuforge.dev/keys))
+- A **Deckle account** and API key (grab one from the [dashboard](https://app.getdeckle.dev/keys))
 - **Node.js 18** or later
 
 That is everything. No Puppeteer installation, no Chromium binaries, no wkhtmltopdf nightmares.
 
 ## Step 1: Install the SDK
 
-Install the `docuforge` npm package in your Next.js project:
+Install the `deckle` npm package in your Next.js project:
 
 ```bash
-npm install docuforge
+npm install deckle
 ```
 
 Then add your API key to `.env.local`. Never commit this file to version control.
 
 ```bash
-DOCUFORGE_API_KEY=df_live_your_api_key_here
+DECKLE_API_KEY=dk_live_your_api_key_here
 ```
 
 The SDK reads this key when you instantiate the client. Since Next.js API routes and Server Actions run on the server, the key is never exposed to the browser. This is exactly why server-side generation matters.
@@ -54,9 +54,9 @@ Create a new file at `app/api/generate-pdf/route.ts`. This route will accept a P
 ```typescript
 // app/api/generate-pdf/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import DocuForge from "docuforge";
+import Deckle from "deckle";
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const df = new Deckle(process.env.DECKLE_API_KEY!);
 
 export async function POST(request: NextRequest) {
   try {
@@ -89,13 +89,13 @@ export async function POST(request: NextRequest) {
 }
 ```
 
-The `df.generate()` call sends your HTML to DocuForge's rendering pipeline, which uses a headless Chromium instance to produce a pixel-perfect PDF. The response includes everything you need:
+The `df.generate()` call sends your HTML to Deckle's rendering pipeline, which uses a headless Chromium instance to produce a pixel-perfect PDF. The response includes everything you need:
 
 ```json
 {
   "id": "gen_abc123xyz",
   "status": "completed",
-  "url": "https://storage.docuforge.com/pdfs/gen_abc123xyz.pdf",
+  "url": "https://storage.deckle.com/pdfs/gen_abc123xyz.pdf",
   "pages": 1,
   "file_size": 48210,
   "generation_time_ms": 320
@@ -104,7 +104,7 @@ The `df.generate()` call sends your HTML to DocuForge's rendering pipeline, whic
 
 The `url` field is a direct link to the generated PDF. You can redirect users to it, embed it in an iframe, or download it programmatically. The `id` field lets you look up the generation later in your history.
 
-Notice that the DocuForge client is instantiated outside the handler. This avoids creating a new client on every request and keeps the connection efficient.
+Notice that the Deckle client is instantiated outside the handler. This avoids creating a new client on every request and keeps the connection efficient.
 
 ## Step 3: Build a Client-Side Download Button
 
@@ -173,7 +173,7 @@ Use it anywhere in your app by passing an HTML string:
 
 ```tsx
 <PdfDownloadButton
-  html="<h1>Hello from DocuForge</h1><p>This is a generated PDF.</p>"
+  html="<h1>Hello from Deckle</h1><p>This is a generated PDF.</p>"
   label="Generate Invoice"
 />
 ```
@@ -182,15 +182,15 @@ The component handles three states: idle, loading, and error. When the PDF is re
 
 ## Step 4: Use Templates for Production Layouts
 
-Hardcoding HTML strings works for prototyping, but production applications need reusable templates. DocuForge templates use Handlebars syntax, which gives you variables, loops, and conditionals without the overhead of a full templating engine on your side.
+Hardcoding HTML strings works for prototyping, but production applications need reusable templates. Deckle templates use Handlebars syntax, which gives you variables, loops, and conditionals without the overhead of a full templating engine on your side.
 
 First, create a template. You would typically do this once, either through the dashboard or programmatically during setup:
 
 ```typescript
 // scripts/create-invoice-template.ts
-import DocuForge from "docuforge";
+import Deckle from "deckle";
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const df = new Deckle(process.env.DECKLE_API_KEY!);
 
 async function createTemplate() {
   const template = await df.templates.create({
@@ -280,11 +280,11 @@ const result = await df.fromTemplate({
 
 The Handlebars syntax keeps your templates readable. `{{#each items}}` iterates over the array, and `{{#if condition}}` lets you conditionally show sections like a discount line or tax breakdown.
 
-Templates also support versioning. Every time you update a template through the API or dashboard, DocuForge saves the previous version. You can list versions, view any historical snapshot, and restore if something goes wrong. This is critical for compliance-heavy documents where you need to prove what a template looked like on a specific date.
+Templates also support versioning. Every time you update a template through the API or dashboard, Deckle saves the previous version. You can list versions, view any historical snapshot, and restore if something goes wrong. This is critical for compliance-heavy documents where you need to prove what a template looked like on a specific date.
 
 ## Step 5: Add Headers, Footers, and Page Numbers
 
-Multi-page documents like contracts and reports need consistent headers and footers. DocuForge supports HTML-based headers and footers with two special interpolation variables: `{{pageNumber}}` and `{{totalPages}}`.
+Multi-page documents like contracts and reports need consistent headers and footers. Deckle supports HTML-based headers and footers with two special interpolation variables: `{{pageNumber}}` and `{{totalPages}}`.
 
 ```typescript
 const result = await df.generate({
@@ -326,9 +326,9 @@ Create a Server Action file:
 // app/actions/generate-pdf.ts
 "use server";
 
-import DocuForge from "docuforge";
+import Deckle from "deckle";
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const df = new Deckle(process.env.DECKLE_API_KEY!);
 
 interface GeneratePdfInput {
   html?: string;
@@ -422,9 +422,9 @@ The tradeoff is that Server Actions are tightly coupled to your Next.js app. If 
 
 You now have a solid foundation for PDF generation in Next.js. From here, there are several directions to explore depending on your use case:
 
-- **[Automate Stripe invoices](https://getdocuforge.dev/blog/invoice-system-stripe-docuforge)** -- Generate and email PDF invoices on every successful payment using Stripe webhooks.
-- **[Export React components to PDF](https://getdocuforge.dev/blog/add-pdf-export-react-app)** -- Use `df.fromReact()` to render your existing React components directly to PDF without maintaining separate HTML templates.
-- **[DocuForge vs Puppeteer](https://getdocuforge.dev/blog/docuforge-vs-puppeteer-why-i-switched)** -- Understand the tradeoffs between a managed API and self-hosted browser automation.
-- **[Generate PDFs in Express](https://getdocuforge.dev/blog/express-pdf-api-html-to-pdf)** -- If your backend is not Next.js, the same SDK works in any Node.js environment.
+- **[Automate Stripe invoices](https://getdeckle.dev/blog/invoice-system-stripe-deckle)** -- Generate and email PDF invoices on every successful payment using Stripe webhooks.
+- **[Export React components to PDF](https://getdeckle.dev/blog/add-pdf-export-react-app)** -- Use `df.fromReact()` to render your existing React components directly to PDF without maintaining separate HTML templates.
+- **[Deckle vs Puppeteer](https://getdeckle.dev/blog/deckle-vs-puppeteer-why-i-switched)** -- Understand the tradeoffs between a managed API and self-hosted browser automation.
+- **[Generate PDFs in Express](https://getdeckle.dev/blog/express-pdf-api-html-to-pdf)** -- If your backend is not Next.js, the same SDK works in any Node.js environment.
 
-Check out the [full API reference](https://getdocuforge.dev/docs/api-reference) for advanced features like batch generation, webhook callbacks, and PDF tools including merge, split, and password protection.
+Check out the [full API reference](https://getdeckle.dev/docs/api-reference) for advanced features like batch generation, webhook callbacks, and PDF tools including merge, split, and password protection.

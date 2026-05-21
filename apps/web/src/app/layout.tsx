@@ -9,12 +9,12 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jet
 
 export const metadata: Metadata = {
   title: {
-    default: 'DocuForge - PDF Generation API for Developers',
-    template: '%s | DocuForge',
+    default: 'Deckle - PDF Generation API for Developers',
+    template: '%s | Deckle',
   },
   description:
     'Generate pixel-perfect PDFs from HTML, React, or templates with one API call. The developer-first PDF generation platform.',
-  metadataBase: new URL('https://getdocuforge.dev'),
+  metadataBase: new URL('https://getdeckle.dev'),
   icons: {
     icon: [
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    siteName: 'DocuForge',
+    siteName: 'Deckle',
     images: [{ url: '/og-image.png', width: 1200, height: 630 }],
   },
   twitter: {

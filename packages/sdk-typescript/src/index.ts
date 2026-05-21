@@ -1,5 +1,5 @@
 import {
-  DocuForgeOptions,
+  DeckleOptions,
   GenerateParams,
   GenerateResponse,
   Generation,
@@ -34,18 +34,18 @@ import {
   TemplateVersion,
   TemplateVersionsResponse,
 } from './types.js';
-import { DocuForgeError, AuthenticationError, RateLimitError } from './errors.js';
+import { DeckleError, AuthenticationError, RateLimitError } from './errors.js';
 
-export class DocuForge {
+export class Deckle {
   #apiKey: string;
   private baseUrl: string;
   private timeout: number;
   private maxRetries: number;
 
-  constructor(apiKey: string, options?: DocuForgeOptions) {
-    if (!apiKey) throw new Error('DocuForge API key is required');
+  constructor(apiKey: string, options?: DeckleOptions) {
+    if (!apiKey) throw new Error('Deckle API key is required');
     this.#apiKey = apiKey;
-    this.baseUrl = (options?.baseUrl ?? 'https://api.getdocuforge.dev').replace(/\/$/, '');
+    this.baseUrl = (options?.baseUrl ?? 'https://api.getdeckle.dev').replace(/\/$/, '');
     this.timeout = options?.timeout ?? 30000;
     this.maxRetries = options?.maxRetries ?? 3;
   }
@@ -68,14 +68,14 @@ export class DocuForge {
             headers: {
               Authorization: `Bearer ${this.#apiKey}`,
               'Content-Type': 'application/json',
-              'User-Agent': 'docuforge-node/0.1.0',
+              'User-Agent': 'deckle-node/0.1.0',
             },
             body: body ? JSON.stringify(body) : undefined,
             signal: controller.signal,
           });
         } catch (err: any) {
           if (err?.name === 'AbortError') {
-            throw new DocuForgeError('Request timed out', 0, 'TIMEOUT');
+            throw new DeckleError('Request timed out', 0, 'TIMEOUT');
           }
           throw err;
         }
@@ -84,12 +84,12 @@ export class DocuForge {
         try {
           data = await res.json();
         } catch {
-          throw new DocuForgeError(`Non-JSON response from API (status ${res.status})`, res.status, 'INVALID_RESPONSE');
+          throw new DeckleError(`Non-JSON response from API (status ${res.status})`, res.status, 'INVALID_RESPONSE');
         }
 
         if (!res.ok) {
           // Retry on retryable status codes (unless we've exhausted attempts)
-          if (DocuForge.RETRYABLE_STATUS_CODES.has(res.status) && attempt < this.maxRetries) {
+          if (Deckle.RETRYABLE_STATUS_CODES.has(res.status) && attempt < this.maxRetries) {
             let delay: number;
             if (res.status === 429) {
               const retryAfterHeader = res.headers.get('Retry-After');
@@ -108,7 +108,7 @@ export class DocuForge {
               data?.error?.message,
             );
           }
-          throw new DocuForgeError(
+          throw new DeckleError(
             data?.error?.message || 'Request failed',
             res.status,
             data?.error?.code || 'UNKNOWN',
@@ -119,7 +119,7 @@ export class DocuForge {
       } catch (err) {
         lastError = err;
         // Don't retry non-retryable errors
-        if (err instanceof DocuForgeError || err instanceof AuthenticationError || err instanceof RateLimitError) {
+        if (err instanceof DeckleError || err instanceof AuthenticationError || err instanceof RateLimitError) {
           throw err;
         }
         // Retry network errors
@@ -478,7 +478,7 @@ export type {
   UpdateTemplateParams,
   UsageStats,
   PDFOptions,
-  DocuForgeOptions,
+  DeckleOptions,
   ListResponse,
   WatermarkOptions,
   PdfMergeParams,
@@ -506,4 +506,4 @@ export type {
   TemplateVersionsResponse,
 } from './types.js';
 
-export { DocuForgeError, AuthenticationError, RateLimitError, ValidationError } from './errors.js';
+export { DeckleError, AuthenticationError, RateLimitError, ValidationError } from './errors.js';

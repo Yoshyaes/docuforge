@@ -440,7 +440,7 @@ describe('PDF Tools service functions', () => {
       const result = await makePdfA(pdf);
 
       const doc = await PDFDocument.load(result);
-      expect(doc.getCreator()).toBe('DocuForge API');
+      expect(doc.getCreator()).toBe('Deckle API');
     });
   });
 

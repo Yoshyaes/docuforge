@@ -1,5 +1,5 @@
 /**
- * Pre-built starter templates that ship with DocuForge.
+ * Pre-built starter templates that ship with Deckle.
  * Users can clone these to their own account from the dashboard.
  */
 
@@ -451,7 +451,7 @@ export const starterTemplates: StarterTemplate[] = [
 </body>
 </html>`,
     sampleData: {
-      organization: 'DocuForge Academy',
+      organization: 'Deckle Academy',
       certificate_type: 'Completion',
       recipient_name: 'Alexandra Chen',
       description: 'For successfully completing the Advanced PDF Generation course, demonstrating proficiency in template design, API integration, and automated document workflows.',
@@ -459,7 +459,7 @@ export const starterTemplates: StarterTemplate[] = [
       expiry_date: 'February 25, 2028',
       location: 'San Francisco, CA',
       certificate_id: 'CERT-2026-00847',
-      verification_url: 'https://verify.getdocuforge.dev/CERT-2026-00847',
+      verification_url: 'https://verify.getdeckle.dev/CERT-2026-00847',
       signers: [
         { name: 'Sarah Johnson', title: 'Director of Education' },
         { name: 'Michael Park', title: 'Lead Instructor' },

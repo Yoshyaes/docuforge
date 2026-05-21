@@ -125,7 +125,7 @@ export interface WatermarkOptions {
   fontSize?: number;
 }
 
-export interface DocuForgeOptions {
+export interface DeckleOptions {
   baseUrl?: string;
   timeout?: number;
   /** Maximum number of retries for failed requests (429/5xx). Defaults to 3. */

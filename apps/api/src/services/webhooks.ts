@@ -163,8 +163,8 @@ async function attemptDelivery(
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-DocuForge-Signature': signature,
-          'X-DocuForge-Timestamp': Date.now().toString(),
+          'X-Deckle-Signature': signature,
+          'X-Deckle-Timestamp': Date.now().toString(),
         },
         body: payload,
         redirect: 'manual',

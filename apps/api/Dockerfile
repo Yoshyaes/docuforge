@@ -11,13 +11,13 @@ COPY apps/api/package.json apps/api/
 COPY packages/sdk-typescript/package.json packages/sdk-typescript/
 
 # Install dependencies for the API workspace
-RUN pnpm install --frozen-lockfile --filter @docuforge/api...
+RUN pnpm install --frozen-lockfile --filter @deckle/api...
 
 # Copy API source
 COPY apps/api/ apps/api/
 
 # Build the API
-RUN pnpm --filter @docuforge/api build
+RUN pnpm --filter @deckle/api build
 
 # ── Stage 2: Production ──
 FROM node:22-slim
@@ -60,7 +60,7 @@ COPY apps/api/package.json apps/api/
 COPY packages/sdk-typescript/package.json packages/sdk-typescript/
 
 # Install production dependencies only
-RUN pnpm install --frozen-lockfile --prod --filter @docuforge/api...
+RUN pnpm install --frozen-lockfile --prod --filter @deckle/api...
 
 # Copy built output from builder stage
 COPY --from=builder /app/apps/api/dist apps/api/dist

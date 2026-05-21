@@ -1,13 +1,13 @@
-﻿---
+---
 title: "The Developer's Guide to PDF Page Breaks, Headers, and Footers"
-description: "Master PDF layout with proper page breaks, repeating headers and footers, and dynamic page numbers using DocuForge."
+description: "Master PDF layout with proper page breaks, repeating headers and footers, and dynamic page numbers using Deckle."
 date: "2026-02-27"
-author: "DocuForge Team"
+author: "Deckle Team"
 category: "Guide"
 readingTime: 7
 ---
 
-Page breaks, headers, and footers are the hardest parts of HTML-to-PDF conversion. Here's how to get them right with DocuForge.
+Page breaks, headers, and footers are the hardest parts of HTML-to-PDF conversion. Here's how to get them right with Deckle.
 
 ## Page Breaks
 
@@ -26,10 +26,10 @@ h2 { page-break-after: avoid; }
 
 ## Headers and Footers
 
-DocuForge supports repeating headers and footers with dynamic content:
+Deckle supports repeating headers and footers with dynamic content:
 
 ```typescript
-const pdf = await docuforge.generate({
+const pdf = await deckle.generate({
   html: '<h1>My Report</h1><p>Content here...</p>',
   options: {
     format: 'A4',
@@ -43,14 +43,14 @@ const pdf = await docuforge.generate({
 
 ## Dynamic Page Numbers
 
-Use `{{pageNumber}}` and `{{totalPages}}` in your header or footer templates. DocuForge replaces these with actual values during rendering.
+Use `{{pageNumber}}` and `{{totalPages}}` in your header or footer templates. Deckle replaces these with actual values during rendering.
 
 ## Using React Components
 
-The `@docuforge/react-pdf` library makes this even easier:
+The `@deckle/react-pdf` library makes this even easier:
 
 ```tsx
-import { Document, Page, Header, Footer } from '@docuforge/react-pdf';
+import { Document, Page, Header, Footer } from '@deckle/react-pdf';
 
 <Document>
   <Page size="A4" margin="20mm">
@@ -74,6 +74,6 @@ import { Document, Page, Header, Footer } from '@docuforge/react-pdf';
 
 ## Next Steps
 
-- Explore the [Page component API](https://getdocuforge.dev/docs)
-- Learn about [watermarks](https://getdocuforge.dev/docs) for draft documents
-- Read about [QR codes and barcodes](https://getdocuforge.dev/docs) in PDFs
+- Explore the [Page component API](https://getdeckle.dev/docs)
+- Learn about [watermarks](https://getdeckle.dev/docs) for draft documents
+- Read about [QR codes and barcodes](https://getdeckle.dev/docs) in PDFs

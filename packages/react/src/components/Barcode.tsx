@@ -16,10 +16,10 @@ export interface BarcodeProps {
 }
 
 /**
- * Barcode / QR code placeholder for DocuForge PDF generation.
+ * Barcode / QR code placeholder for Deckle PDF generation.
  *
  * Renders a `{{qr:value}}` or `{{barcode:value}}` placeholder string inside
- * a sized container. The DocuForge API replaces these placeholders with actual
+ * a sized container. The Deckle API replaces these placeholders with actual
  * barcode or QR code images during server-side PDF rendering.
  */
 export const Barcode: React.FC<BarcodeProps> = ({

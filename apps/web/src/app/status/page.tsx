@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { SectionWrapper } from '@/components/ui/section-wrapper';
 
 export const metadata: Metadata = {
-  title: 'Status — DocuForge',
-  description: 'Live operational status for the DocuForge PDF generation API.',
+  title: 'Status — Deckle',
+  description: 'Live operational status for the Deckle PDF generation API.',
 };
 
 export default function StatusPage() {
@@ -14,7 +14,7 @@ export default function StatusPage() {
           <h1 className="text-4xl font-bold text-text-primary tracking-tight mb-2">
             Status
           </h1>
-          <p className="text-text-muted">Live operational status for the DocuForge platform.</p>
+          <p className="text-text-muted">Live operational status for the Deckle platform.</p>
         </header>
 
         <div className="bg-surface border border-border rounded-2xl p-8 mb-6">
@@ -25,11 +25,11 @@ export default function StatusPage() {
           <p className="text-sm text-text-muted">
             The public dashboard at{' '}
             <a
-              href="https://status.getdocuforge.dev"
+              href="https://status.getdeckle.dev"
               className="text-accent hover:underline"
               rel="noopener noreferrer"
             >
-              status.getdocuforge.dev
+              status.getdeckle.dev
             </a>{' '}
             tracks API, dashboard, and queue worker uptime in real time. This page is a static
             snapshot; bookmark the status subdomain for live updates and incident history.
@@ -40,11 +40,11 @@ export default function StatusPage() {
           <h2 className="text-base font-semibold text-text-primary mb-3">Components</h2>
           <ul className="space-y-2 text-sm text-text-muted">
             <li className="flex justify-between">
-              <span>API (api.getdocuforge.dev)</span>
+              <span>API (api.getdeckle.dev)</span>
               <span className="text-green">Operational</span>
             </li>
             <li className="flex justify-between">
-              <span>Dashboard (app.getdocuforge.dev)</span>
+              <span>Dashboard (app.getdeckle.dev)</span>
               <span className="text-green">Operational</span>
             </li>
             <li className="flex justify-between">

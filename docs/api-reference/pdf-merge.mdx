@@ -5,7 +5,7 @@ description: Merge multiple PDFs into a single document.
 
 # Merge PDFs
 
-`POST https://api.getdocuforge.dev/v1/pdf/merge`
+`POST https://api.getdeckle.dev/v1/pdf/merge`
 
 Combine two or more PDF documents into a single file. PDFs are merged in the order provided.
 
@@ -21,8 +21,8 @@ Each PDF must be under ~27MB when decoded.
 ## Example
 
 ```bash
-curl -X POST https://api.getdocuforge.dev/v1/pdf/merge \
-  -H "Authorization: Bearer df_live_sk_..." \
+curl -X POST https://api.getdeckle.dev/v1/pdf/merge \
+  -H "Authorization: Bearer dk_live_sk_..." \
   -H "Content-Type: application/json" \
   -d '{
     "pdfs": [
@@ -37,7 +37,7 @@ curl -X POST https://api.getdocuforge.dev/v1/pdf/merge \
 
 ```json
 {
-  "url": "https://cdn.getdocuforge.dev/gen_abc123.pdf",
+  "url": "https://cdn.getdeckle.dev/gen_abc123.pdf",
   "file_size": 102400
 }
 ```

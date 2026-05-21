@@ -4,8 +4,8 @@ import { SectionWrapper } from '@/components/ui/section-wrapper';
 import { Card } from '@/components/ui/card';
 
 export const metadata: Metadata = {
-  title: 'Contact — DocuForge',
-  description: 'Get in touch about DocuForge — sales, support, security, or just to say hello.',
+  title: 'Contact — Deckle',
+  description: 'Get in touch about Deckle — sales, support, security, or just to say hello.',
 };
 
 const CHANNELS = [
@@ -13,25 +13,25 @@ const CHANNELS = [
     icon: Mail,
     title: 'Sales',
     body: 'For enterprise volume, custom contracts, SLAs, or self-hosting.',
-    cta: { label: 'sales@getdocuforge.dev', href: 'mailto:sales@getdocuforge.dev' },
+    cta: { label: 'sales@getdeckle.dev', href: 'mailto:sales@getdeckle.dev' },
   },
   {
     icon: MessageCircle,
     title: 'Support',
     body: 'Stuck on an integration or hitting unexpected errors? Reply to any drip email or use this address.',
-    cta: { label: 'support@getdocuforge.dev', href: 'mailto:support@getdocuforge.dev' },
+    cta: { label: 'support@getdeckle.dev', href: 'mailto:support@getdeckle.dev' },
   },
   {
     icon: Mail,
     title: 'Security',
     body: 'Vulnerability reports and security questions. See the Security page for details on safe-harbor.',
-    cta: { label: 'security@getdocuforge.dev', href: 'mailto:security@getdocuforge.dev' },
+    cta: { label: 'security@getdeckle.dev', href: 'mailto:security@getdeckle.dev' },
   },
   {
     icon: Github,
     title: 'GitHub',
     body: 'Public issues, SDK bugs, and feature requests.',
-    cta: { label: 'github.com/docuforge', href: 'https://github.com/docuforge' },
+    cta: { label: 'github.com/Yoshyaes/deckle', href: 'https://github.com/Yoshyaes/deckle' },
   },
 ];
 

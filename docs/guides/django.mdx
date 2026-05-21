@@ -1,6 +1,6 @@
 ---
 title: Django Guide
-description: Generate PDFs in your Django app with DocuForge.
+description: Generate PDFs in your Django app with Deckle.
 ---
 
 # Generate PDFs in Django
@@ -10,7 +10,7 @@ Add PDF generation to a Django application.
 ## 1. Install
 
 ```bash
-pip install docuforge
+pip install deckle
 ```
 
 ## 2. Configure
@@ -19,7 +19,7 @@ Add your API key to settings:
 
 ```python
 # settings.py
-DOCUFORGE_API_KEY = os.environ.get("DOCUFORGE_API_KEY")
+DECKLE_API_KEY = os.environ.get("DECKLE_API_KEY")
 ```
 
 ## 3. Create Views
@@ -30,9 +30,9 @@ import json
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from docuforge import DocuForge
+from deckle import Deckle
 
-df = DocuForge(settings.DOCUFORGE_API_KEY)
+df = Deckle(settings.DECKLE_API_KEY)
 
 
 @csrf_exempt

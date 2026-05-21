@@ -15,7 +15,7 @@ describe('Error classes', () => {
     expect(err.statusCode).toBe(401);
     expect(err.code).toBe('UNAUTHORIZED');
     expect(err.message).toMatch(/Invalid API key/);
-    expect(err.message).toMatch(/df_live_/);
+    expect(err.message).toMatch(/dk_live_/);
   });
 
   it('AuthError gives the user a hint about the header format', () => {

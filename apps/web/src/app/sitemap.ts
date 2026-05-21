@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getAllPosts } from '@/lib/blog';
 
-const SITE = 'https://getdocuforge.dev';
+const SITE = 'https://getdeckle.dev';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();

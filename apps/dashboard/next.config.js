@@ -29,7 +29,7 @@ const cspDirectives = [
   // Avatars come from img.clerk.com; we also keep data: for inline icons.
   "img-src 'self' data: blob: https://img.clerk.com https://*.clerk.accounts.dev",
   // The dashboard hits its own /api/* and the public API.
-  "connect-src 'self' https://api.getdocuforge.dev https://*.clerk.accounts.dev https://*.clerk.com https://clerk-telemetry.com",
+  "connect-src 'self' https://api.getdeckle.dev https://*.clerk.accounts.dev https://*.clerk.com https://clerk-telemetry.com",
   // Workers (Clerk uses Web Workers in some flows).
   "worker-src 'self' blob:",
   // Block all <frame>/<iframe> src by default; Stripe billing portal needs an exception.

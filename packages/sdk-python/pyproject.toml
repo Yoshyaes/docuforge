@@ -3,13 +3,13 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "docuforge"
+name = "deckle"
 version = "0.5.0"
-description = "DocuForge - PDF generation API for developers. HTML in, pixel-perfect PDF out."
+description = "Deckle - PDF generation API for developers. HTML in, pixel-perfect PDF out."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.9"
-authors = [{ name = "DocuForge" }]
+authors = [{ name = "Deckle" }]
 keywords = ["pdf", "html-to-pdf", "pdf-generation", "api"]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -27,9 +27,9 @@ dependencies = [
 test = ["pytest>=7", "respx>=0.20"]
 
 [project.urls]
-Homepage = "https://getdocuforge.dev"
-Documentation = "https://getdocuforge.dev/docs"
-Repository = "https://github.com/docuforge/docuforge-python"
+Homepage = "https://getdeckle.dev"
+Documentation = "https://getdeckle.dev/docs"
+Repository = "https://github.com/Yoshyaes/deckle/deckle-python"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

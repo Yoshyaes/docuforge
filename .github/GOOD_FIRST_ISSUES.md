@@ -26,7 +26,7 @@ Currently, components accept a `style` prop for inline CSS but not a `className`
 
 **Labels:** `good first issue`, `enhancement`
 
-Create a `PageNumber` component that renders the `{{pageNumber}}` and `{{totalPages}}` placeholders. The DocuForge API replaces these with actual values during PDF generation (similar to how the `Barcode` component works).
+Create a `PageNumber` component that renders the `{{pageNumber}}` and `{{totalPages}}` placeholders. The Deckle API replaces these with actual values during PDF generation (similar to how the `Barcode` component works).
 
 **Example usage:**
 ```tsx

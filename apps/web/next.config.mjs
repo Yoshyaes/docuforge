@@ -5,12 +5,12 @@ const nextConfig = {
     return [
       {
         source: '/docs',
-        destination: 'https://docs.getdocuforge.dev',
+        destination: 'https://docs.getdeckle.dev',
         permanent: true,
       },
       {
         source: '/docs/:path*',
-        destination: 'https://docs.getdocuforge.dev/:path*',
+        destination: 'https://docs.getdeckle.dev/:path*',
         permanent: true,
       },
     ];

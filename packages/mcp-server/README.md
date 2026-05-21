@@ -1,6 +1,6 @@
-# @docuforge/mcp-server
+# @deckle/mcp-server
 
-MCP (Model Context Protocol) server for DocuForge PDF generation. Enables AI agents like Claude Desktop and Cursor to generate PDFs directly.
+MCP (Model Context Protocol) server for Deckle PDF generation. Enables AI agents like Claude Desktop and Cursor to generate PDFs directly.
 
 ## Setup
 
@@ -11,11 +11,11 @@ Add to `~/.claude/claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "docuforge": {
+    "deckle": {
       "command": "npx",
-      "args": ["@docuforge/mcp-server"],
+      "args": ["@deckle/mcp-server"],
       "env": {
-        "DOCUFORGE_API_KEY": "df_live_..."
+        "DECKLE_API_KEY": "dk_live_..."
       }
     }
   }
@@ -29,11 +29,11 @@ Add to `.cursor/mcp.json` in your project:
 ```json
 {
   "mcpServers": {
-    "docuforge": {
+    "deckle": {
       "command": "npx",
-      "args": ["@docuforge/mcp-server"],
+      "args": ["@deckle/mcp-server"],
       "env": {
-        "DOCUFORGE_API_KEY": "df_live_..."
+        "DECKLE_API_KEY": "dk_live_..."
       }
     }
   }
@@ -47,11 +47,11 @@ Add to `.mcp.json` in your project:
 ```json
 {
   "mcpServers": {
-    "docuforge": {
+    "deckle": {
       "command": "npx",
-      "args": ["@docuforge/mcp-server"],
+      "args": ["@deckle/mcp-server"],
       "env": {
-        "DOCUFORGE_API_KEY": "df_live_..."
+        "DECKLE_API_KEY": "dk_live_..."
       }
     }
   }
@@ -74,5 +74,5 @@ Add to `.mcp.json` in your project:
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `DOCUFORGE_API_KEY` | Yes | Your DocuForge API key |
-| `DOCUFORGE_API_URL` | No | API URL (default: `https://api.getdocuforge.dev`) |
+| `DECKLE_API_KEY` | Yes | Your Deckle API key |
+| `DECKLE_API_URL` | No | API URL (default: `https://api.getdeckle.dev`) |

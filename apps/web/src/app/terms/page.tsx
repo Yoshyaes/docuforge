@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { SectionWrapper } from '@/components/ui/section-wrapper';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service — DocuForge',
-  description: 'DocuForge terms of service.',
+  title: 'Terms of Service — Deckle',
+  description: 'Deckle terms of service.',
 };
 
 const LAST_UPDATED = '2026-05-20';
@@ -23,13 +23,13 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold text-text-primary mb-3">1. The service</h2>
             <p>
-              DocuForge (&ldquo;we&rdquo;, &ldquo;our&rdquo;) provides an HTTP API for generating
+              Deckle (&ldquo;we&rdquo;, &ldquo;our&rdquo;) provides an HTTP API for generating
               PDFs from HTML, templates, or React components, plus SDKs and a hosted dashboard at{' '}
-              <a href="https://app.getdocuforge.dev" className="text-accent hover:underline">
-                app.getdocuforge.dev
+              <a href="https://app.getdeckle.dev" className="text-accent hover:underline">
+                app.getdeckle.dev
               </a>
               . By creating an account or sending requests to{' '}
-              <code className="text-accent">api.getdocuforge.dev</code> you accept these terms.
+              <code className="text-accent">api.getdeckle.dev</code> you accept these terms.
             </p>
           </section>
 

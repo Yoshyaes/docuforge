@@ -1,4 +1,4 @@
-package docuforge
+package deckle
 
 import (
 	"context"
@@ -76,7 +76,7 @@ func TestGenerateSendsBearerAuthAndCorrectBody(t *testing.T) {
 		"generation_time_ms": 100,
 	})
 
-	client := NewClient("df_live_test", WithBaseURL(srv.URL), WithMaxRetries(0))
+	client := NewClient("dk_live_test", WithBaseURL(srv.URL), WithMaxRetries(0))
 	resp, err := client.Generate(context.Background(), GenerateParams{HTML: "<h1>x</h1>"})
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
@@ -92,8 +92,8 @@ func TestGenerateSendsBearerAuthAndCorrectBody(t *testing.T) {
 	if r.Method != http.MethodPost {
 		t.Errorf("method = %s, want POST", r.Method)
 	}
-	if got := r.Header.Get("Authorization"); got != "Bearer df_live_test" {
-		t.Errorf("Authorization = %q, want Bearer df_live_test", got)
+	if got := r.Header.Get("Authorization"); got != "Bearer dk_live_test" {
+		t.Errorf("Authorization = %q, want Bearer dk_live_test", got)
 	}
 	if got := r.URL.Path; got != "/v1/generate" {
 		t.Errorf("path = %s, want /v1/generate", got)
@@ -104,7 +104,7 @@ func TestUnauthorizedReturnsAuthenticationError(t *testing.T) {
 	srv, _ := newTestServer(t, 401, map[string]any{
 		"error": map[string]any{"code": "UNAUTHORIZED", "message": "bad key"},
 	})
-	client := NewClient("df_live_test", WithBaseURL(srv.URL), WithMaxRetries(0))
+	client := NewClient("dk_live_test", WithBaseURL(srv.URL), WithMaxRetries(0))
 	_, err := client.GetUsage(context.Background())
 	var authErr *AuthenticationError
 	if !errors.As(err, &authErr) {
@@ -121,7 +121,7 @@ func TestRateLimitedReturnsRateLimitError(t *testing.T) {
 	}))
 	t.Cleanup(srv.Close)
 
-	client := NewClient("df_live_test", WithBaseURL(srv.URL), WithMaxRetries(0))
+	client := NewClient("dk_live_test", WithBaseURL(srv.URL), WithMaxRetries(0))
 	_, err := client.GetUsage(context.Background())
 	var rl *RateLimitError
 	if !errors.As(err, &rl) {
@@ -137,7 +137,7 @@ func TestPdfMergeUsesCorrectPath(t *testing.T) {
 		"url":       "https://cdn.example/merged.pdf",
 		"file_size": 2048,
 	})
-	client := NewClient("df_live_test", WithBaseURL(srv.URL), WithMaxRetries(0))
+	client := NewClient("dk_live_test", WithBaseURL(srv.URL), WithMaxRetries(0))
 	_, err := client.PdfMerge(context.Background(), []string{"a", "b"}, "url")
 	if err != nil {
 		t.Fatalf("PdfMerge: %v", err)
@@ -149,7 +149,7 @@ func TestPdfMergeUsesCorrectPath(t *testing.T) {
 
 func TestMarketplaceListUsesGET(t *testing.T) {
 	srv, reqs := newCapturingServer(t, 200, map[string]any{"data": []any{}})
-	client := NewClient("df_live_test", WithBaseURL(srv.URL), WithMaxRetries(0))
+	client := NewClient("dk_live_test", WithBaseURL(srv.URL), WithMaxRetries(0))
 	_, err := client.ListMarketplace(context.Background())
 	if err != nil {
 		t.Fatalf("ListMarketplace: %v", err)

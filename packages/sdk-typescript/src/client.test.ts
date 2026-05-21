@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { DocuForge, AuthenticationError, RateLimitError, DocuForgeError } from './index.js';
+import { Deckle, AuthenticationError, RateLimitError, DeckleError } from './index.js';
 
 // Replace global fetch with a per-test stub. Real network is never
 // touched.
@@ -20,18 +20,18 @@ const errorResponse = (status: number, body: unknown, retryAfter?: string) => ({
   json: async () => body,
 });
 
-describe('DocuForge SDK', () => {
+describe('Deckle SDK', () => {
   beforeEach(() => {
     fetchMock.mockReset();
   });
 
   describe('constructor', () => {
     it('refuses an empty API key', () => {
-      expect(() => new DocuForge('')).toThrow(/required/i);
+      expect(() => new Deckle('')).toThrow(/required/i);
     });
 
     it('trims trailing slashes from custom baseUrl', () => {
-      const client = new DocuForge('df_live_test', {
+      const client = new Deckle('dk_live_test', {
         baseUrl: 'https://api.example.com/',
         maxRetries: 0,
       });
@@ -50,11 +50,11 @@ describe('DocuForge SDK', () => {
       fetchMock.mockResolvedValueOnce(
         successResponse({ id: 'gen_1', status: 'completed', url: 'https://x', pages: 1, file_size: 1, generation_time_ms: 1 }),
       );
-      const client = new DocuForge('df_live_secret_key', { maxRetries: 0 });
+      const client = new Deckle('dk_live_secret_key', { maxRetries: 0 });
       await client.generate({ html: '<h1>x</h1>' });
       const [, opts] = fetchMock.mock.calls[0];
       expect(opts.method).toBe('POST');
-      expect(opts.headers.Authorization).toBe('Bearer df_live_secret_key');
+      expect(opts.headers.Authorization).toBe('Bearer dk_live_secret_key');
       expect(opts.headers['Content-Type']).toBe('application/json');
       const body = JSON.parse(opts.body as string);
       expect(body.html).toBe('<h1>x</h1>');
@@ -62,7 +62,7 @@ describe('DocuForge SDK', () => {
 
     it('encodes the path correctly for generation lookup', async () => {
       fetchMock.mockResolvedValueOnce(successResponse({ id: 'gen_42', status: 'completed' }));
-      const client = new DocuForge('df_live_x', { maxRetries: 0 });
+      const client = new Deckle('dk_live_x', { maxRetries: 0 });
       await client.getGeneration('gen_42');
       expect(fetchMock.mock.calls[0][0]).toMatch(/\/v1\/generations\/gen_42$/);
     });
@@ -73,7 +73,7 @@ describe('DocuForge SDK', () => {
       fetchMock.mockResolvedValueOnce(
         errorResponse(401, { error: { code: 'UNAUTHORIZED', message: 'no good' } }),
       );
-      const client = new DocuForge('df_live_x', { maxRetries: 0 });
+      const client = new Deckle('dk_live_x', { maxRetries: 0 });
       await expect(client.getUsage()).rejects.toBeInstanceOf(AuthenticationError);
     });
 
@@ -81,7 +81,7 @@ describe('DocuForge SDK', () => {
       fetchMock.mockResolvedValueOnce(
         errorResponse(429, { error: { code: 'RATE_LIMITED', message: 'slow down' } }, '7'),
       );
-      const client = new DocuForge('df_live_x', { maxRetries: 0 });
+      const client = new Deckle('dk_live_x', { maxRetries: 0 });
       try {
         await client.getUsage();
         expect.fail('should have thrown');
@@ -91,12 +91,12 @@ describe('DocuForge SDK', () => {
       }
     });
 
-    it('throws DocuForgeError on a non-retryable 4xx', async () => {
+    it('throws DeckleError on a non-retryable 4xx', async () => {
       fetchMock.mockResolvedValueOnce(
         errorResponse(400, { error: { code: 'VALIDATION_ERROR', message: 'bad input' } }),
       );
-      const client = new DocuForge('df_live_x', { maxRetries: 0 });
-      await expect(client.generate({ html: '' })).rejects.toBeInstanceOf(DocuForgeError);
+      const client = new Deckle('dk_live_x', { maxRetries: 0 });
+      await expect(client.generate({ html: '' })).rejects.toBeInstanceOf(DeckleError);
     });
   });
 
@@ -112,7 +112,7 @@ describe('DocuForge SDK', () => {
       ['starterTemplates.list', '/v1/starter-templates', 'GET'],
     ])('%s -> %s %s', async (path, expectedUrl, expectedMethod) => {
       fetchMock.mockResolvedValueOnce(successResponse({ data: [] }));
-      const client = new DocuForge('df_live_x', { maxRetries: 0 });
+      const client = new Deckle('dk_live_x', { maxRetries: 0 });
       // Tiny dispatcher so we can call methods by name.
       const dispatch: Record<string, () => Promise<unknown>> = {
         'pdf.merge': () => client.pdf.merge({ pdfs: ['a', 'b'] }),
@@ -131,7 +131,7 @@ describe('DocuForge SDK', () => {
       fetchMock.mockResolvedValueOnce(
         successResponse({ report_id: 'rep_1', auto_actioned: false }),
       );
-      const client = new DocuForge('df_live_x', { maxRetries: 0 });
+      const client = new Deckle('dk_live_x', { maxRetries: 0 });
       const result = await client.marketplace.report('tmpl_xyz', {
         reason: 'spam',
         notes: 'repetitive nonsense',

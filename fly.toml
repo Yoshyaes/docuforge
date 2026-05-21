@@ -1,4 +1,4 @@
-app = "docuforge-api"
+app = "deckle-api"
 primary_region = "iad"
 
 [build]

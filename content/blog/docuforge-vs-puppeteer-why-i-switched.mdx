@@ -1,19 +1,19 @@
-﻿---
-title: "DocuForge vs Puppeteer: Why I Switched"
-description: "A developer's honest comparison of self-hosted Puppeteer PDF generation versus the DocuForge API. Infrastructure, code complexity, cost, and performance compared."
-slug: "docuforge-vs-puppeteer-why-i-switched"
+---
+title: "Deckle vs Puppeteer: Why I Switched"
+description: "A developer's honest comparison of self-hosted Puppeteer PDF generation versus the Deckle API. Infrastructure, code complexity, cost, and performance compared."
+slug: "deckle-vs-puppeteer-why-i-switched"
 date: "2026-03-24"
-author: "DocuForge Team"
+author: "Deckle Team"
 authorRole: "Developer Advocate"
 tags: ["comparison", "pdf-generation", "typescript"]
 readingTime: "10 min read"
 ---
 
-# DocuForge vs Puppeteer: Why I Switched
+# Deckle vs Puppeteer: Why I Switched
 
-I spent three days getting Puppeteer to reliably generate invoices in production. Three days of debugging Chromium crashes inside Docker, wrestling with memory limits, and writing retry logic that should not have been my responsibility. Then I found DocuForge and replaced the entire setup in about ten minutes.
+I spent three days getting Puppeteer to reliably generate invoices in production. Three days of debugging Chromium crashes inside Docker, wrestling with memory limits, and writing retry logic that should not have been my responsibility. Then I found Deckle and replaced the entire setup in about ten minutes.
 
-This is not a theoretical comparison post. I am going to walk through the exact Puppeteer code I was running, the problems I hit, and how the same workflow looks with DocuForge. I will be honest about when Puppeteer still makes sense. But for my use case -- a SaaS that generates invoices, receipts, and shipping labels at moderate scale -- the switch was one of the best infrastructure decisions I made last year.
+This is not a theoretical comparison post. I am going to walk through the exact Puppeteer code I was running, the problems I hit, and how the same workflow looks with Deckle. I will be honest about when Puppeteer still makes sense. But for my use case -- a SaaS that generates invoices, receipts, and shipping labels at moderate scale -- the switch was one of the best infrastructure decisions I made last year.
 
 If you are currently running Puppeteer or Playwright in production for PDF generation, or if you are about to set it up for the first time, this post will save you time. You will see the real tradeoffs, not a marketing page.
 
@@ -132,7 +132,7 @@ async function getBrowser() {
 
 This helped, but it introduced new problems. If the browser crashed mid-render, the pool returned a dead instance. I had to add health checks, crash detection, and automatic recovery. What started as 40 lines of PDF code was now 200 lines of browser lifecycle management.
 
-DocuForge handles all of this internally. Its browser pool keeps 2-3 Chromium instances alive, assigns requests via round-robin, and recycles each instance after 100 uses. I did not know that when I switched -- I just knew my PDFs stopped failing. Later, reading their architecture docs, I understood why. The pool management that took me a week to get right was a solved problem from day one.
+Deckle handles all of this internally. Its browser pool keeps 2-3 Chromium instances alive, assigns requests via round-robin, and recycles each instance after 100 uses. I did not know that when I switched -- I just knew my PDFs stopped failing. Later, reading their architecture docs, I understood why. The pool management that took me a week to get right was a solved problem from day one.
 
 ## Problem 2: Headers, Footers, and Page Breaks
 
@@ -144,7 +144,7 @@ Puppeteer's `displayHeaderFooter` option sounds great until you actually use it.
 
 CSS page breaks were another frustration. I had multi-page invoices where a line item table needed to break cleanly across pages. In theory, `break-inside: avoid` on table rows should handle this. In practice, Chromium's print rendering engine has its own opinions. I spent an afternoon experimenting with combinations of `page-break-before`, `page-break-after`, `break-inside`, and wrapper divs before finding a combination that worked consistently.
 
-DocuForge still uses Chromium under the hood, so the rendering engine is the same. But their header and footer handling is cleaner. You pass `header` and `footer` as HTML strings in the options, and they support `{{pageNumber}}` and `{{totalPages}}` as interpolation variables:
+Deckle still uses Chromium under the hood, so the rendering engine is the same. But their header and footer handling is cleaner. You pass `header` and `footer` as HTML strings in the options, and they support `{{pageNumber}}` and `{{totalPages}}` as interpolation variables:
 
 ```typescript
 const pdf = await df.generate({
@@ -167,25 +167,25 @@ Six months into production, our Python team needed to generate PDF reports from 
 
 We had two options. First, duplicate the entire Puppeteer setup in Python using Pyppeteer or Playwright for Python. That meant another Dockerfile with Chromium, another browser pool, another set of memory issues to debug. Second, build an internal PDF generation microservice that both the Node.js and Python codebases could call over HTTP.
 
-We went with option two, and it worked, but we were now maintaining a standalone service just to wrap Puppeteer behind an HTTP API. We had accidentally built a worse version of what DocuForge already provides.
+We went with option two, and it worked, but we were now maintaining a standalone service just to wrap Puppeteer behind an HTTP API. We had accidentally built a worse version of what Deckle already provides.
 
-With DocuForge, the Python team just installed the SDK:
+With Deckle, the Python team just installed the SDK:
 
 ```bash
-pip install docuforge
+pip install deckle
 ```
 
 ```python
-from docuforge import DocuForge
+from deckle import Deckle
 
-df = DocuForge("df_live_your_api_key_here")
+df = Deckle("dk_live_your_api_key_here")
 result = df.generate(html=report_html, options={"format": "A4"})
 print(result.url)
 ```
 
 Same API, same response shape, no infrastructure. They also have SDKs for Go and Ruby, which means any future service we build can generate PDFs without standing up its own Chromium instance.
 
-## The Switch: DocuForge in 10 Minutes
+## The Switch: Deckle in 10 Minutes
 
 Let me show you the before and after. Here is the Puppeteer version again, condensed to its core:
 
@@ -208,13 +208,13 @@ await browser.close();
 // Then handle crashes, retries, cleanup...
 ```
 
-Here is the DocuForge version:
+Here is the Deckle version:
 
 ```typescript
-// DocuForge: 6 lines, no infrastructure
-import DocuForge from "docuforge";
+// Deckle: 6 lines, no infrastructure
+import Deckle from "deckle";
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const df = new Deckle(process.env.DECKLE_API_KEY!);
 
 const pdf = await df.generate({
   html: invoiceHtml,
@@ -228,9 +228,9 @@ const pdf = await df.generate({
 console.log(pdf.url); // hosted URL, ready to use
 ```
 
-The response object gives you everything you need: `id`, `status`, `url`, `pages`, `file_size`, and `generation_time_ms`. The PDF is stored automatically -- DocuForge supports local storage, Cloudflare R2, AWS S3, and Google Cloud Storage -- so there is no manual upload step.
+The response object gives you everything you need: `id`, `status`, `url`, `pages`, `file_size`, and `generation_time_ms`. The PDF is stored automatically -- Deckle supports local storage, Cloudflare R2, AWS S3, and Google Cloud Storage -- so there is no manual upload step.
 
-For templated documents, the difference is even starker. Instead of building HTML strings with string interpolation (or setting up a template engine yourself), DocuForge has built-in Handlebars support:
+For templated documents, the difference is even starker. Instead of building HTML strings with string interpolation (or setting up a template engine yourself), Deckle has built-in Handlebars support:
 
 ```typescript
 const pdf = await df.fromTemplate({
@@ -249,13 +249,13 @@ const pdf = await df.fromTemplate({
 
 Templates support `{{variable}}`, `{{#each items}}`, `{{#if condition}}`, and the full Handlebars syntax. They are stored server-side with version history, so you can update an invoice layout without redeploying your application.
 
-The migration took about ten minutes. I removed the Puppeteer dependency, deleted the browser pool code, deleted the S3 upload logic, removed Chromium from the Dockerfile, and installed the `docuforge` npm package. The Docker image dropped from 800MB to 200MB.
+The migration took about ten minutes. I removed the Puppeteer dependency, deleted the browser pool code, deleted the S3 upload logic, removed Chromium from the Dockerfile, and installed the `deckle` npm package. The Docker image dropped from 800MB to 200MB.
 
 ## Feature Comparison Table
 
 Here is a side-by-side comparison of what you get with each approach:
 
-| Feature | Puppeteer (Self-Hosted) | DocuForge |
+| Feature | Puppeteer (Self-Hosted) | Deckle |
 |---|---|---|
 | **Setup time** | Hours to days (Docker, Chromium, pool) | 5 minutes (npm install + API key) |
 | **Infrastructure** | Your servers, your Chromium, your problem | Managed service, nothing to host |
@@ -283,25 +283,25 @@ I ran both setups against the same invoice HTML to get a rough comparison. These
 - Concurrent requests: 2-3 before degradation on a 1GB container
 - Memory: scales linearly with concurrency; each page adds ~50-80MB
 
-**DocuForge API:**
+**Deckle API:**
 - Consistent generation time: 1-2 seconds
 - No cold start penalty (pool is always warm)
 - Concurrent requests: handled by the service; rate limits depend on plan (10-500 req/s)
 - Memory: zero on your infrastructure
 
-The consistency was what mattered most to me. With Puppeteer, the p50 latency was fine, but the p99 was unpredictable. A garbage collection pause or a page with heavy CSS could push a single render to 5+ seconds. With DocuForge, the generation times clustered tightly around 1-2 seconds because their pool is purpose-built for this workload.
+The consistency was what mattered most to me. With Puppeteer, the p50 latency was fine, but the p99 was unpredictable. A garbage collection pause or a page with heavy CSS could push a single render to 5+ seconds. With Deckle, the generation times clustered tightly around 1-2 seconds because their pool is purpose-built for this workload.
 
-For batch generation, the difference was even more pronounced. Generating 50 invoices with Puppeteer meant either sequential processing (slow) or a concurrency limit of 2-3 (still slow, and risky). DocuForge's batch endpoint accepts the full set and processes them through a BullMQ queue with concurrency of 5, retries, and exponential backoff. I just fire the request and poll for completion.
+For batch generation, the difference was even more pronounced. Generating 50 invoices with Puppeteer meant either sequential processing (slow) or a concurrency limit of 2-3 (still slow, and risky). Deckle's batch endpoint accepts the full set and processes them through a BullMQ queue with concurrency of 5, retries, and exponential backoff. I just fire the request and poll for completion.
 
 ## When Puppeteer Still Makes Sense
 
 I want to be honest here. Puppeteer is not a bad tool. It is a bad tool for PDF-only workloads in production. There are legitimate reasons to keep it:
 
-**Full browser automation.** If you need screenshots, scraping, end-to-end testing, or any interaction beyond "render HTML to PDF," Puppeteer is the right choice. DocuForge is a PDF API, not a general-purpose browser automation tool.
+**Full browser automation.** If you need screenshots, scraping, end-to-end testing, or any interaction beyond "render HTML to PDF," Puppeteer is the right choice. Deckle is a PDF API, not a general-purpose browser automation tool.
 
-**Strict data residency requirements.** If your compliance rules require that document data never leaves your infrastructure, a self-hosted solution is necessary. DocuForge does offer a self-hosted Docker deployment, but you should evaluate whether that meets your specific compliance needs.
+**Strict data residency requirements.** If your compliance rules require that document data never leaves your infrastructure, a self-hosted solution is necessary. Deckle does offer a self-hosted Docker deployment, but you should evaluate whether that meets your specific compliance needs.
 
-**You are already operating at massive scale.** If you have already invested in a robust browser pool with health checks, auto-scaling, and monitoring, and it is working well, the migration cost may not be worth it. The argument for DocuForge is strongest when you are setting up PDF generation for the first time or when your current setup is causing pain.
+**You are already operating at massive scale.** If you have already invested in a robust browser pool with health checks, auto-scaling, and monitoring, and it is working well, the migration cost may not be worth it. The argument for Deckle is strongest when you are setting up PDF generation for the first time or when your current setup is causing pain.
 
 **Cost sensitivity at very high volume.** If you are generating hundreds of thousands of PDFs per month, the math changes. At that scale, a dedicated Puppeteer cluster on cheap compute might cost less than API pricing. Run the numbers for your specific volume.
 
@@ -309,15 +309,15 @@ For everyone else -- and that includes most teams generating PDFs in production 
 
 ## Conclusion
 
-Switching from Puppeteer to DocuForge was not a dramatic, everything-changed moment. It was more like removing a constant low-grade headache. I stopped worrying about browser crashes. I stopped debugging Docker memory limits. I stopped maintaining a browser pool. I just called an API and got a PDF back.
+Switching from Puppeteer to Deckle was not a dramatic, everything-changed moment. It was more like removing a constant low-grade headache. I stopped worrying about browser crashes. I stopped debugging Docker memory limits. I stopped maintaining a browser pool. I just called an API and got a PDF back.
 
-If you are starting a new project that needs PDF generation, I would recommend trying DocuForge first. You can always fall back to Puppeteer if you hit a limitation, but chances are you will not need to.
+If you are starting a new project that needs PDF generation, I would recommend trying Deckle first. You can always fall back to Puppeteer if you hit a limitation, but chances are you will not need to.
 
 To get started, check out these tutorials:
 
-- [How to Generate PDFs in Next.js with DocuForge](https://getdocuforge.dev/blog/generate-pdfs-nextjs-docuforge)
-- [Express.js PDF Generation Guide](https://getdocuforge.dev/docs/guides/express)
-- [Python SDK with FastAPI](https://getdocuforge.dev/docs/guides/fastapi)
-- [DocuForge API Reference](https://getdocuforge.dev/docs/api-reference)
+- [How to Generate PDFs in Next.js with Deckle](https://getdeckle.dev/blog/generate-pdfs-nextjs-deckle)
+- [Express.js PDF Generation Guide](https://getdeckle.dev/docs/guides/express)
+- [Python SDK with FastAPI](https://getdeckle.dev/docs/guides/fastapi)
+- [Deckle API Reference](https://getdeckle.dev/docs/api-reference)
 
-You can grab an API key from the [dashboard](https://app.getdocuforge.dev) and generate your first PDF in under five minutes.
+You can grab an API key from the [dashboard](https://app.getdeckle.dev) and generate your first PDF in under five minutes.

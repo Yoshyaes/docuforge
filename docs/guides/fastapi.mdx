@@ -1,6 +1,6 @@
 ---
 title: FastAPI Guide
-description: Generate PDFs in your FastAPI app with DocuForge.
+description: Generate PDFs in your FastAPI app with Deckle.
 ---
 
 # Generate PDFs in FastAPI
@@ -10,7 +10,7 @@ Add PDF generation to a FastAPI application.
 ## 1. Install
 
 ```bash
-pip install docuforge fastapi uvicorn
+pip install deckle fastapi uvicorn
 ```
 
 ## 2. Set Up
@@ -20,10 +20,10 @@ pip install docuforge fastapi uvicorn
 import os
 from fastapi import FastAPI
 from pydantic import BaseModel
-from docuforge import DocuForge
+from deckle import Deckle
 
 app = FastAPI()
-df = DocuForge(os.environ["DOCUFORGE_API_KEY"])
+df = Deckle(os.environ["DECKLE_API_KEY"])
 
 
 class GenerateRequest(BaseModel):
@@ -58,7 +58,7 @@ def generate_invoice(data: InvoiceData):
 ## 3. Run
 
 ```bash
-DOCUFORGE_API_KEY=df_live_... uvicorn main:app --reload
+DECKLE_API_KEY=dk_live_... uvicorn main:app --reload
 ```
 
 ## 4. Download Endpoint

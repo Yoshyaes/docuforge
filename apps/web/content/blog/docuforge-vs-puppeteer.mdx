@@ -1,13 +1,13 @@
 ---
-title: "DocuForge vs Puppeteer: Why I Switched"
-description: "A developer's comparison of building PDF generation with raw Puppeteer versus using DocuForge's API. Spoiler: it's not even close."
+title: "Deckle vs Puppeteer: Why I Switched"
+description: "A developer's comparison of building PDF generation with raw Puppeteer versus using Deckle's API. Spoiler: it's not even close."
 date: "2026-03-05"
-author: "DocuForge Team"
+author: "Deckle Team"
 category: "Comparison"
 readingTime: 6
 ---
 
-I spent six months maintaining a Puppeteer-based PDF generation system. Browser crashes, memory leaks, font rendering issues, and a 200-line wrapper that nobody wanted to touch. Then I switched to DocuForge.
+I spent six months maintaining a Puppeteer-based PDF generation system. Browser crashes, memory leaks, font rendering issues, and a 200-line wrapper that nobody wanted to touch. Then I switched to Deckle.
 
 ## The Puppeteer Approach
 
@@ -23,10 +23,10 @@ With Puppeteer, generating a PDF means:
 
 That's a lot of infrastructure for "turn this HTML into a PDF."
 
-## The DocuForge Approach
+## The Deckle Approach
 
 ```typescript
-const pdf = await docuforge.generate({
+const pdf = await deckle.generate({
   html: '<h1>Hello World</h1>',
   options: { format: 'A4' },
 });
@@ -36,7 +36,7 @@ One line. No browser management. No memory leaks. No zombie processes.
 
 ## Feature Comparison
 
-| Feature | Puppeteer DIY | DocuForge |
+| Feature | Puppeteer DIY | Deckle |
 |---------|--------------|-----------|
 | Setup time | 30+ minutes | 30 seconds |
 | Lines of code | 200+ | 5 |
@@ -53,10 +53,10 @@ Puppeteer is great for web scraping, browser automation, and screenshot tools. B
 
 ## Making the Switch
 
-If you're currently using Puppeteer for PDFs, migration is straightforward. Replace your browser pool and rendering code with a single DocuForge API call. Your HTML templates work as-is.
+If you're currently using Puppeteer for PDFs, migration is straightforward. Replace your browser pool and rendering code with a single Deckle API call. Your HTML templates work as-is.
 
 ```bash
-npm install docuforge
+npm install deckle
 ```
 
 That's it. Your Puppeteer nightmare is over.

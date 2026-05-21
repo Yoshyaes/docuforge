@@ -9,16 +9,16 @@ Get from zero to a generated PDF in 5 minutes.
 
 ## 1. Get an API Key
 
-Sign up at [app.getdocuforge.dev](https://app.getdocuforge.dev) and copy your API key from the dashboard. It starts with `df_live_`.
+Sign up at [app.getdeckle.dev](https://app.getdeckle.dev) and copy your API key from the dashboard. It starts with `dk_live_`.
 
 ## 2. Install the SDK
 
 <CodeGroup>
 ```bash npm
-npm install docuforge
+npm install deckle
 ```
 ```bash pip
-pip install docuforge
+pip install deckle
 ```
 </CodeGroup>
 
@@ -26,13 +26,13 @@ pip install docuforge
 
 <CodeGroup>
 ```typescript TypeScript
-import { DocuForge } from 'docuforge';
+import { Deckle } from 'deckle';
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY);
+const df = new Deckle(process.env.DECKLE_API_KEY);
 
 const pdf = await df.generate({
   html: `
-    <h1>Hello from DocuForge</h1>
+    <h1>Hello from Deckle</h1>
     <p>This took 30 seconds, not 3 days.</p>
   `,
   options: { format: 'A4' }
@@ -42,12 +42,12 @@ console.log(pdf.url);
 ```
 
 ```python Python
-from docuforge import DocuForge
+from deckle import Deckle
 
-df = DocuForge("df_live_...")
+df = Deckle("dk_live_...")
 
 pdf = df.generate(
-    html="<h1>Hello from DocuForge</h1><p>This took 30 seconds, not 3 days.</p>",
+    html="<h1>Hello from Deckle</h1><p>This took 30 seconds, not 3 days.</p>",
     options={"format": "A4"}
 )
 

@@ -176,7 +176,7 @@ app.onError((err, c) => {
     let keyPrefix: string | null = null;
     if (authHeader?.startsWith('Bearer ')) {
       const token = authHeader.slice(7);
-      if (token.startsWith('df_live_')) {
+      if (token.startsWith('dk_live_')) {
         keyPrefix = token.slice(0, 16);
       }
     }
@@ -216,7 +216,7 @@ async function start() {
   httpServer = serve(
     { fetch: app.fetch, port },
     (info) => {
-      logger.info(`DocuForge API running on http://localhost:${info.port}`);
+      logger.info(`Deckle API running on http://localhost:${info.port}`);
     },
   );
 }

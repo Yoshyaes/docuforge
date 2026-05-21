@@ -10,8 +10,8 @@ interface OnboardingChecklistProps {
   apiKeyPreview?: string;
 }
 
-const DISMISS_KEY = 'docuforge:onboarding-dismissed';
-const SDK_TAB_KEY = 'docuforge:sdk-tab';
+const DISMISS_KEY = 'deckle:onboarding-dismissed';
+const SDK_TAB_KEY = 'deckle:sdk-tab';
 
 type StepId = 'first-pdf' | 'api-key' | 'try-api' | 'install-sdk';
 
@@ -31,49 +31,49 @@ const SDK_TABS = [
   {
     id: 'ts',
     label: 'TypeScript',
-    install: 'npm install docuforge',
-    code: `import { DocuForge } from 'docuforge';
+    install: 'npm install deckle',
+    code: `import { Deckle } from 'deckle';
 
 // The constructor takes the API key as the first positional argument.
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const df = new Deckle(process.env.DECKLE_API_KEY!);
 
 const pdf = await df.generate({
-  html: '<h1>Hello from DocuForge!</h1>',
+  html: '<h1>Hello from Deckle!</h1>',
 });
 console.log(pdf.url);`,
   },
   {
     id: 'python',
     label: 'Python',
-    install: 'pip install docuforge',
+    install: 'pip install deckle',
     code: `import os
-from docuforge import DocuForge
+from deckle import Deckle
 
 # The constructor takes the API key as the first positional argument.
-df = DocuForge(os.environ["DOCUFORGE_API_KEY"])
+df = Deckle(os.environ["DECKLE_API_KEY"])
 
-pdf = df.generate(html="<h1>Hello from DocuForge!</h1>")
+pdf = df.generate(html="<h1>Hello from Deckle!</h1>")
 print(pdf.url)`,
   },
   {
     id: 'go',
     label: 'Go',
-    install: 'go get github.com/docuforge/docuforge-go',
-    code: `import "github.com/docuforge/docuforge-go"
+    install: 'go get github.com/Yoshyaes/deckle/packages/sdk-go',
+    code: `import "github.com/Yoshyaes/deckle/packages/sdk-go"
 
-client := docuforge.NewClient(os.Getenv("DOCUFORGE_API_KEY"))
-pdf, err := client.Generate(ctx, docuforge.GenerateParams{
-    HTML: "<h1>Hello from DocuForge!</h1>",
+client := deckle.NewClient(os.Getenv("DECKLE_API_KEY"))
+pdf, err := client.Generate(ctx, deckle.GenerateParams{
+    HTML: "<h1>Hello from Deckle!</h1>",
 })`,
   },
   {
     id: 'ruby',
     label: 'Ruby',
-    install: 'gem install docuforge',
-    code: `require "docuforge"
+    install: 'gem install deckle',
+    code: `require "deckle"
 
-df = DocuForge::Client.new(api_key: ENV["DOCUFORGE_API_KEY"])
-pdf = df.generate(html: "<h1>Hello from DocuForge!</h1>")
+df = Deckle::Client.new(api_key: ENV["DECKLE_API_KEY"])
+pdf = df.generate(html: "<h1>Hello from Deckle!</h1>")
 puts pdf.url`,
   },
 ] as const;
@@ -94,7 +94,7 @@ export function OnboardingChecklist({
     if (window.localStorage.getItem(DISMISS_KEY) === '1') {
       setDismissed(true);
     }
-    if (window.localStorage.getItem('docuforge:onboarding-sdk-done') === '1') {
+    if (window.localStorage.getItem('deckle:onboarding-sdk-done') === '1') {
       setInstallSdkDone(true);
     }
     const savedTab = window.localStorage.getItem(SDK_TAB_KEY) as
@@ -128,10 +128,10 @@ export function OnboardingChecklist({
   if (allDone) return null;
 
   const keyPlaceholder = apiKeyPreview ? `${apiKeyPreview}...` : 'YOUR_API_KEY';
-  const curlCommand = `curl -X POST https://api.getdocuforge.dev/v1/generate \\
+  const curlCommand = `curl -X POST https://api.getdeckle.dev/v1/generate \\
   -H "Authorization: Bearer ${keyPlaceholder}" \\
   -H "Content-Type: application/json" \\
-  -d '{"html": "<h1>Hello from DocuForge!</h1>"}'`;
+  -d '{"html": "<h1>Hello from Deckle!</h1>"}'`;
 
   const copy = (key: string, value: string) => {
     navigator.clipboard.writeText(value);
@@ -142,7 +142,7 @@ export function OnboardingChecklist({
   const markSdkDone = () => {
     setInstallSdkDone(true);
     if (typeof window !== 'undefined') {
-      window.localStorage.setItem('docuforge:onboarding-sdk-done', '1');
+      window.localStorage.setItem('deckle:onboarding-sdk-done', '1');
     }
   };
 
@@ -160,7 +160,7 @@ export function OnboardingChecklist({
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-[15px] font-bold text-text-primary">
-            Get started with DocuForge
+            Get started with Deckle
           </h2>
           <p className="text-xs text-text-dim mt-0.5">
             Generate your first PDF in under 5 minutes

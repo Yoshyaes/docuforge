@@ -4,9 +4,9 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { CodeBlock } from '@/components/ui/code-block';
 
-const heroCode = `import { DocuForge } from 'docuforge';
+const heroCode = `import { Deckle } from 'deckle';
 
-const client = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const client = new Deckle(process.env.DECKLE_API_KEY!);
 
 const pdf = await client.generate({
   html: '<h1>Invoice #1042</h1><p>Total: $69.98</p>',
@@ -14,12 +14,12 @@ const pdf = await client.generate({
 });
 
 console.log(pdf.url);
-// → https://cdn.getdocuforge.dev/gen_abc123.pdf`;
+// → https://cdn.getdeckle.dev/gen_abc123.pdf`;
 
 const heroResponse = `{
   "id": "gen_abc123",
   "status": "completed",
-  "url": "https://cdn.getdocuforge.dev/gen_abc123.pdf",
+  "url": "https://cdn.getdeckle.dev/gen_abc123.pdf",
   "pages": 1,
   "file_size": 24531,
   "generation_time_ms": 287
@@ -58,13 +58,13 @@ export function Hero() {
             </p>
 
             <div className="flex flex-wrap gap-3">
-              <Button size="lg" href="https://app.getdocuforge.dev/sign-up">
+              <Button size="lg" href="https://app.getdeckle.dev/sign-up">
                 Start for Free
               </Button>
               <Button
                 variant="secondary"
                 size="lg"
-                href="https://docs.getdocuforge.dev"
+                href="https://docs.getdeckle.dev"
               >
                 Read the Docs
               </Button>

@@ -16,7 +16,7 @@
  *      compile + run with a 5s timeout, return the HTML string
  *   4. Dispose the isolate
  *
- * Kill switch: `DOCUFORGE_DISABLE_REACT_RENDERER=true` returns a
+ * Kill switch: `DECKLE_DISABLE_REACT_RENDERER=true` returns a
  * `ValidationError` before any isolate work happens.
  */
 import { buildSync, transformSync } from 'esbuild';
@@ -32,7 +32,7 @@ const RENDER_TIMEOUT_MS = 5_000;
 const ISOLATE_MEMORY_MB = 128;
 
 function rendererDisabled(): boolean {
-  return process.env.DOCUFORGE_DISABLE_REACT_RENDERER === 'true';
+  return process.env.DECKLE_DISABLE_REACT_RENDERER === 'true';
 }
 
 // Minimal globals React 18's renderer touches but that aren't part of

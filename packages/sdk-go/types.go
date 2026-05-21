@@ -1,5 +1,5 @@
-// Package docuforge provides a Go client for the DocuForge PDF generation API.
-package docuforge
+// Package deckle provides a Go client for the Deckle PDF generation API.
+package deckle
 
 import "encoding/json"
 

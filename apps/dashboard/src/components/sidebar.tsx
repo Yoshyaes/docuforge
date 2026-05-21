@@ -52,7 +52,7 @@ export function Sidebar({ usageCount = 0, usageLimit = 1000, isAdmin = false }: 
           D
         </div>
         <span className="text-sm font-bold text-text-primary tracking-tight">
-          DocuForge
+          Deckle
         </span>
       </div>
 
@@ -81,7 +81,7 @@ export function Sidebar({ usageCount = 0, usageLimit = 1000, isAdmin = false }: 
           );
         })}
         <a
-          href="https://getdocuforge.dev/docs"
+          href="https://getdeckle.dev/docs"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium mb-0.5 transition-colors text-text-muted hover:text-text-primary hover:bg-surface-hover/50"
@@ -146,13 +146,13 @@ export function Sidebar({ usageCount = 0, usageLimit = 1000, isAdmin = false }: 
 }
 
 function DevOrClerkUser() {
-  if ((process.env.NEXT_PUBLIC_DEV_BYPASS === 'true' || process.env.DOCUFORGE_DEV_BYPASS === 'true') && process.env.NODE_ENV !== 'production') {
+  if ((process.env.NEXT_PUBLIC_DEV_BYPASS === 'true' || process.env.DECKLE_DEV_BYPASS === 'true') && process.env.NODE_ENV !== 'production') {
     return (
       <div className="flex items-center gap-2">
         <div className="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center text-xs font-bold text-accent">
           D
         </div>
-        <span className="text-xs text-text-muted">dev@docuforge.local</span>
+        <span className="text-xs text-text-muted">dev@deckle.local</span>
       </div>
     );
   }

@@ -1,5 +1,5 @@
-from docuforge.client import DocuForge
-from docuforge.types import (
+from deckle.client import Deckle
+from deckle.types import (
     PDFOptions,
     GenerateParams,
     GenerateResponse,
@@ -13,15 +13,15 @@ from docuforge.types import (
     CreateTemplateParams,
     UsageStats,
 )
-from docuforge.errors import (
-    DocuForgeError,
+from deckle.errors import (
+    DeckleError,
     AuthenticationError,
     RateLimitError,
     ValidationError,
 )
 
 __all__ = [
-    "DocuForge",
+    "Deckle",
     "PDFOptions",
     "GenerateParams",
     "GenerateResponse",
@@ -34,7 +34,7 @@ __all__ = [
     "Template",
     "CreateTemplateParams",
     "UsageStats",
-    "DocuForgeError",
+    "DeckleError",
     "AuthenticationError",
     "RateLimitError",
     "ValidationError",

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# DocuForge Ruby SDK — request shape, error mapping, and namespace
+# Deckle Ruby SDK — request shape, error mapping, and namespace
 # coverage. Mirrors packages/sdk-typescript/src/client.test.ts.
 #
 # Faraday::Adapter::Test intercepts every request so no real network
@@ -8,8 +8,8 @@
 
 require "spec_helper"
 
-RSpec.describe DocuForge::Client do
-  include DocuForgeSpecHelpers
+RSpec.describe Deckle::Client do
+  include DeckleSpecHelpers
 
   let(:usage_payload) do
     {
@@ -25,11 +25,11 @@ RSpec.describe DocuForge::Client do
 
   describe "constructor" do
     it "refuses an empty api_key" do
-      expect { DocuForge::Client.new(api_key: "") }.to raise_error(ArgumentError, /required/)
+      expect { Deckle::Client.new(api_key: "") }.to raise_error(ArgumentError, /required/)
     end
 
     it "refuses a nil api_key" do
-      expect { DocuForge::Client.new(api_key: nil) }.to raise_error(ArgumentError, /required/)
+      expect { Deckle::Client.new(api_key: nil) }.to raise_error(ArgumentError, /required/)
     end
 
     it "strips trailing slash from base_url" do
@@ -41,11 +41,11 @@ RSpec.describe DocuForge::Client do
       # Pass the slash through the real constructor; build_client
       # rebuilds @conn but we set base_url on the client constructor
       # so the chomp logic is exercised before our rebuild.
-      client = DocuForge::Client.new(
-        api_key: "k", base_url: "#{DocuForgeSpecHelpers::BASE_URL}/", max_retries: 0
+      client = Deckle::Client.new(
+        api_key: "k", base_url: "#{DeckleSpecHelpers::BASE_URL}/", max_retries: 0
       )
       # Replace its conn with the stub adapter.
-      conn = Faraday.new(url: DocuForgeSpecHelpers::BASE_URL) do |f|
+      conn = Faraday.new(url: DeckleSpecHelpers::BASE_URL) do |f|
         f.headers["Authorization"] = "Bearer k"
         f.adapter(:test, stubs)
       end
@@ -68,7 +68,7 @@ RSpec.describe DocuForge::Client do
         end
       end
       build_client(stubs).generate(html: "<h1>hi</h1>")
-      expect(captured[:auth]).to eq("Bearer df_live_test")
+      expect(captured[:auth]).to eq("Bearer dk_live_test")
       expect(captured[:content_type]).to eq("application/json")
       expect(JSON.parse(captured[:body])).to include("html" => "<h1>hi</h1>")
       stubs.verify_stubbed_calls
@@ -105,7 +105,7 @@ RSpec.describe DocuForge::Client do
           [401, {}, JSON.generate({ "error" => { "code" => "UNAUTHORIZED", "message" => "no" } })]
         end
       end
-      expect { build_client(stubs).get_usage }.to raise_error(DocuForge::AuthenticationError)
+      expect { build_client(stubs).get_usage }.to raise_error(Deckle::AuthenticationError)
     end
 
     it "raises RateLimitError on 429 with Retry-After" do
@@ -118,7 +118,7 @@ RSpec.describe DocuForge::Client do
       begin
         build_client(stubs).get_usage
         raise "should have raised"
-      rescue DocuForge::RateLimitError => e
+      rescue Deckle::RateLimitError => e
         expect(e.retry_after).to eq(11)
       end
     end
@@ -131,7 +131,7 @@ RSpec.describe DocuForge::Client do
       end
       expect do
         build_client(stubs).generate(html: "")
-      end.to raise_error(DocuForge::Error) { |e|
+      end.to raise_error(Deckle::Error) { |e|
         expect(e.status_code).to eq(400)
         expect(e.code).to eq("VALIDATION_ERROR")
       }
@@ -145,7 +145,7 @@ RSpec.describe DocuForge::Client do
       end
       expect do
         build_client(stubs).get_generation("gen_missing")
-      end.to raise_error(DocuForge::NotFoundError)
+      end.to raise_error(Deckle::NotFoundError)
     end
 
     it "does not retry when max_retries is zero" do
@@ -158,7 +158,7 @@ RSpec.describe DocuForge::Client do
       end
       expect do
         build_client(stubs, max_retries: 0).get_usage
-      end.to raise_error(DocuForge::Error)
+      end.to raise_error(Deckle::Error)
       expect(hit).to eq(1)
     end
   end

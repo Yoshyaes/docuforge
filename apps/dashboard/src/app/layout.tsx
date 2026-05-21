@@ -8,11 +8,11 @@ const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-dm-sans' });
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains-mono' });
 
 export const metadata: Metadata = {
-  title: 'DocuForge Dashboard',
+  title: 'Deckle Dashboard',
   description: 'Manage your PDF generation API',
 };
 
-const DEV_MODE = process.env.NODE_ENV === 'development' && process.env.DOCUFORGE_DEV_BYPASS === 'true';
+const DEV_MODE = process.env.NODE_ENV === 'development' && process.env.DECKLE_DEV_BYPASS === 'true';
 
 export default function RootLayout({
   children,

@@ -1,6 +1,6 @@
-# Contributing to DocuForge
+# Contributing to Deckle
 
-Thanks for your interest in contributing to DocuForge! This guide will help you get started.
+Thanks for your interest in contributing to Deckle! This guide will help you get started.
 
 ## Development Setup
 
@@ -15,8 +15,8 @@ Thanks for your interest in contributing to DocuForge! This guide will help you 
 1. Fork and clone the repository:
 
 ```bash
-git clone https://github.com/docuforge/docuforge.git
-cd docuforge
+git clone https://github.com/Yoshyaes/deckle/deckle.git
+cd deckle
 ```
 
 2. Install dependencies:
@@ -40,7 +40,7 @@ cp .env.example .env
 5. Run database migrations:
 
 ```bash
-pnpm --filter @docuforge/api db:push
+pnpm --filter @deckle/api db:push
 ```
 
 6. Install Playwright (required for PDF rendering):
@@ -64,8 +64,8 @@ apps/
   api/          — Hono API server (PDF generation, templates, auth)
   dashboard/    — Next.js 14 dashboard
 packages/
-  react/        — @docuforge/react-pdf component library
-  sdk-typescript/ — TypeScript SDK (npm: docuforge)
+  react/        — @deckle/react-pdf component library
+  sdk-typescript/ — TypeScript SDK (npm: deckle)
   sdk-python/   — Python SDK
   sdk-go/       — Go SDK
   sdk-ruby/     — Ruby SDK
@@ -94,11 +94,11 @@ pnpm build
 To build a specific package:
 
 ```bash
-pnpm --filter @docuforge/react-pdf build
-pnpm --filter docuforge build
+pnpm --filter @deckle/react-pdf build
+pnpm --filter deckle build
 ```
 
-## Contributing to `@docuforge/react-pdf`
+## Contributing to `@deckle/react-pdf`
 
 The React component library lives in `packages/react/`. Components are in `src/components/`.
 

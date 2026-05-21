@@ -1,11 +1,11 @@
 import { db, users, apiKeys, generations, templates, usageDaily } from './db';
 import { eq, and, desc, sql, gte, count } from 'drizzle-orm';
 
-const DEV_MODE = process.env.DOCUFORGE_DEV_BYPASS === 'true' && process.env.NODE_ENV !== 'production';
+const DEV_MODE = process.env.DECKLE_DEV_BYPASS === 'true' && process.env.NODE_ENV !== 'production';
 
 /**
  * Get the current user from Clerk session → DB lookup.
- * In dev mode (DOCUFORGE_DEV_BYPASS=true), returns the seeded test user
+ * In dev mode (DECKLE_DEV_BYPASS=true), returns the seeded test user
  * so the dashboard works without Clerk credentials.
  */
 export async function getCurrentUser() {
@@ -13,7 +13,7 @@ export async function getCurrentUser() {
     const [user] = await db
       .select()
       .from(users)
-      .where(eq(users.email, 'dev@docuforge.local'))
+      .where(eq(users.email, 'dev@deckle.local'))
       .limit(1);
     return user || null;
   }

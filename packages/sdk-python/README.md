@@ -1,19 +1,19 @@
-# DocuForge Python SDK
+# Deckle Python SDK
 
 PDF generation API for developers. HTML in, pixel-perfect PDF out.
 
 ## Installation
 
 ```bash
-pip install docuforge
+pip install deckle
 ```
 
 ## Quick Start
 
 ```python
-from docuforge import DocuForge
+from deckle import Deckle
 
-df = DocuForge("df_live_...")
+df = Deckle("dk_live_...")
 
 # Generate a PDF from HTML
 pdf = df.generate(
@@ -21,7 +21,7 @@ pdf = df.generate(
     options={"format": "A4", "margin": "1in"}
 )
 
-print(pdf.url)    # https://cdn.getdocuforge.dev/gen_abc123.pdf
+print(pdf.url)    # https://cdn.getdeckle.dev/gen_abc123.pdf
 print(pdf.pages)  # 2
 ```
 
@@ -43,7 +43,7 @@ pdf = df.from_template(
 ## PDF Options
 
 ```python
-from docuforge import PDFOptions
+from deckle import PDFOptions
 
 pdf = df.generate(
     html=invoice_html,
@@ -81,13 +81,13 @@ df.templates.delete("tmpl_abc123")
 ## Error Handling
 
 ```python
-from docuforge import DocuForge, DocuForgeError, RateLimitError
+from deckle import Deckle, DeckleError, RateLimitError
 
 try:
     pdf = df.generate(html="<h1>Hello</h1>")
 except RateLimitError as e:
     print(f"Rate limited. Retry after {e.retry_after}s")
-except DocuForgeError as e:
+except DeckleError as e:
     print(f"Error {e.code}: {e.message}")
 ```
 

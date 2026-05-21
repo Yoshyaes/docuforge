@@ -1,9 +1,9 @@
 ---
 title: "Django PDF Generation Made Simple"
-description: "Add PDF generation to your Django app with the DocuForge Python SDK. Build views for HTML-to-PDF, template-based invoices, and file downloads."
+description: "Add PDF generation to your Django app with the Deckle Python SDK. Build views for HTML-to-PDF, template-based invoices, and file downloads."
 slug: "django-pdf-generation-made-simple"
 date: "2026-04-04"
-author: "DocuForge Team"
+author: "Deckle Team"
 authorRole: "Developer Advocate"
 tags: ["django", "python", "pdf-generation", "tutorial"]
 readingTime: "9 min read"
@@ -13,25 +13,25 @@ readingTime: "9 min read"
 
 Django developers who need to generate PDFs have traditionally reached for libraries like ReportLab, WeasyPrint, or xhtml2pdf. Each has its own quirks: ReportLab forces you to build documents programmatically rather than from HTML, WeasyPrint requires system-level dependencies that complicate deployment, and xhtml2pdf struggles with modern CSS. All of them run rendering in-process, consuming server resources and introducing maintenance burden.
 
-DocuForge eliminates this complexity. One `pip install`, one API call, and you get back a pixel-perfect PDF rendered by a headless Chromium instance managed entirely by the DocuForge service. The Python SDK is synchronous and fits naturally into Django's request-response cycle.
+Deckle eliminates this complexity. One `pip install`, one API call, and you get back a pixel-perfect PDF rendered by a headless Chromium instance managed entirely by the Deckle service. The Python SDK is synchronous and fits naturally into Django's request-response cycle.
 
 In this tutorial you will build Django views that cover the most common PDF workflows: converting raw HTML, generating invoices from templates with file downloads, integrating with Django REST Framework, building reusable class-based views, and adding PDF export actions to the Django admin.
 
 ## Step 1: Install and Configure
 
-Start by installing the DocuForge Python SDK alongside your Django project dependencies.
+Start by installing the Deckle Python SDK alongside your Django project dependencies.
 
 ```bash
-pip install docuforge
+pip install deckle
 ```
 
-Add your API key to your Django settings. You can grab one from the [DocuForge dashboard](https://app.getdocuforge.dev/keys). Never hard-code API keys in source files -- pull them from environment variables.
+Add your API key to your Django settings. You can grab one from the [Deckle dashboard](https://app.getdeckle.dev/keys). Never hard-code API keys in source files -- pull them from environment variables.
 
 ```python
 # settings.py
 import os
 
-DOCUFORGE_API_KEY = os.environ["DOCUFORGE_API_KEY"]
+DECKLE_API_KEY = os.environ["DECKLE_API_KEY"]
 ```
 
 Create a small utility module so you do not repeat the client initialization across views.
@@ -39,11 +39,11 @@ Create a small utility module so you do not repeat the client initialization acr
 ```python
 # pdf/utils.py
 from django.conf import settings
-from docuforge import DocuForge
+from deckle import Deckle
 
 
-def get_docuforge_client():
-    return DocuForge(api_key=settings.DOCUFORGE_API_KEY)
+def get_deckle_client():
+    return Deckle(api_key=settings.DECKLE_API_KEY)
 ```
 
 This function returns a client instance you can use as a context manager in any view. Keeping it in one place means you only need to change configuration once if your setup evolves.
@@ -58,13 +58,13 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from docuforge import (
+from deckle import (
     AuthenticationError,
     RateLimitError,
     ValidationError,
-    DocuForgeError,
+    DeckleError,
 )
-from .utils import get_docuforge_client
+from .utils import get_deckle_client
 
 
 @csrf_exempt
@@ -80,7 +80,7 @@ def generate_pdf(request):
         return JsonResponse({"error": "html field is required"}, status=400)
 
     try:
-        with get_docuforge_client() as df:
+        with get_deckle_client() as df:
             pdf = df.generate(
                 html=html,
                 options={
@@ -105,7 +105,7 @@ def generate_pdf(request):
         return JsonResponse({"error": "Rate limit exceeded"}, status=429)
     except ValidationError as e:
         return JsonResponse({"error": f"Validation failed: {e}"}, status=400)
-    except DocuForgeError as e:
+    except DeckleError as e:
         return JsonResponse({"error": f"PDF generation failed: {e}"}, status=502)
 ```
 
@@ -121,11 +121,11 @@ urlpatterns = [
 ]
 ```
 
-The `@csrf_exempt` decorator is necessary here because this endpoint receives JSON from API clients rather than Django form submissions. The `@require_POST` decorator rejects anything that is not a POST request. The DocuForge error hierarchy maps cleanly to HTTP status codes: `AuthenticationError` to 401, `RateLimitError` to 429, `ValidationError` to 400, and the base `DocuForgeError` to 502 for upstream failures.
+The `@csrf_exempt` decorator is necessary here because this endpoint receives JSON from API clients rather than Django form submissions. The `@require_POST` decorator rejects anything that is not a POST request. The Deckle error hierarchy maps cleanly to HTTP status codes: `AuthenticationError` to 401, `RateLimitError` to 429, `ValidationError` to 400, and the base `DeckleError` to 502 for upstream failures.
 
 ## Step 3: Template-Based Invoice Download
 
-Most production use cases involve templates rather than raw HTML. This view fetches an invoice from your database, passes its data to a DocuForge template, and returns the PDF as a direct file download.
+Most production use cases involve templates rather than raw HTML. This view fetches an invoice from your database, passes its data to a Deckle template, and returns the PDF as a direct file download.
 
 Assume you have an Invoice model:
 
@@ -154,7 +154,7 @@ Now build the download view:
 import base64
 from django.http import HttpResponse, Http404
 from django.conf import settings
-from docuforge import DocuForge
+from deckle import Deckle
 
 INVOICE_TEMPLATE_ID = "tmpl_your_template_id"
 
@@ -175,7 +175,7 @@ def download_invoice_pdf(request, invoice_id):
         "total": str(invoice.total),
     }
 
-    with DocuForge(api_key=settings.DOCUFORGE_API_KEY) as df:
+    with Deckle(api_key=settings.DECKLE_API_KEY) as df:
         pdf = df.from_template(
             template=INVOICE_TEMPLATE_ID,
             data=template_data,
@@ -203,7 +203,7 @@ urlpatterns = [
 ]
 ```
 
-Setting `output="base64"` tells DocuForge to return the PDF content as a base64-encoded string instead of a hosted URL. You decode it with the standard library, wrap it in an `HttpResponse` with `content_type="application/pdf"`, and set the `Content-Disposition` header to trigger a browser download. The filename includes the invoice number so users can identify the file after saving.
+Setting `output="base64"` tells Deckle to return the PDF content as a base64-encoded string instead of a hosted URL. You decode it with the standard library, wrap it in an `HttpResponse` with `content_type="application/pdf"`, and set the `Content-Disposition` header to trigger a browser download. The filename includes the invoice number so users can identify the file after saving.
 
 ## Step 4: Django REST Framework Integration
 
@@ -235,12 +235,12 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.conf import settings
-from docuforge import (
-    DocuForge,
+from deckle import (
+    Deckle,
     AuthenticationError,
     RateLimitError,
     ValidationError,
-    DocuForgeError,
+    DeckleError,
 )
 from .serializers import PDFGenerateSerializer
 
@@ -254,7 +254,7 @@ class PDFViewSet(viewsets.ViewSet):
         data = serializer.validated_data
 
         try:
-            with DocuForge(api_key=settings.DOCUFORGE_API_KEY) as df:
+            with Deckle(api_key=settings.DECKLE_API_KEY) as df:
                 pdf = df.generate(
                     html=data["html"],
                     options={
@@ -289,7 +289,7 @@ class PDFViewSet(viewsets.ViewSet):
                 {"error": f"Validation failed: {e}"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        except DocuForgeError as e:
+        except DeckleError as e:
             return Response(
                 {"error": f"PDF generation failed: {e}"},
                 status=status.HTTP_502_BAD_GATEWAY,
@@ -309,7 +309,7 @@ router.register(r"pdf", PDFViewSet, basename="pdf")
 urlpatterns = router.urls
 ```
 
-The serializer handles input validation and provides clear error messages before any API call is made. DRF's `is_valid(raise_exception=True)` returns a 400 response automatically if the data does not match the schema. The DocuForge error classes map to DRF's `status` constants, keeping the response format consistent with the rest of your API.
+The serializer handles input validation and provides clear error messages before any API call is made. DRF's `is_valid(raise_exception=True)` returns a 400 response automatically if the data does not match the schema. The Deckle error classes map to DRF's `status` constants, keeping the response format consistent with the rest of your API.
 
 ## Step 5: Class-Based View Approach
 
@@ -321,7 +321,7 @@ import base64
 from django.http import HttpResponse, JsonResponse
 from django.views import View
 from django.conf import settings
-from docuforge import DocuForge, DocuForgeError
+from deckle import Deckle, DeckleError
 
 
 class PDFGenerationView(View):
@@ -337,13 +337,13 @@ class PDFGenerationView(View):
         html = self.get_html(request, **kwargs)
 
         try:
-            with DocuForge(api_key=settings.DOCUFORGE_API_KEY) as df:
+            with Deckle(api_key=settings.DECKLE_API_KEY) as df:
                 pdf = df.generate(
                     html=html,
                     options=self.pdf_options,
                     output="base64",
                 )
-        except DocuForgeError as e:
+        except DeckleError as e:
             return JsonResponse({"error": str(e)}, status=502)
 
         pdf_bytes = base64.b64decode(pdf.data)
@@ -359,7 +359,7 @@ You can also define a mixin that adds PDF export capability to any existing deta
 import base64
 from django.http import HttpResponse
 from django.conf import settings
-from docuforge import DocuForge
+from deckle import Deckle
 from django.template.loader import render_to_string
 
 
@@ -373,7 +373,7 @@ class PDFExportMixin:
     def render_pdf(self, request, context):
         html = render_to_string(self.pdf_template_name, context, request=request)
 
-        with DocuForge(api_key=settings.DOCUFORGE_API_KEY) as df:
+        with Deckle(api_key=settings.DECKLE_API_KEY) as df:
             pdf = df.generate(html=html, options=self.pdf_options, output="base64")
 
         pdf_bytes = base64.b64decode(pdf.data)
@@ -382,7 +382,7 @@ class PDFExportMixin:
         return response
 ```
 
-Using the mixin, any view that already builds a context dictionary can add a PDF export route with minimal code. The `render_to_string` call renders a Django template to HTML, which DocuForge then converts to PDF. This lets you reuse your existing Django templates -- the same Jinja-style markup you already write for web pages can produce PDFs with no modifications.
+Using the mixin, any view that already builds a context dictionary can add a PDF export route with minimal code. The `render_to_string` call renders a Django template to HTML, which Deckle then converts to PDF. This lets you reuse your existing Django templates -- the same Jinja-style markup you already write for web pages can produce PDFs with no modifications.
 
 ## Step 6: Admin Integration
 
@@ -394,7 +394,7 @@ import base64
 from django.contrib import admin
 from django.http import HttpResponse
 from django.conf import settings
-from docuforge import DocuForge
+from deckle import Deckle
 from .models import Invoice, InvoiceItem
 
 
@@ -418,7 +418,7 @@ class InvoiceAdmin(admin.ModelAdmin):
                 "options": {"format": "A4", "margin": "20mm"},
             })
 
-        with DocuForge(api_key=settings.DOCUFORGE_API_KEY) as df:
+        with Deckle(api_key=settings.DECKLE_API_KEY) as df:
             if len(items) == 1:
                 pdf = df.generate(
                     html=items[0]["html"],
@@ -470,9 +470,9 @@ The `@admin.action` decorator (available in Django 3.2 and later) registers the 
 
 ## Going Further
 
-This tutorial covered the core patterns for integrating DocuForge into a Django application -- function-based views, template-based downloads, DRF integration, class-based views, and admin actions. From here you can explore several directions:
+This tutorial covered the core patterns for integrating Deckle into a Django application -- function-based views, template-based downloads, DRF integration, class-based views, and admin actions. From here you can explore several directions:
 
-- **FastAPI integration** -- If parts of your system use FastAPI, the SDK works identically. See our [FastAPI tutorial](https://getdocuforge.dev/blog/pdf-generation-python-fastapi-docuforge) for async patterns and Pydantic model examples.
-- **Comparing rendering approaches** -- If you are evaluating DocuForge against Puppeteer or WeasyPrint, the [DocuForge vs Puppeteer](https://getdocuforge.dev/blog/docuforge-vs-puppeteer-why-i-switched) article breaks down the trade-offs in performance, accuracy, and operational overhead.
-- **Page layout control** -- Our [page layout guide](https://getdocuforge.dev/blog/pdf-page-breaks-headers-footers-guide) covers headers, footers, page numbers, and multi-column layouts in detail.
+- **FastAPI integration** -- If parts of your system use FastAPI, the SDK works identically. See our [FastAPI tutorial](https://getdeckle.dev/blog/pdf-generation-python-fastapi-deckle) for async patterns and Pydantic model examples.
+- **Comparing rendering approaches** -- If you are evaluating Deckle against Puppeteer or WeasyPrint, the [Deckle vs Puppeteer](https://getdeckle.dev/blog/deckle-vs-puppeteer-why-i-switched) article breaks down the trade-offs in performance, accuracy, and operational overhead.
+- **Page layout control** -- Our [page layout guide](https://getdeckle.dev/blog/pdf-page-breaks-headers-footers-guide) covers headers, footers, page numbers, and multi-column layouts in detail.
 - **Batch processing** -- The `df.batch()` method is ideal for scheduled jobs like monthly invoice runs. Pair it with Django management commands or Celery tasks for fully automated PDF pipelines.

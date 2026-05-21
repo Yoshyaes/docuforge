@@ -1,6 +1,6 @@
 ---
 title: Express Guide
-description: Generate PDFs in your Express.js app with DocuForge.
+description: Generate PDFs in your Express.js app with Deckle.
 ---
 
 # Generate PDFs in Express
@@ -10,7 +10,7 @@ Add PDF generation to an Express.js application.
 ## 1. Install
 
 ```bash
-npm install docuforge express
+npm install deckle express
 ```
 
 ## 2. Set Up
@@ -18,12 +18,12 @@ npm install docuforge express
 ```typescript
 // server.ts
 import express from 'express';
-import { DocuForge } from 'docuforge';
+import { Deckle } from 'deckle';
 
 const app = express();
 app.use(express.json());
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const df = new Deckle(process.env.DECKLE_API_KEY!);
 
 // Generate PDF from HTML
 app.post('/api/generate', async (req, res) => {

@@ -67,7 +67,7 @@ export default async function BlogPost({ params }: Props) {
           <p className="text-lg text-text-muted">{post.description}</p>
         </header>
 
-        <div className="prose-docuforge">
+        <div className="prose-deckle">
           <MDXRemote source={post.content} components={mdxComponents} />
         </div>
       </div>

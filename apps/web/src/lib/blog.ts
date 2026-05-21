@@ -28,7 +28,7 @@ export async function getAllPosts(): Promise<BlogPost[]> {
       title: data.title,
       description: data.description,
       date: data.date,
-      author: data.author || 'DocuForge Team',
+      author: data.author || 'Deckle Team',
       category: data.category || data.tags?.[0] || 'Tutorial',
       readingTime: typeof data.readingTime === 'number'
         ? data.readingTime
@@ -52,7 +52,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
     title: data.title,
     description: data.description,
     date: data.date,
-    author: data.author || 'DocuForge Team',
+    author: data.author || 'Deckle Team',
     category: data.category || data.tags?.[0] || 'Tutorial',
     readingTime: typeof data.readingTime === 'number'
       ? data.readingTime

@@ -3,9 +3,9 @@ title: Introduction
 description: PDF generation API for developers. HTML in, pixel-perfect PDF out.
 ---
 
-# DocuForge
+# Deckle
 
-DocuForge is a PDF generation API for developers. Send HTML or template data — get pixel-perfect PDFs back in under 3 seconds. No headless browsers to manage, no rendering bugs to chase.
+Deckle is a PDF generation API for developers. Send HTML or template data — get pixel-perfect PDFs back in under 3 seconds. No headless browsers to manage, no rendering bugs to chase.
 
 ## Three Ways to Generate
 
@@ -21,7 +21,7 @@ DocuForge is a PDF generation API for developers. Send HTML or template data —
   </Card>
 </CardGroup>
 
-## Why DocuForge?
+## Why Deckle?
 
 - **Fast** — Generate a 2-page invoice in under 1.5 seconds
 - **Pixel-perfect** — Full CSS3 support including Flexbox, Grid, and @page rules
@@ -33,9 +33,9 @@ DocuForge is a PDF generation API for developers. Send HTML or template data —
 ## Quick Example
 
 ```typescript
-import { DocuForge } from 'docuforge';
+import { Deckle } from 'deckle';
 
-const df = new DocuForge('df_live_...');
+const df = new Deckle('dk_live_...');
 
 const pdf = await df.generate({
   html: '<h1>Invoice #1234</h1><p>Amount: $500</p>',
@@ -43,5 +43,5 @@ const pdf = await df.generate({
 });
 
 console.log(pdf.url);
-// → https://cdn.getdocuforge.dev/gen_abc123.pdf
+// → https://cdn.getdeckle.dev/gen_abc123.pdf
 ```

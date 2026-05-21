@@ -1,4 +1,4 @@
-package docuforge
+package deckle
 
 import (
 	"context"
@@ -9,8 +9,8 @@ import (
 //
 // Access it through the Client.Templates field:
 //
-//	client := docuforge.NewClient("df_live_...")
-//	tmpl, err := client.Templates.Create(ctx, docuforge.CreateTemplateParams{
+//	client := deckle.NewClient("dk_live_...")
+//	tmpl, err := client.Templates.Create(ctx, deckle.CreateTemplateParams{
 //	    Name:        "Invoice",
 //	    HTMLContent: "<h1>Invoice for {{name}}</h1>",
 //	})

@@ -24,9 +24,9 @@ function mintTestP12(password = 'testpass'): TestKeyMaterial {
   cert.validity.notAfter = new Date();
   cert.validity.notAfter.setFullYear(cert.validity.notBefore.getFullYear() + 1);
   const attrs = [
-    { name: 'commonName', value: 'DocuForge Test Signer' },
+    { name: 'commonName', value: 'Deckle Test Signer' },
     { name: 'countryName', value: 'US' },
-    { name: 'organizationName', value: 'DocuForge CI' },
+    { name: 'organizationName', value: 'Deckle CI' },
   ];
   cert.setSubject(attrs);
   cert.setIssuer(attrs);

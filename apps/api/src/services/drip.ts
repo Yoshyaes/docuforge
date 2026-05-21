@@ -75,7 +75,7 @@ export const dripTickQueue = new Queue<{ tick: true }>('drip-tick', {
 });
 
 function baseUrl(): string {
-  return process.env.DASHBOARD_URL || 'https://app.getdocuforge.dev';
+  return process.env.DASHBOARD_URL || 'https://app.getdeckle.dev';
 }
 
 function buildContext(email: string, userId?: string): TemplateContext {
@@ -94,7 +94,7 @@ function buildContext(email: string, userId?: string): TemplateContext {
     playgroundUrl: `${root}/playground?template=invoice&autorun=1`,
     keysUrl: `${root}/keys`,
     marketplaceUrl: `${root}/marketplace`,
-    docsUrl: 'https://getdocuforge.dev/docs',
+    docsUrl: 'https://getdeckle.dev/docs',
     unsubscribeUrl,
     founderEmail: process.env.FOUNDER_EMAIL,
   };

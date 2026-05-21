@@ -80,7 +80,7 @@ export async function protectPdf(input: Buffer, opts: ProtectOptions): Promise<B
   // to a unique temp file. The output goes to stdout (qpdf does support
   // "-" for that). The temp directory is removed in `finally`, even on
   // error, so a crashed render never leaks PDFs onto disk.
-  const tempDir = await mkdtemp(join(tmpdir(), 'docuforge-qpdf-'));
+  const tempDir = await mkdtemp(join(tmpdir(), 'deckle-qpdf-'));
   const inputPath = join(tempDir, 'input.pdf');
   try {
     await writeFile(inputPath, input);

@@ -16,13 +16,13 @@ export function FinalCta() {
             Get your API key and generate your first PDF in under 5 minutes.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <Button size="lg" href="https://app.getdocuforge.dev/sign-up">
+            <Button size="lg" href="https://app.getdeckle.dev/sign-up">
               Start for Free
             </Button>
             <Button
               variant="secondary"
               size="lg"
-              href="https://docs.getdocuforge.dev"
+              href="https://docs.getdeckle.dev"
             >
               Read the Docs
             </Button>

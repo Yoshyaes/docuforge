@@ -1,11 +1,11 @@
 ---
 title: Rails Guide
-description: Generate PDFs in your Rails app with DocuForge.
+description: Generate PDFs in your Rails app with Deckle.
 ---
 
 # Generate PDFs in Rails
 
-Add PDF generation to a Ruby on Rails application using the DocuForge REST API directly.
+Add PDF generation to a Ruby on Rails application using the Deckle REST API directly.
 
 ## 1. Set Up
 
@@ -19,14 +19,14 @@ gem "httpx"
 ## 2. Create a Service
 
 ```ruby
-# app/services/docuforge.rb
+# app/services/deckle.rb
 require "httpx"
 require "json"
 
 class Docuforge
-  BASE_URL = "https://api.getdocuforge.dev"
+  BASE_URL = "https://api.getdeckle.dev"
 
-  def initialize(api_key = ENV["DOCUFORGE_API_KEY"])
+  def initialize(api_key = ENV["DECKLE_API_KEY"])
     @api_key = api_key
   end
 

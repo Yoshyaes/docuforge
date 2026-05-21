@@ -1,15 +1,15 @@
 ---
-title: "DocuForge vs PDFMonkey"
-description: "Compare DocuForge and PDFMonkey for PDF generation"
+title: "Deckle vs PDFMonkey"
+description: "Compare Deckle and PDFMonkey for PDF generation"
 ---
 
-# DocuForge vs PDFMonkey
+# Deckle vs PDFMonkey
 
-PDFMonkey is a template-based PDF generation service focused on visual template design. DocuForge offers both template-based and code-first approaches (HTML, React) with full programmatic control.
+PDFMonkey is a template-based PDF generation service focused on visual template design. Deckle offers both template-based and code-first approaches (HTML, React) with full programmatic control.
 
 ## Feature Comparison
 
-| Feature | DocuForge | PDFMonkey |
+| Feature | Deckle | PDFMonkey |
 |---------|-----------|-----------|
 | **HTML-to-PDF** | Yes (full CSS3) | No (template-only) |
 | **React-to-PDF** | Yes | No |
@@ -28,12 +28,12 @@ PDFMonkey is a template-based PDF generation service focused on visual template 
 
 **PDFMonkey** is template-only — you design templates in their editor and merge data via API. You cannot send raw HTML.
 
-**DocuForge** supports three input modes:
+**Deckle** supports three input modes:
 1. **HTML** — send any HTML/CSS, get a PDF back
 2. **React** — send JSX components, rendered server-side
 3. **Templates** — visual editor with Handlebars variables
 
-This flexibility means DocuForge works for both quick one-off PDFs and production template workflows.
+This flexibility means Deckle works for both quick one-off PDFs and production template workflows.
 
 ## Code Comparison
 
@@ -56,11 +56,11 @@ const response = await fetch('https://api.pdfmonkey.io/api/v1/documents', {
 });
 ```
 
-### DocuForge
+### Deckle
 
 ```typescript
-import { DocuForge } from 'docuforge';
-const df = new DocuForge('df_live_...');
+import { Deckle } from 'deckle';
+const df = new Deckle('dk_live_...');
 
 // Template mode (like PDFMonkey)
 const pdf = await df.fromTemplate({
@@ -80,7 +80,7 @@ const pdf2 = await df.generate({
 - You only need template-based generation
 - You prefer Liquid templating over Handlebars
 
-## When to Choose DocuForge
+## When to Choose Deckle
 
 - You need HTML-to-PDF or React-to-PDF (not just templates)
 - You want more SDKs and language support

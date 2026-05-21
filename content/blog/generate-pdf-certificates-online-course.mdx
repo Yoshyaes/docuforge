@@ -1,9 +1,9 @@
 ---
 title: "Generate PDF Certificates for Your Online Course"
-description: "Automatically generate personalized PDF certificates for course graduates using DocuForge templates. Includes QR verification codes and batch generation."
+description: "Automatically generate personalized PDF certificates for course graduates using Deckle templates. Includes QR verification codes and batch generation."
 slug: "generate-pdf-certificates-online-course"
 date: "2026-04-01"
-author: "DocuForge Team"
+author: "Deckle Team"
 authorRole: "Developer Advocate"
 tags: ["certificates", "templates", "batch", "tutorial", "typescript"]
 readingTime: "10 min read"
@@ -13,7 +13,7 @@ readingTime: "10 min read"
 
 Completion certificates are one of the most tangible rewards you can offer students who finish your online course. They validate effort, look good on a LinkedIn profile, and give your platform a professional edge. The problem is that creating them manually does not scale. Once you have a few hundred graduates per cohort, opening a design tool and swapping out names is no longer an option.
 
-In this tutorial, you will build a certificate generation pipeline with DocuForge that handles everything end to end. You will design a polished certificate template with Handlebars placeholders, embed a QR code that links to a verification page, generate a single certificate to test the flow, and then batch-generate certificates for an entire cohort in one API call. You will also add draft watermarks for preview mode and wire up email delivery so each student receives their certificate automatically.
+In this tutorial, you will build a certificate generation pipeline with Deckle that handles everything end to end. You will design a polished certificate template with Handlebars placeholders, embed a QR code that links to a verification page, generate a single certificate to test the flow, and then batch-generate certificates for an entire cohort in one API call. You will also add draft watermarks for preview mode and wire up email delivery so each student receives their certificate automatically.
 
 By the end, you will have a production-ready system that turns a list of student records into individually personalized, verifiable PDF certificates with no manual intervention.
 
@@ -217,14 +217,14 @@ A certificate needs to look the part. Gold accents, elegant typography, and a fo
 </html>
 ```
 
-The `{{qr:...}}` placeholder is a DocuForge feature that replaces the tag with an inline SVG QR code at render time. No external library is needed. The QR encodes a URL pointing to your verification endpoint, which you will build in Step 3.
+The `{{qr:...}}` placeholder is a Deckle feature that replaces the tag with an inline SVG QR code at render time. No external library is needed. The QR encodes a URL pointing to your verification endpoint, which you will build in Step 3.
 
-Now store this template in DocuForge so you can reference it by ID in every generation call:
+Now store this template in Deckle so you can reference it by ID in every generation call:
 
 ```typescript
-import DocuForge from "docuforge";
+import Deckle from "deckle";
 
-const df = new DocuForge("df_live_your_api_key");
+const df = new Deckle("dk_live_your_api_key");
 
 const template = await df.templates.create({
   name: "Course Completion Certificate",
@@ -267,7 +267,7 @@ console.log(certificate);
 // {
 //   id: "gen_abc123",
 //   status: "completed",
-//   url: "https://storage.docuforge.com/pdfs/gen_abc123.pdf",
+//   url: "https://storage.deckle.com/pdfs/gen_abc123.pdf",
 //   pages: 1,
 //   file_size: 48210,
 //   generation_time_ms: 320
@@ -368,13 +368,13 @@ console.log(batchResult);
 // }
 ```
 
-The response returns immediately with HTTP 202. Each item in the `generations` array has an `id` you can use to poll status with `df.getGeneration(id)`, but the more practical approach is the `webhook` parameter. When every item in the batch has finished processing, DocuForge sends a POST request to your webhook URL with the full results. Your webhook handler can then persist the certificate records and trigger email delivery, which you will set up in Step 6.
+The response returns immediately with HTTP 202. Each item in the `generations` array has an `id` you can use to poll status with `df.getGeneration(id)`, but the more practical approach is the `webhook` parameter. When every item in the batch has finished processing, Deckle sends a POST request to your webhook URL with the full results. Your webhook handler can then persist the certificate records and trigger email delivery, which you will set up in Step 6.
 
 The batch queue processes jobs with a concurrency of 5 and retries failed items up to 3 times with exponential backoff. For most cohort sizes, all certificates will be ready within a few minutes.
 
 ## Step 5: Add a Watermark for Draft Previews
 
-Before you finalize a new certificate design or a new course title, it helps to generate a preview that is clearly marked as non-final. DocuForge supports text watermarks as a generation option. Add one during your review cycle and remove it for the production run.
+Before you finalize a new certificate design or a new course title, it helps to generate a preview that is clearly marked as non-final. Deckle supports text watermarks as a generation option. Add one during your review cycle and remove it for the production run.
 
 ```typescript
 const preview = await df.fromTemplate({
@@ -409,7 +409,7 @@ This is also useful if you offer students a preview of their certificate before 
 
 With the batch complete and PDF URLs in hand, the last step is delivering each certificate to its recipient. You can loop through the results and send an email with a download link, or attach the PDF directly.
 
-The simplest approach uses the hosted URL that DocuForge provides:
+The simplest approach uses the hosted URL that Deckle provides:
 
 ```typescript
 import { Resend } from "resend";
@@ -482,8 +482,8 @@ When processing a large cohort, add a short delay between sends or use your emai
 
 You now have a complete pipeline: a polished template, single and batch generation, QR verification, draft previews, and email delivery. Here are a few directions to extend it.
 
-If your course platform handles payments, you can use the same template and generation pattern to produce Stripe-style invoices for each transaction. The [Stripe invoice tutorial](https://getdocuforge.dev/blog/invoice-system-stripe-docuforge) walks through that setup.
+If your course platform handles payments, you can use the same template and generation pattern to produce Stripe-style invoices for each transaction. The [Stripe invoice tutorial](https://getdeckle.dev/blog/invoice-system-stripe-deckle) walks through that setup.
 
-For more complex certificate layouts that include dynamic charts or interactive elements, consider building the certificate as a React component and rendering it with `df.generate({ react: ... })`. The [React PDF export guide](https://getdocuforge.dev/blog/add-pdf-export-react-app) covers the approach in detail.
+For more complex certificate layouts that include dynamic charts or interactive elements, consider building the certificate as a React component and rendering it with `df.generate({ react: ... })`. The [React PDF export guide](https://getdeckle.dev/blog/add-pdf-export-react-app) covers the approach in detail.
 
-Finally, if you need to fine-tune page dimensions, header and footer placement, or multi-page layouts, the [page layout guide](https://getdocuforge.dev/blog/pdf-page-breaks-headers-footers-guide) is a useful reference.
+Finally, if you need to fine-tune page dimensions, header and footer placement, or multi-page layouts, the [page layout guide](https://getdeckle.dev/blog/pdf-page-breaks-headers-footers-guide) is a useful reference.

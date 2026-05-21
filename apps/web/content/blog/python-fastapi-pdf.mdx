@@ -1,28 +1,28 @@
-﻿---
-title: "PDF Generation in Python (FastAPI + DocuForge)"
-description: "Add PDF generation to your FastAPI application with the DocuForge Python SDK. Generate invoices, reports, and certificates in seconds."
+---
+title: "PDF Generation in Python (FastAPI + Deckle)"
+description: "Add PDF generation to your FastAPI application with the Deckle Python SDK. Generate invoices, reports, and certificates in seconds."
 date: "2026-03-03"
-author: "DocuForge Team"
+author: "Deckle Team"
 category: "Python"
 readingTime: 5
 ---
 
-Python developers deserve great PDF generation too. The DocuForge Python SDK uses httpx under the hood and supports both sync and async workflows.
+Python developers deserve great PDF generation too. The Deckle Python SDK uses httpx under the hood and supports both sync and async workflows.
 
 ## Install
 
 ```bash
-pip install docuforge
+pip install deckle
 ```
 
 ## Quick Start with FastAPI
 
 ```python
 from fastapi import FastAPI
-from docuforge import DocuForge
+from deckle import Deckle
 
 app = FastAPI()
-client = DocuForge("df_live_...")
+client = Deckle("dk_live_...")
 
 @app.post("/generate-pdf")
 async def generate_pdf(html: str):
@@ -47,10 +47,10 @@ pdf = client.from_template(
 
 ## Generating Reports from Database Queries
 
-Pull data from your database, format it, and generate a PDF report â€” all in a single endpoint. DocuForge handles the rendering while you focus on your data.
+Pull data from your database, format it, and generate a PDF report â€” all in a single endpoint. Deckle handles the rendering while you focus on your data.
 
 ## Next Steps
 
-- Read the [Python SDK docs](https://getdocuforge.dev/docs)
-- Explore [Django integration](https://getdocuforge.dev/docs/guides/django)
-- Try [batch generation](https://getdocuforge.dev/docs/api-reference/generate) for bulk reports
+- Read the [Python SDK docs](https://getdeckle.dev/docs)
+- Explore [Django integration](https://getdeckle.dev/docs/guides/django)
+- Try [batch generation](https://getdeckle.dev/docs/api-reference/generate) for bulk reports

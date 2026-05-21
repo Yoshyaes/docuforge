@@ -5,7 +5,7 @@ description: Generate a PDF template using AI from a natural language descriptio
 
 # AI Template Generation
 
-`POST https://api.getdocuforge.dev/v1/ai/generate-template`
+`POST https://api.getdeckle.dev/v1/ai/generate-template`
 
 Generate a complete HTML template from a natural language description using AI. The response includes ready-to-use HTML with Handlebars variables that you can save as a template or use directly with `/v1/generate`.
 
@@ -23,8 +23,8 @@ Requires the `ANTHROPIC_API_KEY` environment variable to be configured on the se
 ## Example
 
 ```bash
-curl -X POST https://api.getdocuforge.dev/v1/ai/generate-template \
-  -H "Authorization: Bearer df_live_sk_..." \
+curl -X POST https://api.getdeckle.dev/v1/ai/generate-template \
+  -H "Authorization: Bearer dk_live_sk_..." \
   -H "Content-Type: application/json" \
   -d '{
     "prompt": "A professional invoice for a freelance web developer with hourly billing, tax calculation, and payment terms",
@@ -52,8 +52,8 @@ The `variables` array in the response includes all Handlebars variables detected
 Save the generated HTML as a reusable template:
 
 ```bash
-curl -X POST https://api.getdocuforge.dev/v1/templates \
-  -H "Authorization: Bearer df_live_sk_..." \
+curl -X POST https://api.getdeckle.dev/v1/templates \
+  -H "Authorization: Bearer dk_live_sk_..." \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Freelance Invoice",
@@ -71,8 +71,8 @@ curl -X POST https://api.getdocuforge.dev/v1/templates \
 Or generate a PDF directly:
 
 ```bash
-curl -X POST https://api.getdocuforge.dev/v1/generate \
-  -H "Authorization: Bearer df_live_sk_..." \
+curl -X POST https://api.getdeckle.dev/v1/generate \
+  -H "Authorization: Bearer dk_live_sk_..." \
   -H "Content-Type: application/json" \
   -d '{
     "html": "<the generated HTML>"

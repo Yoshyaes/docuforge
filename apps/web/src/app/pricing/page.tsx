@@ -5,9 +5,9 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 export const metadata: Metadata = {
-  title: 'Pricing — DocuForge',
+  title: 'Pricing — Deckle',
   description:
-    'Simple, transparent pricing for the DocuForge PDF generation API. Free tier with 1,000 PDFs/month, paid plans from $29.',
+    'Simple, transparent pricing for the Deckle PDF generation API. Free tier with 1,000 PDFs/month, paid plans from $29.',
 };
 
 const tiers = [
@@ -16,7 +16,7 @@ const tiers = [
     price: '$0',
     cadence: 'forever',
     description: 'Everything you need to evaluate, build a prototype, or run a side project.',
-    cta: { label: 'Get Your API Key', href: 'https://app.getdocuforge.dev/sign-up?plan=free' },
+    cta: { label: 'Get Your API Key', href: 'https://app.getdeckle.dev/sign-up?plan=free' },
     features: [
       '1,000 PDFs per month',
       'All input modes (HTML, templates, React*)',
@@ -32,7 +32,7 @@ const tiers = [
     price: '$29',
     cadence: 'per month',
     description: 'For shipping production workloads and small teams.',
-    cta: { label: 'Start Starter', href: 'https://app.getdocuforge.dev/sign-up?plan=starter' },
+    cta: { label: 'Start Starter', href: 'https://app.getdeckle.dev/sign-up?plan=starter' },
     featured: true,
     features: [
       '10,000 PDFs per month',
@@ -48,7 +48,7 @@ const tiers = [
     price: '$99',
     cadence: 'per month',
     description: 'For high-volume teams and customer-facing PDF features.',
-    cta: { label: 'Start Pro', href: 'https://app.getdocuforge.dev/sign-up?plan=pro' },
+    cta: { label: 'Start Pro', href: 'https://app.getdeckle.dev/sign-up?plan=pro' },
     features: [
       '100,000 PDFs per month',
       'Everything in Starter',

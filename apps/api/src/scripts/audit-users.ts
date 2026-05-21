@@ -35,7 +35,7 @@ function section(title: string): void {
 }
 
 async function audit(): Promise<void> {
-  section('DOCUFORGE USER AUDIT');
+  section('DECKLE USER AUDIT');
   console.log(`Generated: ${new Date().toISOString()}`);
 
   // ------------------------------------------------------------------

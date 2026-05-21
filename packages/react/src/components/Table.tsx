@@ -33,7 +33,7 @@ export interface TableProps<T> {
  *
  * Renders a standard HTML `<table>` with configurable columns, optional
  * striped rows, borders, and per-cell custom renderers. Designed to produce
- * clean output when converted to PDF by DocuForge.
+ * clean output when converted to PDF by Deckle.
  */
 export function Table<T extends Record<string, any>>({
   data,

@@ -18,7 +18,7 @@ __pycache__/
 *.cert
 .claude/
 .claire/
-DocuForge Assets/
+Deckle Assets/
 
 # Build artifacts
 *.tsbuildinfo

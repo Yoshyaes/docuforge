@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-DocuForge is a PDF generation API ("Stripe for PDFs"). It accepts HTML or template data and returns pixel-perfect PDFs. The codebase is a pnpm monorepo with Turborepo orchestration.
+Deckle is a PDF generation API ("Stripe for PDFs"). It accepts HTML or template data and returns pixel-perfect PDFs. The codebase is a pnpm monorepo with Turborepo orchestration.
 
 ## Commands
 
@@ -14,26 +14,26 @@ pnpm dev                        # Run all dev servers (API :3000, Dashboard :300
 pnpm build                      # Build all packages via Turborepo
 
 # API server
-pnpm --filter @docuforge/api dev        # API dev server with hot reload
-pnpm --filter @docuforge/api build      # Build API
-pnpm --filter @docuforge/api db:push    # Push schema to database
-pnpm --filter @docuforge/api db:generate # Generate migration files
-pnpm --filter @docuforge/api db:migrate  # Run migrations
+pnpm --filter @deckle/api dev        # API dev server with hot reload
+pnpm --filter @deckle/api build      # Build API
+pnpm --filter @deckle/api db:push    # Push schema to database
+pnpm --filter @deckle/api db:generate # Generate migration files
+pnpm --filter @deckle/api db:migrate  # Run migrations
 
 # Testing
 cd apps/api && npx vitest run           # Run all 36 API tests
 cd apps/api && npx vitest run src/__tests__/generate-validation.test.ts  # Single test file
 
 # Dashboard
-pnpm --filter @docuforge/dashboard dev   # Next.js dev on port 3001
-pnpm --filter @docuforge/dashboard build # Build dashboard
+pnpm --filter @deckle/dashboard dev   # Next.js dev on port 3001
+pnpm --filter @deckle/dashboard build # Build dashboard
 
 # TypeScript SDK
-pnpm --filter docuforge build           # Build SDK (ESM + CJS + types)
-pnpm --filter docuforge dev             # Watch mode build
+pnpm --filter deckle build           # Build SDK (ESM + CJS + types)
+pnpm --filter deckle dev             # Watch mode build
 
 # React component library
-cd packages/react && npm run build      # Build @docuforge/react
+cd packages/react && npm run build      # Build @deckle/react
 
 # Playwright (required once before API dev)
 cd apps/api && npx playwright install chromium
@@ -48,20 +48,20 @@ docker compose -f docker-compose.selfhost.yml up -d
 
 - **`apps/api`** — Hono API server. Playwright renders HTML→PDF. Drizzle ORM for PostgreSQL. Redis for rate limiting + BullMQ job queue. Multi-provider storage (local/R2/S3/GCS).
 - **`apps/dashboard`** — Next.js 14 App Router. Clerk auth. Tailwind CSS with dark theme (#0A0A0B bg, #F97316 accent). DM Sans body font, JetBrains Mono for code.
-- **`packages/sdk-typescript`** — npm package `docuforge`. Dual ESM/CJS build via tsup. `DocuForge` class with `generate()`, `fromTemplate()`, `fromReact()`, `batch()`, and `templates.*` namespace.
-- **`packages/sdk-python`** — pip package `docuforge`. Mirrors TS SDK API. Uses httpx + Pydantic v2.
-- **`packages/sdk-go`** — Go module `github.com/docuforge/docuforge-go`. Stdlib `net/http` + functional options. Context-based API.
-- **`packages/sdk-ruby`** — Ruby gem `docuforge`. Uses Faraday HTTP client. Idiomatic Ruby API.
-- **`packages/react`** — `@docuforge/react` component library (Document, Page, Header, Footer, Table, Grid, Watermark, Barcode, Signature).
+- **`packages/sdk-typescript`** — npm package `deckle`. Dual ESM/CJS build via tsup. `Deckle` class with `generate()`, `fromTemplate()`, `fromReact()`, `batch()`, and `templates.*` namespace.
+- **`packages/sdk-python`** — pip package `deckle`. Mirrors TS SDK API. Uses httpx + Pydantic v2.
+- **`packages/sdk-go`** — Go module `github.com/Yoshyaes/deckle/packages/sdk-go`. Stdlib `net/http` + functional options. Context-based API.
+- **`packages/sdk-ruby`** — Ruby gem `deckle`. Uses Faraday HTTP client. Idiomatic Ruby API.
+- **`packages/react`** — `@deckle/react` component library (Document, Page, Header, Footer, Table, Grid, Watermark, Barcode, Signature).
 - **`packages/mcp-server`** — MCP server for AI agent integration (Claude Desktop, Cursor, Claude Code). 7 tools.
 - **`docs/`** — Mintlify documentation site. Framework guides for Next.js, Express, FastAPI, Django, Rails.
 - **`public/`** — AI discoverability: `llms.txt`, `llms-full.txt`.
 
 ## Key Patterns
 
-**ID prefixes** — All entities use nanoid with semantic prefixes: `gen_` (generations), `tmpl_` (templates), `df_live_` (API keys), `usr_` (users). See `apps/api/src/lib/id.ts`.
+**ID prefixes** — All entities use nanoid with semantic prefixes: `gen_` (generations), `tmpl_` (templates), `dk_live_` (API keys), `usr_` (users). See `apps/api/src/lib/id.ts`.
 
-**API auth flow** — Bearer token (`df_live_...`) → look up by first 16 chars as `keyPrefix` → bcrypt compare full token → set user on Hono context (`c.get('user')`). Middleware chain: CORS → logging → (public routes bypass) → auth → rate limit → route handler → global error handler.
+**API auth flow** — Bearer token (`dk_live_...`) → look up by first 16 chars as `keyPrefix` → bcrypt compare full token → set user on Hono context (`c.get('user')`). Middleware chain: CORS → logging → (public routes bypass) → auth → rate limit → route handler → global error handler.
 
 **Error hierarchy** — `AppError` base class in `apps/api/src/lib/errors.ts` with subclasses: `AuthError` (401), `RateLimitError` (429), `NotFoundError` (404), `UsageLimitError` (403), `ValidationError` (400). All caught by Hono's `app.onError` and serialized as `{ error: { code, message } }`.
 
@@ -147,7 +147,7 @@ All SDKs (TS, Python, Go, Ruby) share identical response shapes. Key response: `
 
 ## Environment Variables
 
-Required for API: `DATABASE_URL`, `REDIS_URL`. Optional: `STORAGE_PROVIDER` (local/r2/s3/gcs), `R2_*`/`AWS_*`/`GCS_*` vars, `PORT` (default 3000), `ANTHROPIC_API_KEY` (for AI templates). Dashboard: `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `DOCUFORGE_DEV_BYPASS=true` for local dev.
+Required for API: `DATABASE_URL`, `REDIS_URL`. Optional: `STORAGE_PROVIDER` (local/r2/s3/gcs), `R2_*`/`AWS_*`/`GCS_*` vars, `PORT` (default 3000), `ANTHROPIC_API_KEY` (for AI templates). Dashboard: `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `DECKLE_DEV_BYPASS=true` for local dev.
 
 ## Deployment
 

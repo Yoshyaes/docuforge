@@ -20,7 +20,7 @@ export default async function BlogIndex() {
             Blog
           </h1>
           <p className="text-lg text-text-muted mb-12 max-w-2xl">
-            Tutorials, guides, and insights on generating PDFs with DocuForge.
+            Tutorials, guides, and insights on generating PDFs with Deckle.
           </p>
         </ScrollReveal>
 

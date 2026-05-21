@@ -5,7 +5,7 @@ description: Get metadata and information about a PDF document.
 
 # PDF Info
 
-`POST https://api.getdocuforge.dev/v1/pdf/info`
+`POST https://api.getdeckle.dev/v1/pdf/info`
 
 Extract metadata from a PDF document including page count, title, author, and other properties.
 
@@ -18,8 +18,8 @@ Extract metadata from a PDF document including page count, title, author, and ot
 ## Example
 
 ```bash
-curl -X POST https://api.getdocuforge.dev/v1/pdf/info \
-  -H "Authorization: Bearer df_live_sk_..." \
+curl -X POST https://api.getdeckle.dev/v1/pdf/info \
+  -H "Authorization: Bearer dk_live_sk_..." \
   -H "Content-Type: application/json" \
   -d '{
     "pdf": "<base64-encoded-pdf>"
@@ -34,8 +34,8 @@ curl -X POST https://api.getdocuforge.dev/v1/pdf/info \
   "title": "Quarterly Report",
   "author": "Acme Corp",
   "subject": "",
-  "creator": "DocuForge API",
-  "producer": "DocuForge",
+  "creator": "Deckle API",
+  "producer": "Deckle",
   "creation_date": "2026-03-01T12:00:00.000Z",
   "modification_date": "2026-03-10T08:30:00.000Z",
   "file_size": 245000

@@ -1,21 +1,21 @@
-# @docuforge/react-pdf
+# @deckle/react-pdf
 
-React components for building pixel-perfect PDF documents with [DocuForge](https://getdocuforge.dev).
+React components for building pixel-perfect PDF documents with [Deckle](https://getdeckle.dev).
 
-Compose documents using familiar React patterns — pages, headers, footers, tables, grids, watermarks, barcodes, and signatures — then send them to the DocuForge API to generate production-ready PDFs.
+Compose documents using familiar React patterns — pages, headers, footers, tables, grids, watermarks, barcodes, and signatures — then send them to the Deckle API to generate production-ready PDFs.
 
 ## Installation
 
 ```bash
-npm install @docuforge/react-pdf
+npm install @deckle/react-pdf
 ```
 
 ```bash
-pnpm add @docuforge/react-pdf
+pnpm add @deckle/react-pdf
 ```
 
 ```bash
-yarn add @docuforge/react-pdf
+yarn add @deckle/react-pdf
 ```
 
 > **Peer dependency:** React 18 or later is required.
@@ -23,7 +23,7 @@ yarn add @docuforge/react-pdf
 ## Quick Start
 
 ```tsx
-import { Document, Page, Header, Footer } from '@docuforge/react-pdf';
+import { Document, Page, Header, Footer } from '@deckle/react-pdf';
 
 export default function MyDocument() {
   return (
@@ -34,7 +34,7 @@ export default function MyDocument() {
         </Header>
         <p>This will be rendered as a pixel-perfect PDF.</p>
         <Footer>
-          <span>Generated with DocuForge</span>
+          <span>Generated with Deckle</span>
         </Footer>
       </Page>
     </Document>
@@ -46,7 +46,7 @@ export default function MyDocument() {
 
 ### `<Document>`
 
-Root wrapper for the entire PDF. Renders a full HTML structure (`<html>`, `<head>`, `<body>`) that the DocuForge API converts to PDF.
+Root wrapper for the entire PDF. Renders a full HTML structure (`<html>`, `<head>`, `<body>`) that the Deckle API converts to PDF.
 
 ```tsx
 <Document title="Invoice #1234" styles={`
@@ -230,7 +230,7 @@ Semi-transparent text overlay for marking documents as drafts, confidential, etc
 
 ### `<Barcode>`
 
-Renders a placeholder that the DocuForge API replaces with an actual QR code or barcode SVG during PDF generation.
+Renders a placeholder that the Deckle API replaces with an actual QR code or barcode SVG during PDF generation.
 
 ```tsx
 {/* QR Code */}
@@ -281,7 +281,7 @@ import {
   Watermark,
   Barcode,
   Signature,
-} from '@docuforge/react-pdf';
+} from '@deckle/react-pdf';
 
 interface InvoiceProps {
   data: {
@@ -367,21 +367,21 @@ export default function Invoice({ data }: InvoiceProps) {
 }
 ```
 
-## Usage with DocuForge API
+## Usage with Deckle API
 
-Components render to HTML that the DocuForge API converts to PDF via a headless browser. Here's the full workflow:
+Components render to HTML that the Deckle API converts to PDF via a headless browser. Here's the full workflow:
 
 ### With the TypeScript SDK
 
 ```typescript
-import { DocuForge } from 'docuforge';
+import { Deckle } from 'deckle';
 
-const df = new DocuForge('df_live_...');
+const df = new Deckle('dk_live_...');
 
 // Send a React component as a string
 const pdf = await df.fromReact({
   react: `
-    import { Document, Page, Header } from '@docuforge/react-pdf';
+    import { Document, Page, Header } from '@deckle/react-pdf';
 
     export default function Report({ data }) {
       return (
@@ -398,17 +398,17 @@ const pdf = await df.fromReact({
   options: { format: 'A4' },
 });
 
-console.log(pdf.url); // https://cdn.getdocuforge.dev/gen_abc123.pdf
+console.log(pdf.url); // https://cdn.getdeckle.dev/gen_abc123.pdf
 ```
 
 ### With the REST API directly
 
 ```bash
-curl -X POST https://api.getdocuforge.dev/v1/generate \
-  -H "Authorization: Bearer df_live_..." \
+curl -X POST https://api.getdeckle.dev/v1/generate \
+  -H "Authorization: Bearer dk_live_..." \
   -H "Content-Type: application/json" \
   -d '{
-    "react": "import { Document, Page } from \"@docuforge/react-pdf\";\nexport default function Doc() { return <Document><Page><h1>Hello</h1></Page></Document>; }",
+    "react": "import { Document, Page } from \"@deckle/react-pdf\";\nexport default function Doc() { return <Document><Page><h1>Hello</h1></Page></Document>; }",
     "options": { "format": "A4" }
   }'
 ```
@@ -419,8 +419,8 @@ curl -X POST https://api.getdocuforge.dev/v1/generate \
 React Components ──(renderToStaticMarkup)──> HTML ──(Playwright)──> PDF
 ```
 
-1. You compose a document using `@docuforge/react-pdf` components
-2. The DocuForge API transpiles your JSX and renders it to static HTML via `ReactDOMServer.renderToStaticMarkup()`
+1. You compose a document using `@deckle/react-pdf` components
+2. The Deckle API transpiles your JSX and renders it to static HTML via `ReactDOMServer.renderToStaticMarkup()`
 3. Playwright (headless Chromium) converts the HTML to a pixel-perfect PDF
 4. Special placeholders like `{{qr:...}}` and `{{barcode:...}}` are replaced with SVG images before rendering
 
@@ -444,7 +444,7 @@ import type {
   WatermarkProps,
   BarcodeProps,
   SignatureProps,
-} from '@docuforge/react-pdf';
+} from '@deckle/react-pdf';
 ```
 
 ## License

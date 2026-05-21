@@ -13,4 +13,4 @@ RUN pnpm install --frozen-lockfile
 COPY apps/api/ apps/api/
 COPY packages/sdk-typescript/ packages/sdk-typescript/
 
-CMD ["pnpm", "--filter", "@docuforge/api", "db:migrate"]
+CMD ["pnpm", "--filter", "@deckle/api", "db:migrate"]

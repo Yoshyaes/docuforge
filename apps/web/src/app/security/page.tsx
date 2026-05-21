@@ -4,9 +4,9 @@ import { SectionWrapper } from '@/components/ui/section-wrapper';
 import { Card } from '@/components/ui/card';
 
 export const metadata: Metadata = {
-  title: 'Security — DocuForge',
+  title: 'Security — Deckle',
   description:
-    'How DocuForge protects your data: bcrypt-hashed API keys, signed webhooks, isolated rendering, and a published vulnerability-disclosure policy.',
+    'How Deckle protects your data: bcrypt-hashed API keys, signed webhooks, isolated rendering, and a published vulnerability-disclosure policy.',
 };
 
 const PILLARS = [
@@ -23,7 +23,7 @@ const PILLARS = [
   {
     icon: Lock,
     title: 'Transport and storage',
-    body: 'All traffic to api.getdocuforge.dev is TLS 1.2+. Generated PDFs are written to your chosen S3-compatible storage (R2, S3, GCS). Storage credentials live in env vars, not in the code repo.',
+    body: 'All traffic to api.getdeckle.dev is TLS 1.2+. Generated PDFs are written to your chosen S3-compatible storage (R2, S3, GCS). Storage credentials live in env vars, not in the code repo.',
   },
   {
     icon: Eye,
@@ -40,7 +40,7 @@ export default function SecurityPage() {
           Security
         </h1>
         <p className="text-text-muted">
-          DocuForge is a public-beta product. This page is an honest snapshot of what is in place
+          Deckle is a public-beta product. This page is an honest snapshot of what is in place
           today and what is on the roadmap, so you can make an informed call about whether the
           posture meets your bar before you ship.
         </p>
@@ -64,7 +64,7 @@ export default function SecurityPage() {
               SOC 2 Type II — engagement opens once we have 12 months of operational evidence.
             </li>
             <li>
-              <code className="text-accent">@docuforge/react</code> rendering in{' '}
+              <code className="text-accent">@deckle/react</code> rendering in{' '}
               <code className="text-accent">isolated-vm</code> rather than Node&apos;s built-in{' '}
               <code className="text-accent">vm</code>.
             </li>
@@ -84,7 +84,7 @@ export default function SecurityPage() {
             Reporting a vulnerability
           </h2>
           <p>
-            Email <a href="mailto:security@getdocuforge.dev" className="text-accent hover:underline">security@getdocuforge.dev</a>{' '}
+            Email <a href="mailto:security@getdeckle.dev" className="text-accent hover:underline">security@getdeckle.dev</a>{' '}
             with reproduction steps. We respond within two business days and treat
             good-faith research under safe-harbor terms. Please do not publicly disclose until we
             have shipped a fix or 90 days have passed, whichever is sooner.

@@ -9,7 +9,7 @@ import bcrypt from 'bcryptjs';
 import { db } from '../lib/db.js';
 import { users, apiKeys } from '../schema/db.js';
 
-const TEST_API_KEY = 'df_live_test_key_for_local_dev_only_do_not_use_in_prod';
+const TEST_API_KEY = 'dk_live_test_key_for_local_dev_only_do_not_use_in_prod';
 
 async function seed() {
   console.log('Seeding database...');
@@ -18,7 +18,7 @@ async function seed() {
   const [user] = await db
     .insert(users)
     .values({
-      email: 'dev@docuforge.local',
+      email: 'dev@deckle.local',
       plan: 'pro',
     })
     .onConflictDoNothing()
@@ -27,7 +27,7 @@ async function seed() {
   if (!user) {
     console.log('Test user already exists, skipping.');
     const existing = await db.query.users.findFirst({
-      where: (u, { eq }) => eq(u.email, 'dev@docuforge.local'),
+      where: (u, { eq }) => eq(u.email, 'dev@deckle.local'),
     });
     if (existing) {
       console.log(`User ID: ${existing.id}`);
@@ -56,7 +56,7 @@ async function seed() {
   console.log(`curl -X POST http://localhost:3000/v1/generate \\`);
   console.log(`  -H "Authorization: Bearer ${TEST_API_KEY}" \\`);
   console.log(`  -H "Content-Type: application/json" \\`);
-  console.log(`  -d '{"html": "<h1>Hello DocuForge</h1>"}'`);
+  console.log(`  -d '{"html": "<h1>Hello Deckle</h1>"}'`);
 
   process.exit(0);
 }

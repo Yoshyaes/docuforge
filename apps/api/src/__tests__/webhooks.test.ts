@@ -45,8 +45,8 @@ describe('Webhook delivery', () => {
     expect(url).toBe('https://example.com/hook');
     expect(opts.method).toBe('POST');
     expect(opts.headers['Content-Type']).toBe('application/json');
-    expect(opts.headers['X-DocuForge-Signature']).toBeDefined();
-    expect(opts.headers['X-DocuForge-Timestamp']).toBeDefined();
+    expect(opts.headers['X-Deckle-Signature']).toBeDefined();
+    expect(opts.headers['X-Deckle-Timestamp']).toBeDefined();
   });
 
   it('includes valid HMAC-SHA256 signature', async () => {
@@ -62,7 +62,7 @@ describe('Webhook delivery', () => {
     const expectedSig = createHmac('sha256', secret).update(body).digest('hex');
 
     const [, opts] = mockFetch.mock.calls[0];
-    expect(opts.headers['X-DocuForge-Signature']).toBe(expectedSig);
+    expect(opts.headers['X-Deckle-Signature']).toBe(expectedSig);
     expect(opts.body).toBe(body);
   });
 

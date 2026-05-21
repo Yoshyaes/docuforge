@@ -1,27 +1,27 @@
-# DocuForge Ruby SDK
+# Deckle Ruby SDK
 
 PDF generation API for developers. HTML in, pixel-perfect PDF out.
 
 ## Installation
 
 ```bash
-gem install docuforge
+gem install deckle
 ```
 
 Or in a `Gemfile`:
 
 ```ruby
-gem "docuforge"
+gem "deckle"
 ```
 
 ## Quick start
 
 ```ruby
-require "docuforge"
+require "deckle"
 
-client = DocuForge::Client.new(api_key: ENV["DOCUFORGE_API_KEY"])
+client = Deckle::Client.new(api_key: ENV["DECKLE_API_KEY"])
 
-pdf = client.generate(html: "<h1>Hello, DocuForge!</h1>")
+pdf = client.generate(html: "<h1>Hello, Deckle!</h1>")
 puts pdf["url"]
 ```
 
@@ -62,11 +62,11 @@ client.pdf_sign_annotation(
 ```ruby
 begin
   client.generate(html: "...")
-rescue DocuForge::RateLimitError => e
+rescue Deckle::RateLimitError => e
   puts "rate limited; retry after #{e.retry_after}s"
-rescue DocuForge::AuthenticationError => e
+rescue Deckle::AuthenticationError => e
   puts "bad API key: #{e.message}"
-rescue DocuForge::Error => e
+rescue Deckle::Error => e
   puts "error #{e.code}: #{e.message}"
 end
 ```

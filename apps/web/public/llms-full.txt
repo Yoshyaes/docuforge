@@ -1,32 +1,32 @@
-# DocuForge — Full Documentation
+# Deckle — Full Documentation
 
 > PDF generation API for developers. HTML in, pixel-perfect PDF out.
 
 ## Overview
 
-DocuForge is a hosted PDF generation API. Send HTML or template data, get pixel-perfect PDFs back in under 3 seconds. No headless browsers to manage.
+Deckle is a hosted PDF generation API. Send HTML or template data, get pixel-perfect PDFs back in under 3 seconds. No headless browsers to manage.
 
-**Base URL:** `https://api.getdocuforge.dev`
-**Authentication:** Bearer token in Authorization header (`Authorization: Bearer df_live_...`)
+**Base URL:** `https://api.getdeckle.dev`
+**Authentication:** Bearer token in Authorization header (`Authorization: Bearer dk_live_...`)
 
 ## SDKs
 
 ### TypeScript
 ```bash
-npm install docuforge
+npm install deckle
 ```
 ```typescript
-import { DocuForge } from 'docuforge';
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY);
+import { Deckle } from 'deckle';
+const df = new Deckle(process.env.DECKLE_API_KEY);
 ```
 
 ### Python
 ```bash
-pip install docuforge
+pip install deckle
 ```
 ```python
-from docuforge import DocuForge
-df = DocuForge("df_live_...")
+from deckle import Deckle
+df = Deckle("dk_live_...")
 ```
 
 ---
@@ -67,7 +67,7 @@ For template mode:
 {
   "id": "gen_abc123",
   "status": "completed",
-  "url": "https://cdn.getdocuforge.dev/gen_abc123.pdf",
+  "url": "https://cdn.getdeckle.dev/gen_abc123.pdf",
   "pages": 2,
   "file_size": 45230,
   "generation_time_ms": 1840
@@ -96,7 +96,7 @@ Get a specific generation.
   "template_id": null,
   "input_type": "html",
   "status": "completed",
-  "url": "https://cdn.getdocuforge.dev/gen_abc123.pdf",
+  "url": "https://cdn.getdeckle.dev/gen_abc123.pdf",
   "pages": 2,
   "file_size": 45230,
   "generation_time_ms": 1840,
@@ -167,7 +167,7 @@ Get usage for current billing period.
 ### TypeScript SDK
 
 ```typescript
-const df = new DocuForge(apiKey, { baseUrl?, timeout? });
+const df = new Deckle(apiKey, { baseUrl?, timeout? });
 
 // Generate from HTML
 await df.generate({ html, options?, output?, webhook? }): GenerateResponse
@@ -193,7 +193,7 @@ await df.getUsage(): UsageStats
 ### Python SDK
 
 ```python
-df = DocuForge(api_key, base_url?, timeout?)
+df = Deckle(api_key, base_url?, timeout?)
 
 # Generate from HTML
 df.generate(html, options?, output?, webhook?) -> GenerateResponse

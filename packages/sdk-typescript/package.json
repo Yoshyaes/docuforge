@@ -1,14 +1,14 @@
 {
-  "name": "docuforge",
+  "name": "deckle",
   "version": "0.5.0",
-  "author": "DocuForge",
-  "homepage": "https://getdocuforge.dev",
+  "author": "Deckle",
+  "homepage": "https://getdeckle.dev",
   "repository": {
     "type": "git",
-    "url": "https://github.com/docuforge/docuforge"
+    "url": "https://github.com/Yoshyaes/deckle/deckle"
   },
-  "bugs": "https://github.com/docuforge/docuforge/issues",
-  "description": "DocuForge - PDF generation API for developers. HTML in, pixel-perfect PDF out.",
+  "bugs": "https://github.com/Yoshyaes/deckle/deckle/issues",
+  "description": "Deckle - PDF generation API for developers. HTML in, pixel-perfect PDF out.",
   "sideEffects": false,
   "type": "module",
   "main": "./dist/index.cjs",
@@ -37,7 +37,7 @@
     "html-to-pdf",
     "pdf-generation",
     "api",
-    "docuforge"
+    "deckle"
   ],
   "license": "MIT",
   "devDependencies": {

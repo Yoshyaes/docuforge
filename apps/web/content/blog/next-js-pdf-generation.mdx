@@ -1,24 +1,24 @@
-﻿---
-title: "How to Generate PDFs in Next.js with DocuForge"
-description: "Learn how to add PDF generation to your Next.js application in under 5 minutes using the DocuForge SDK."
+---
+title: "How to Generate PDFs in Next.js with Deckle"
+description: "Learn how to add PDF generation to your Next.js application in under 5 minutes using the Deckle SDK."
 date: "2026-03-01"
-author: "DocuForge Team"
+author: "Deckle Team"
 category: "Next.js"
 readingTime: 6
 ---
 
-Generating PDFs in Next.js shouldn't be hard. No headless browsers to configure, no Puppeteer memory leaks, no wkhtmltopdf compatibility issues. With DocuForge, it's one API call.
+Generating PDFs in Next.js shouldn't be hard. No headless browsers to configure, no Puppeteer memory leaks, no wkhtmltopdf compatibility issues. With Deckle, it's one API call.
 
 ## Prerequisites
 
 - A Next.js 14+ project (App Router or Pages Router)
-- A DocuForge API key ([get one free](https://app.getdocuforge.dev/sign-up))
+- A Deckle API key ([get one free](https://app.getdeckle.dev/sign-up))
 - Node.js 18+
 
 ## Install the SDK
 
 ```bash
-npm install docuforge
+npm install deckle
 ```
 
 ## Create a PDF Generation API Route
@@ -26,15 +26,15 @@ npm install docuforge
 Create a new API route at `app/api/generate-pdf/route.ts`:
 
 ```typescript
-import DocuForge from 'docuforge';
+import Deckle from 'deckle';
 import { NextResponse } from 'next/server';
 
-const docuforge = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const deckle = new Deckle(process.env.DECKLE_API_KEY!);
 
 export async function POST(request: Request) {
   const { html } = await request.json();
 
-  const pdf = await docuforge.generate({
+  const pdf = await deckle.generate({
     html,
     options: { format: 'A4', margin: '20mm' },
   });
@@ -62,12 +62,12 @@ console.log(pdf.url); // Your PDF is ready
 
 ## Using React Components
 
-You can also use DocuForge's React components for type-safe, component-based PDF design:
+You can also use Deckle's React components for type-safe, component-based PDF design:
 
 ```typescript
-import { Document, Page, Table } from '@docuforge/react-pdf';
+import { Document, Page, Table } from '@deckle/react-pdf';
 
-const pdf = await docuforge.fromReact({
+const pdf = await deckle.fromReact({
   component: `
     <Document title="Sales Report">
       <Page size="A4">
@@ -84,7 +84,7 @@ const pdf = await docuforge.fromReact({
 For recurring PDFs like invoices, create a template once and fill it with data:
 
 ```typescript
-const pdf = await docuforge.fromTemplate({
+const pdf = await deckle.fromTemplate({
   templateId: 'tmpl_invoice_v2',
   data: {
     customerName: 'Acme Corp',
@@ -96,6 +96,6 @@ const pdf = await docuforge.fromTemplate({
 
 ## Next Steps
 
-- Read the [full SDK documentation](https://getdocuforge.dev/docs)
-- Explore [pre-built templates](https://app.getdocuforge.dev/templates/gallery)
-- Learn about [batch PDF generation](https://getdocuforge.dev/docs/api-reference/generate) for high-volume use cases
+- Read the [full SDK documentation](https://getdeckle.dev/docs)
+- Explore [pre-built templates](https://app.getdeckle.dev/templates/gallery)
+- Learn about [batch PDF generation](https://getdeckle.dev/docs/api-reference/generate) for high-volume use cases

@@ -5,7 +5,7 @@ description: Password-protect a PDF document. Currently disabled.
 
 # Protect PDF
 
-`POST https://api.getdocuforge.dev/v1/pdf/protect`
+`POST https://api.getdeckle.dev/v1/pdf/protect`
 
 <Warning>
   **This endpoint is temporarily disabled.** Earlier behavior only set
@@ -38,8 +38,8 @@ Add password protection and permission controls to a PDF document.
 ## Example
 
 ```bash
-curl -X POST https://api.getdocuforge.dev/v1/pdf/protect \
-  -H "Authorization: Bearer df_live_sk_..." \
+curl -X POST https://api.getdeckle.dev/v1/pdf/protect \
+  -H "Authorization: Bearer dk_live_sk_..." \
   -H "Content-Type: application/json" \
   -d '{
     "pdf": "<base64-encoded-pdf>",
@@ -57,7 +57,7 @@ curl -X POST https://api.getdocuforge.dev/v1/pdf/protect \
 
 ```json
 {
-  "url": "https://cdn.getdocuforge.dev/gen_abc123.pdf",
+  "url": "https://cdn.getdeckle.dev/gen_abc123.pdf",
   "file_size": 52400,
   "protected": true
 }

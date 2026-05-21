@@ -18,7 +18,7 @@ const DEFAULT_HTML = `<!DOCTYPE html>
 </style>
 </head>
 <body>
-  <h1>DocuForge Playground</h1>
+  <h1>Deckle Playground</h1>
   <p>Edit this HTML to see your PDF come to life. Try modifying the styles, adding tables, or building a complete document layout.</p>
 
   <div class="card">

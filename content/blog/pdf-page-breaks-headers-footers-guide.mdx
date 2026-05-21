@@ -1,9 +1,9 @@
 ---
 title: "The Developer's Guide to PDF Page Breaks, Headers, and Footers"
-description: "Master CSS page breaks, repeating headers and footers, page numbers, and multi-page layout for pixel-perfect PDFs with DocuForge."
+description: "Master CSS page breaks, repeating headers and footers, page numbers, and multi-page layout for pixel-perfect PDFs with Deckle."
 slug: "pdf-page-breaks-headers-footers-guide"
 date: "2026-04-07"
-author: "DocuForge Team"
+author: "Deckle Team"
 authorRole: "Developer Advocate"
 tags: ["page-layout", "pdf-generation", "html-to-pdf", "tutorial"]
 readingTime: "11 min read"
@@ -15,7 +15,7 @@ If you have ever generated a multi-page PDF from HTML, you already know the pain
 
 Page breaks, headers, and footers are the number one pain point in HTML-to-PDF generation. The web was designed for continuous scrolling, not discrete pages. When you force HTML into a paged medium, you need a different set of CSS properties and rendering strategies than what you use for browser layout.
 
-This guide covers everything you need to control multi-page PDF layout with DocuForge. You will learn the CSS properties that govern page breaks, how to configure repeating headers and footers with page numbers, how to handle tables that span multiple pages, and how to avoid the most common pitfalls. Every technique works with DocuForge's Chromium-based rendering engine, and all code examples use the DocuForge SDK directly.
+This guide covers everything you need to control multi-page PDF layout with Deckle. You will learn the CSS properties that govern page breaks, how to configure repeating headers and footers with page numbers, how to handle tables that span multiple pages, and how to avoid the most common pitfalls. Every technique works with Deckle's Chromium-based rendering engine, and all code examples use the Deckle SDK directly.
 
 ## Page Breaks: The CSS Properties
 
@@ -80,9 +80,9 @@ This ensures at least three lines of any paragraph appear at the bottom of a pag
 Here is a complete example that combines all three techniques:
 
 ```typescript
-import DocuForge from "docuforge";
+import Deckle from "deckle";
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const df = new Deckle(process.env.DECKLE_API_KEY!);
 
 const result = await df.generate({
   html: `
@@ -179,9 +179,9 @@ const result = await df.generate({
 
 For very long tables or tables with complex layouts, consider splitting them into separate `<table>` elements per logical section, each with its own `<thead>`. This gives you explicit control over where breaks happen and avoids edge cases with Chromium's table-splitting behavior.
 
-## Headers via DocuForge Options
+## Headers via Deckle Options
 
-DocuForge supports repeating headers on every page of your PDF through the `options.header` property. This header renders inside the top margin area and supports dynamic page number interpolation.
+Deckle supports repeating headers on every page of your PDF through the `options.header` property. This header renders inside the top margin area and supports dynamic page number interpolation.
 
 ### Basic Header
 
@@ -206,7 +206,7 @@ const result = await df.generate({
 
 ### Page Numbers in Headers
 
-Use `{{pageNumber}}` and `{{totalPages}}` inside your header HTML. DocuForge interpolates these values for each page during rendering.
+Use `{{pageNumber}}` and `{{totalPages}}` inside your header HTML. Deckle interpolates these values for each page during rendering.
 
 ```typescript
 header: `
@@ -234,7 +234,7 @@ header: `
 `,
 ```
 
-## Footers via DocuForge Options
+## Footers via Deckle Options
 
 Footers work exactly like headers but render inside the bottom margin area. Use `options.footer` with the same HTML string approach.
 
@@ -306,14 +306,14 @@ A rule of thumb: measure or estimate the height of your header/footer content, t
 
 ## React Component Approach
 
-If you prefer a component-based workflow, the `@docuforge/react` library provides `Document`, `Page`, `Header`, and `Footer` components that handle page breaks and positioning for you.
+If you prefer a component-based workflow, the `@deckle/react` library provides `Document`, `Page`, `Header`, and `Footer` components that handle page breaks and positioning for you.
 
 ### Basic Multi-Page Document
 
 The `Page` component automatically applies `break-after: page` between pages. The `Footer` component is absolutely positioned at the bottom of each page.
 
 ```tsx
-import { Document, Page, Header, Footer } from "@docuforge/react";
+import { Document, Page, Header, Footer } from "@deckle/react";
 
 function AnnualReport({ data }) {
   return (
@@ -363,9 +363,9 @@ function AnnualReport({ data }) {
 Pass the React component to `df.generate()` using the `react` source:
 
 ```typescript
-import DocuForge from "docuforge";
+import Deckle from "deckle";
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const df = new Deckle(process.env.DECKLE_API_KEY!);
 
 const result = await df.generate({
   html: renderToString(<AnnualReport data={reportData} />),
@@ -502,15 +502,15 @@ These are the issues that trip up nearly every developer working with PDF page l
 
 **Images forcing unexpected page breaks.** Large images can push content to the next page if they do not fit. Add `max-width: 100%` and `break-inside: avoid` to image containers, and consider setting explicit heights to prevent layout surprises.
 
-**External CSS in headers and footers.** Stylesheet links and `<style>` blocks do not work inside `options.header` and `options.footer`. All styling must be inline. This is a Chromium limitation, not a DocuForge limitation.
+**External CSS in headers and footers.** Stylesheet links and `<style>` blocks do not work inside `options.header` and `options.footer`. All styling must be inline. This is a Chromium limitation, not a Deckle limitation.
 
 ## Going Further
 
 This guide covered the core techniques for controlling page layout in HTML-to-PDF generation. For framework-specific implementations, check out these tutorials:
 
-- [Generate PDFs in Next.js with DocuForge](https://getdocuforge.dev/blog/generate-pdfs-nextjs-docuforge) for a complete Next.js integration
-- [Build a Stripe Invoice System](https://getdocuforge.dev/blog/invoice-system-stripe-docuforge) for multi-page invoice generation with page numbers
-- [Generate Report PDFs from Supabase Data](https://getdocuforge.dev/blog/generate-report-pdfs-supabase-data) for data-driven flowing reports
-- [Python PDF Generation with FastAPI](https://getdocuforge.dev/blog/pdf-generation-python-fastapi-docuforge) for server-side generation in Python
+- [Generate PDFs in Next.js with Deckle](https://getdeckle.dev/blog/generate-pdfs-nextjs-deckle) for a complete Next.js integration
+- [Build a Stripe Invoice System](https://getdeckle.dev/blog/invoice-system-stripe-deckle) for multi-page invoice generation with page numbers
+- [Generate Report PDFs from Supabase Data](https://getdeckle.dev/blog/generate-report-pdfs-supabase-data) for data-driven flowing reports
+- [Python PDF Generation with FastAPI](https://getdeckle.dev/blog/pdf-generation-python-fastapi-deckle) for server-side generation in Python
 
 All of these build on the page break, header, and footer techniques covered here. Start with the pattern that matches your use case, and adjust margins and break rules until the output is exactly what you need.

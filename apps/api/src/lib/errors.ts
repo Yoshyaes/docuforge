@@ -15,7 +15,7 @@ export class AppError extends Error {
 
 export class AuthError extends AppError {
   constructor(
-    message = "Invalid API key. Send it as 'Authorization: Bearer df_live_…' (must start with df_live_).",
+    message = "Invalid API key. Send it as 'Authorization: Bearer dk_live_…' (must start with dk_live_).",
   ) {
     super(401, 'UNAUTHORIZED', message);
   }
@@ -128,7 +128,7 @@ export function errorResponse(err: unknown, requestId?: string) {
       error: {
         code: 'INTERNAL_ERROR',
         message:
-          'Something broke on our side. Retry in a minute. If this persists, share the request_id below with support@getdocuforge.dev.',
+          'Something broke on our side. Retry in a minute. If this persists, share the request_id below with support@getdeckle.dev.',
         request_id: id,
       },
     },

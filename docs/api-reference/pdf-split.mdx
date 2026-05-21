@@ -5,7 +5,7 @@ description: Split a PDF into multiple documents by page ranges.
 
 # Split PDF
 
-`POST https://api.getdocuforge.dev/v1/pdf/split`
+`POST https://api.getdeckle.dev/v1/pdf/split`
 
 Split a single PDF into multiple documents based on page ranges.
 
@@ -28,8 +28,8 @@ Split a single PDF into multiple documents based on page ranges.
 ## Example
 
 ```bash
-curl -X POST https://api.getdocuforge.dev/v1/pdf/split \
-  -H "Authorization: Bearer df_live_sk_..." \
+curl -X POST https://api.getdeckle.dev/v1/pdf/split \
+  -H "Authorization: Bearer dk_live_sk_..." \
   -H "Content-Type: application/json" \
   -d '{
     "pdf": "<base64-encoded-pdf>",
@@ -43,8 +43,8 @@ curl -X POST https://api.getdocuforge.dev/v1/pdf/split \
 ```json
 {
   "parts": [
-    { "url": "https://cdn.getdocuforge.dev/gen_abc123.pdf", "file_size": 45230 },
-    { "url": "https://cdn.getdocuforge.dev/gen_def456.pdf", "file_size": 32100 }
+    { "url": "https://cdn.getdeckle.dev/gen_abc123.pdf", "file_size": 45230 },
+    { "url": "https://cdn.getdeckle.dev/gen_def456.pdf", "file_size": 32100 }
   ],
   "total": 2
 }

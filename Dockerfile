@@ -56,18 +56,18 @@ COPY packages/sdk-typescript/ packages/sdk-typescript/
 COPY public/ public/
 
 # Build the API
-RUN pnpm --filter @docuforge/api build
+RUN pnpm --filter @deckle/api build
 
 # Install Playwright Chromium to a stable system path so it survives
-# the switch from the build-time root user to the runtime docuforge
+# the switch from the build-time root user to the runtime deckle
 # user. Without PLAYWRIGHT_BROWSERS_PATH the install lands in
-# /root/.cache/ms-playwright, which docuforge (HOME=/app) cannot reach.
+# /root/.cache/ms-playwright, which deckle (HOME=/app) cannot reach.
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 RUN cd apps/api && pnpm exec playwright install chromium
 
-RUN groupadd -r docuforge && useradd -r -g docuforge -d /app docuforge
-RUN chown -R docuforge:docuforge /app /ms-playwright
-USER docuforge
+RUN groupadd -r deckle && useradd -r -g deckle -d /app deckle
+RUN chown -R deckle:deckle /app /ms-playwright
+USER deckle
 
 EXPOSE 3000
 

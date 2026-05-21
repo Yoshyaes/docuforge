@@ -1,15 +1,15 @@
 ---
-title: "DocuForge vs Puppeteer"
-description: "Compare DocuForge's managed PDF API against self-hosted Puppeteer/Playwright"
+title: "Deckle vs Puppeteer"
+description: "Compare Deckle's managed PDF API against self-hosted Puppeteer/Playwright"
 ---
 
-# DocuForge vs Puppeteer / Playwright
+# Deckle vs Puppeteer / Playwright
 
-Puppeteer (and Playwright) are the most common approaches to PDF generation — run headless Chrome, navigate to a page, and call `page.pdf()`. DocuForge uses the same underlying technology but wraps it in a managed API so you don't have to operate browser infrastructure.
+Puppeteer (and Playwright) are the most common approaches to PDF generation — run headless Chrome, navigate to a page, and call `page.pdf()`. Deckle uses the same underlying technology but wraps it in a managed API so you don't have to operate browser infrastructure.
 
 ## Feature Comparison
 
-| Feature | DocuForge | Puppeteer (Self-Hosted) |
+| Feature | Deckle | Puppeteer (Self-Hosted) |
 |---------|-----------|------------------------|
 | **Setup time** | 5 minutes | 2-5 days |
 | **Infrastructure** | Managed (zero ops) | You manage Chrome, Docker, scaling |
@@ -57,11 +57,11 @@ await page.close();
 // And recycle browsers periodically to prevent memory leaks...
 ```
 
-### DocuForge
+### Deckle
 
 ```typescript
-import { DocuForge } from 'docuforge';
-const df = new DocuForge('df_live_...');
+import { Deckle } from 'deckle';
+const df = new Deckle('dk_live_...');
 
 const pdf = await df.generate({
   html: htmlContent,
@@ -82,7 +82,7 @@ console.log(pdf.url); // Hosted, CDN-delivered PDF
 - You have strict data residency requirements and can't use cloud APIs
 - You're already operating browser infrastructure at scale
 
-## When to Choose DocuForge
+## When to Choose Deckle
 
 - You want to generate PDFs without managing infrastructure
 - You need batch generation, templates, or React-to-PDF support

@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/'],
       },
     ],
-    sitemap: 'https://getdocuforge.dev/sitemap.xml',
-    host: 'https://getdocuforge.dev',
+    sitemap: 'https://getdeckle.dev/sitemap.xml',
+    host: 'https://getdeckle.dev',
   };
 }

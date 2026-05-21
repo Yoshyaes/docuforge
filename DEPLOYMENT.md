@@ -1,4 +1,4 @@
-﻿# DocuForge Deployment Guide
+# Deckle Deployment Guide
 
 ## Table of Contents
 
@@ -63,15 +63,15 @@ Optional for full functionality:
 
 ```bash
 # Push the Drizzle schema to your Neon database
-pnpm --filter @docuforge/api db:push
+pnpm --filter @deckle/api db:push
 
 # Seed a test user and API key for local development
-pnpm --filter @docuforge/api db:seed
+pnpm --filter @deckle/api db:seed
 ```
 
 The seed script creates:
-- **User:** `dev@docuforge.local` (pro plan)
-- **API Key:** `df_live_test_key_for_local_dev_only_do_not_use_in_prod`
+- **User:** `dev@deckle.local` (pro plan)
+- **API Key:** `dk_live_test_key_for_local_dev_only_do_not_use_in_prod`
 
 ### 4. Start Dev Servers
 
@@ -98,9 +98,9 @@ curl http://localhost:3000/health
 
 ```bash
 curl -X POST http://localhost:3000/v1/generate \
-  -H "Authorization: Bearer df_live_test_key_for_local_dev_only_do_not_use_in_prod" \
+  -H "Authorization: Bearer dk_live_test_key_for_local_dev_only_do_not_use_in_prod" \
   -H "Content-Type: application/json" \
-  -d '{"html": "<h1>Hello DocuForge</h1>"}'
+  -d '{"html": "<h1>Hello Deckle</h1>"}'
 ```
 
 **Dashboard:** Open http://localhost:3001 and sign in via Clerk.
@@ -109,17 +109,17 @@ curl -X POST http://localhost:3000/v1/generate \
 
 ```bash
 # Run all tests
-pnpm --filter @docuforge/api test
+pnpm --filter @deckle/api test
 
 # Watch mode
-pnpm --filter @docuforge/api test:watch
+pnpm --filter @deckle/api test:watch
 ```
 
 ### 7. Build SDKs & Packages (optional)
 
 ```bash
 # TypeScript SDK
-pnpm --filter docuforge build
+pnpm --filter deckle build
 
 # React component library
 cd packages/react && npm install && npm run build
@@ -135,7 +135,7 @@ cd packages/mcp-server && npm install && npm run build
 
 ## Self-Hosted Docker
 
-The easiest way to deploy the full DocuForge stack on your own infrastructure.
+The easiest way to deploy the full Deckle stack on your own infrastructure.
 
 ### Prerequisites
 
@@ -146,8 +146,8 @@ The easiest way to deploy the full DocuForge stack on your own infrastructure.
 
 ```bash
 # Clone the repo
-git clone https://github.com/yourusername/docuforge.git
-cd docuforge
+git clone https://github.com/yourusername/deckle.git
+cd deckle
 
 # Start the full stack (API + PostgreSQL + Redis)
 docker compose -f docker-compose.selfhost.yml up -d
@@ -157,7 +157,7 @@ This starts:
 
 | Service | Port | Description |
 |---------|------|-------------|
-| **api** | 3000 | DocuForge API (Hono + Playwright) |
+| **api** | 3000 | Deckle API (Hono + Playwright) |
 | **postgres** | 5432 | PostgreSQL 16 |
 | **redis** | 6379 | Redis 7 (rate limiting + job queue) |
 
@@ -212,7 +212,7 @@ Data persists across restarts in Docker volumes:
 
 ## Public Deployment
 
-DocuForge is split across multiple services, each deployed to the platform best suited for it:
+Deckle is split across multiple services, each deployed to the platform best suited for it:
 
 | Component | Platform | Why |
 |-----------|----------|-----|
@@ -237,7 +237,7 @@ curl -L https://fly.io/install.sh | sh
 fly auth login
 
 # Launch the app (from the repo root)
-fly launch --name docuforge-api --region iad --no-deploy
+fly launch --name deckle-api --region iad --no-deploy
 ```
 
 #### Set secrets
@@ -250,7 +250,7 @@ fly secrets set \
   R2_ACCOUNT_ID="..." \
   R2_ACCESS_KEY_ID="..." \
   R2_SECRET_ACCESS_KEY="..." \
-  R2_BUCKET_NAME="docuforge-pdfs" \
+  R2_BUCKET_NAME="deckle-pdfs" \
   R2_PUBLIC_URL="https://cdn.yourdomain.com" \
   CLERK_WEBHOOK_SECRET="..." \
   WEBHOOK_SIGNING_SECRET="whsec_..." \
@@ -276,7 +276,7 @@ The included `fly.toml` is pre-configured with:
 fly certs add api.yourdomain.com
 ```
 
-Then add a CNAME record: `api.yourdomain.com` -> `docuforge-api.fly.dev`
+Then add a CNAME record: `api.yourdomain.com` -> `deckle-api.fly.dev`
 
 ### Dashboard on Vercel
 
@@ -308,7 +308,7 @@ Set these in the Vercel project settings (Settings > Environment Variables):
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Your Clerk publishable key |
 | `CLERK_SECRET_KEY` | Your Clerk secret key |
 | `DATABASE_URL` | Your Neon connection string |
-| `NEXT_PUBLIC_API_URL` | Your Fly.io API URL (e.g., `https://docuforge-api.fly.dev`) |
+| `NEXT_PUBLIC_API_URL` | Your Fly.io API URL (e.g., `https://deckle-api.fly.dev`) |
 
 #### Custom domain
 
@@ -321,13 +321,13 @@ Add your domain in Vercel project settings > Domains (e.g., `app.yourdomain.com`
 3. Set the docs directory to `docs/`
 4. Mintlify auto-deploys on push to main
 
-#### Custom domain setup (`docs.getdocuforge.dev`)
+#### Custom domain setup (`docs.getdeckle.dev`)
 
 Mintlify custom domains require the **Startup plan** ($150/mo). If using the free tier, docs will be served at your Mintlify preview subdomain (e.g., `<team>.mintlify.app`).
 
 To set up the custom domain:
 
-1. **In Mintlify dashboard:** Go to Settings > Custom Domain > enter `docs.getdocuforge.dev`
+1. **In Mintlify dashboard:** Go to Settings > Custom Domain > enter `docs.getdeckle.dev`
 2. **In your DNS provider (Vercel):** Add a CNAME record:
    - **Name:** `docs`
    - **Target:** `cname.mintlify.com`
@@ -338,26 +338,26 @@ To set up the custom domain:
 ```json
 {
   "rewrites": [
-    { "source": "/docs/:path*", "destination": "https://getdocuforge.dev/docs/:path*" }
+    { "source": "/docs/:path*", "destination": "https://getdeckle.dev/docs/:path*" }
   ]
 }
 ```
 
-This serves docs at `getdocuforge.dev/docs/` without a custom Mintlify domain.
+This serves docs at `getdeckle.dev/docs/` without a custom Mintlify domain.
 
 ### Clerk Webhook Setup
 
 To auto-create database users when people sign up:
 
 1. Go to **Clerk Dashboard > Webhooks**
-2. Add endpoint: `https://docuforge-api.fly.dev/webhooks/clerk`
+2. Add endpoint: `https://deckle-api.fly.dev/webhooks/clerk`
 3. Subscribe to events: `user.created`, `user.updated`, `user.deleted`
 4. Copy the **Signing Secret** and set it as `CLERK_WEBHOOK_SECRET` in Fly.io secrets
 
 ### Cloudflare R2 Setup
 
 1. Go to **Cloudflare Dashboard > R2**
-2. Create a bucket named `docuforge-pdfs`
+2. Create a bucket named `deckle-pdfs`
 3. Create an API token with read/write access to the bucket
 4. Set the R2 env vars in Fly.io secrets
 5. (Optional) Connect a custom domain for the public URL (e.g., `cdn.yourdomain.com`)
@@ -375,22 +375,22 @@ To auto-create database users when people sign up:
 | `R2_ACCOUNT_ID` | No | API | Cloudflare R2 account ID |
 | `R2_ACCESS_KEY_ID` | No | API | R2 API token key ID |
 | `R2_SECRET_ACCESS_KEY` | No | API | R2 API token secret |
-| `R2_BUCKET_NAME` | No | API | R2 bucket name (default: `docuforge-pdfs`) |
+| `R2_BUCKET_NAME` | No | API | R2 bucket name (default: `deckle-pdfs`) |
 | `R2_PUBLIC_URL` | No | API | Public URL for accessing stored PDFs |
 | `AWS_ACCESS_KEY_ID` | No | API | AWS S3 access key |
 | `AWS_SECRET_ACCESS_KEY` | No | API | AWS S3 secret key |
 | `AWS_REGION` | No | API | AWS region (default: `us-east-1`) |
-| `S3_BUCKET_NAME` | No | API | S3 bucket name (default: `docuforge-pdfs`) |
+| `S3_BUCKET_NAME` | No | API | S3 bucket name (default: `deckle-pdfs`) |
 | `S3_PUBLIC_URL` | No | API | Public URL for S3-stored PDFs |
 | `GOOGLE_ACCESS_KEY_ID` | No | API | GCS interop access key |
 | `GOOGLE_SECRET_ACCESS_KEY` | No | API | GCS interop secret key |
-| `GCS_BUCKET_NAME` | No | API | GCS bucket name (default: `docuforge-pdfs`) |
+| `GCS_BUCKET_NAME` | No | API | GCS bucket name (default: `deckle-pdfs`) |
 | `GCS_PUBLIC_URL` | No | API | Public URL for GCS-stored PDFs |
 | **Auth** | | | |
 | `CLERK_SECRET_KEY` | Yes | API, Dashboard | Clerk backend secret key |
 | `CLERK_WEBHOOK_SECRET` | No | API | Clerk webhook signing secret (Svix) |
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Yes | Dashboard | Clerk frontend publishable key |
-| `DOCUFORGE_DEV_BYPASS` | No | Dashboard | Set to `true` to bypass Clerk auth in local dev |
+| `DECKLE_DEV_BYPASS` | No | Dashboard | Set to `true` to bypass Clerk auth in local dev |
 | **Features** | | | |
 | `ANTHROPIC_API_KEY` | No | API | Enables AI template generation (`/v1/ai/generate-template`) |
 | `WEBHOOK_SIGNING_SECRET` | No | API | HMAC secret for outbound webhook signatures |

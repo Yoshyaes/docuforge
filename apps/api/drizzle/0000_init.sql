@@ -1,4 +1,4 @@
--- DocuForge initial schema migration
+-- Deckle initial schema migration
 -- Run with: psql $DATABASE_URL -f drizzle/0000_init.sql
 
 DO $$ BEGIN

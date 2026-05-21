@@ -11,7 +11,7 @@ Pre-built templates to help you get started quickly. The list endpoint is public
 
 ## List Starter Templates
 
-`GET https://api.getdocuforge.dev/v1/starter-templates`
+`GET https://api.getdeckle.dev/v1/starter-templates`
 
 **Public** -- no authentication required.
 
@@ -20,7 +20,7 @@ Returns all available starter templates with their metadata and sample data.
 ### Example
 
 ```bash
-curl https://api.getdocuforge.dev/v1/starter-templates
+curl https://api.getdeckle.dev/v1/starter-templates
 ```
 
 ### Response
@@ -47,7 +47,7 @@ curl https://api.getdocuforge.dev/v1/starter-templates
 
 ## Get Starter Template
 
-`GET https://api.getdocuforge.dev/v1/starter-templates/:slug`
+`GET https://api.getdeckle.dev/v1/starter-templates/:slug`
 
 **Public** -- no authentication required.
 
@@ -80,7 +80,7 @@ Get the full details of a starter template including its HTML content.
 
 ## Clone Starter Template
 
-`POST https://api.getdocuforge.dev/v1/starter-templates/:slug/clone`
+`POST https://api.getdeckle.dev/v1/starter-templates/:slug/clone`
 
 **Requires authentication.** Clone a starter template into your account as a new editable template.
 
@@ -93,8 +93,8 @@ Get the full details of a starter template including its HTML content.
 ### Example
 
 ```bash
-curl -X POST https://api.getdocuforge.dev/v1/starter-templates/invoice/clone \
-  -H "Authorization: Bearer df_live_sk_..."
+curl -X POST https://api.getdeckle.dev/v1/starter-templates/invoice/clone \
+  -H "Authorization: Bearer dk_live_sk_..."
 ```
 
 ### Response -- `201 Created`

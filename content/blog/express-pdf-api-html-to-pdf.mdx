@@ -1,9 +1,9 @@
 ---
 title: "Express.js PDF API: From HTML to PDF in 30 Seconds"
-description: "Build a complete PDF generation API with Express.js and DocuForge in under a minute. HTML-to-PDF, templates, downloads, and error handling included."
+description: "Build a complete PDF generation API with Express.js and Deckle in under a minute. HTML-to-PDF, templates, downloads, and error handling included."
 slug: "express-pdf-api-html-to-pdf"
 date: "2026-04-10"
-author: "DocuForge Team"
+author: "Deckle Team"
 authorRole: "Developer Advocate"
 tags: ["express", "typescript", "api", "pdf-generation", "tutorial"]
 readingTime: "8 min read"
@@ -15,7 +15,7 @@ Express.js remains the most widely used Node.js framework for building APIs. It 
 
 In practice, it rarely is. Teams burn days configuring Puppeteer, managing headless Chromium processes, handling zombie browsers, and debugging font rendering. All of that complexity exists below the abstraction layer you actually care about: give me HTML, give me back a PDF.
 
-DocuForge eliminates that entire layer. You send HTML (or a template, or JSX) to a single API call and get a production-ready PDF back. No browser binaries. No process management. No memory leaks at 3 AM.
+Deckle eliminates that entire layer. You send HTML (or a template, or JSX) to a single API call and get a production-ready PDF back. No browser binaries. No process management. No memory leaks at 3 AM.
 
 In this tutorial, you will build a PDF microservice with Express.js that exposes four endpoints: HTML-to-PDF generation, template-based invoice rendering, direct file downloads, and React-to-PDF conversion. The whole thing takes about 30 seconds to set up and a few more minutes to flesh out with proper error handling.
 
@@ -26,7 +26,7 @@ Start by creating a new project and installing the two packages you need:
 ```bash
 mkdir pdf-service && cd pdf-service
 npm init -y
-npm install express docuforge
+npm install express deckle
 npm install -D typescript @types/express @types/node tsx
 ```
 
@@ -47,23 +47,23 @@ Create a `tsconfig.json` with sensible defaults:
 }
 ```
 
-Add your DocuForge API key to a `.env` file. Never commit this file to version control.
+Add your Deckle API key to a `.env` file. Never commit this file to version control.
 
 ```bash
-DOCUFORGE_API_KEY=df_live_your_api_key_here
+DECKLE_API_KEY=dk_live_your_api_key_here
 ```
 
-Now initialize the DocuForge client. Create `src/server.ts` and add the foundation:
+Now initialize the Deckle client. Create `src/server.ts` and add the foundation:
 
 ```typescript
 // src/server.ts
 import express from "express";
-import DocuForge from "docuforge";
+import Deckle from "deckle";
 
 const app = express();
 app.use(express.json({ limit: "10mb" }));
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const df = new Deckle(process.env.DECKLE_API_KEY!);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
@@ -71,7 +71,7 @@ app.listen(PORT, () => {
 });
 ```
 
-Run it with `npx tsx --env-file=.env src/server.ts`. You have a running Express server with a configured DocuForge client. Time to add endpoints.
+Run it with `npx tsx --env-file=.env src/server.ts`. You have a running Express server with a configured Deckle client. Time to add endpoints.
 
 ## Step 2: HTML-to-PDF Endpoint
 
@@ -136,13 +136,13 @@ const pdf = await df.generate({
 });
 ```
 
-The `{{pageNumber}}` and `{{totalPages}}` tokens are interpolated automatically by DocuForge during rendering.
+The `{{pageNumber}}` and `{{totalPages}}` tokens are interpolated automatically by Deckle during rendering.
 
 ## Step 3: Template-Based Invoice Endpoint
 
-Raw HTML works for one-off documents, but most real applications generate PDFs from structured data. Invoices, receipts, reports -- these all follow a fixed layout populated with dynamic values. DocuForge templates use Handlebars syntax (`{{variable}}`, `{{#each items}}`, `{{#if}}`) and are stored server-side with version history.
+Raw HTML works for one-off documents, but most real applications generate PDFs from structured data. Invoices, receipts, reports -- these all follow a fixed layout populated with dynamic values. Deckle templates use Handlebars syntax (`{{variable}}`, `{{#each items}}`, `{{#if}}`) and are stored server-side with version history.
 
-Create a template in the DocuForge dashboard first (or via the API), then reference it by ID:
+Create a template in the Deckle dashboard first (or via the API), then reference it by ID:
 
 ```typescript
 const INVOICE_TEMPLATE_ID = "tmpl_your_invoice_template";
@@ -196,7 +196,7 @@ app.post("/api/invoices/:id/pdf", async (req, res, next) => {
 
 The `data` object is matched against the Handlebars placeholders in your template. If your template contains `{{#each items}}`, the `items` array is iterated. If it contains `{{#if customerEmail}}`, the block renders conditionally. This separation of layout and data means designers can update the template in the dashboard without touching your Express code.
 
-Templates also support version history. Every update to a template creates a new version, so you can roll back if a layout change breaks something. The template ID stays the same across versions -- DocuForge always uses the latest version unless you specify otherwise.
+Templates also support version history. Every update to a template creates a new version, so you can roll back if a layout change breaks something. The template ID stays the same across versions -- Deckle always uses the latest version unless you specify otherwise.
 
 ## Step 4: Direct File Download
 
@@ -261,19 +261,19 @@ app.get("/api/invoices/:id/download-redirect", async (req, res, next) => {
 });
 ```
 
-This is faster since the PDF is generated and stored on DocuForge's CDN, and the browser fetches it directly. The tradeoff is that the URL is temporarily public. For sensitive documents like invoices, the base64 approach keeps the PDF entirely within your server's control.
+This is faster since the PDF is generated and stored on Deckle's CDN, and the browser fetches it directly. The tradeoff is that the URL is temporarily public. For sensitive documents like invoices, the base64 approach keeps the PDF entirely within your server's control.
 
 ## Step 5: Error Handling Middleware
 
-DocuForge's SDK throws typed errors that map cleanly to HTTP status codes. A single Express error middleware can catch them all and return consistent responses:
+Deckle's SDK throws typed errors that map cleanly to HTTP status codes. A single Express error middleware can catch them all and return consistent responses:
 
 ```typescript
 import {
-  DocuForgeError,
+  DeckleError,
   AuthenticationError,
   RateLimitError,
   ValidationError,
-} from "docuforge";
+} from "deckle";
 
 app.use(
   (
@@ -293,7 +293,7 @@ app.use(
 
     if (err instanceof AuthenticationError) {
       res.status(401).json({
-        error: "Invalid or missing DocuForge API key",
+        error: "Invalid or missing Deckle API key",
       });
       return;
     }
@@ -305,7 +305,7 @@ app.use(
       return;
     }
 
-    if (err instanceof DocuForgeError) {
+    if (err instanceof DeckleError) {
       res.status(err.statusCode).json({
         error: err.message,
       });
@@ -321,17 +321,17 @@ app.use(
 );
 ```
 
-The order matters. `RateLimitError` and `AuthenticationError` extend `DocuForgeError`, so they must be checked first. If you catch `DocuForgeError` at the top, the specific subclasses would never match.
+The order matters. `RateLimitError` and `AuthenticationError` extend `DeckleError`, so they must be checked first. If you catch `DeckleError` at the top, the specific subclasses would never match.
 
 The `RateLimitError` is particularly important to handle well. It includes a `retryAfter` property (in seconds) that you should forward as a `Retry-After` header. Well-behaved clients will wait that duration before retrying. If you are building a frontend that calls this Express API, you can read that header and show a countdown or queue the request.
 
-The `ValidationError` covers cases like malformed HTML, missing template variables, or invalid PDF options. The error message from DocuForge is descriptive enough to return directly to the caller.
+The `ValidationError` covers cases like malformed HTML, missing template variables, or invalid PDF options. The error message from Deckle is descriptive enough to return directly to the caller.
 
-Because every route uses `next(err)` in its catch block, all DocuForge errors flow through this single middleware. You write the error mapping once and every endpoint benefits.
+Because every route uses `next(err)` in its catch block, all Deckle errors flow through this single middleware. You write the error mapping once and every endpoint benefits.
 
 ## Step 6: React-to-PDF Endpoint
 
-If your team writes components in React, you can skip the HTML string entirely and send JSX to DocuForge. The server transpiles it, renders it to static markup, and converts it to a PDF:
+If your team writes components in React, you can skip the HTML string entirely and send JSX to Deckle. The server transpiles it, renders it to static markup, and converts it to a PDF:
 
 ```typescript
 app.post("/api/generate/react", async (req, res, next) => {
@@ -367,7 +367,7 @@ app.post("/api/generate/react", async (req, res, next) => {
 });
 ```
 
-The `react` field accepts a JSX/TSX string. DocuForge transpiles it with esbuild on the server, so you do not need a build step. The optional `data` object is passed as props to the root component, and `styles` accepts a CSS string applied to the rendered output.
+The `react` field accepts a JSX/TSX string. Deckle transpiles it with esbuild on the server, so you do not need a build step. The optional `data` object is passed as props to the root component, and `styles` accepts a CSS string applied to the rendered output.
 
 This is especially useful when your PDF layouts share components with your frontend. Instead of maintaining separate HTML templates, you write React components that work in both the browser and the PDF renderer. A reporting dashboard component, for example, can render interactively on screen and produce a static PDF with the same layout when exported.
 
@@ -387,17 +387,17 @@ Here is the full `src/server.ts` with all endpoints consolidated:
 ```typescript
 // src/server.ts
 import express from "express";
-import DocuForge, {
-  DocuForgeError,
+import Deckle, {
+  DeckleError,
   AuthenticationError,
   RateLimitError,
   ValidationError,
-} from "docuforge";
+} from "deckle";
 
 const app = express();
 app.use(express.json({ limit: "10mb" }));
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const df = new Deckle(process.env.DECKLE_API_KEY!);
 const INVOICE_TEMPLATE_ID = "tmpl_your_invoice_template";
 
 // Health check
@@ -500,7 +500,7 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
     res.status(400).json({ error: err.message });
     return;
   }
-  if (err instanceof DocuForgeError) {
+  if (err instanceof DeckleError) {
     res.status(err.statusCode).json({ error: err.message });
     return;
   }
@@ -518,8 +518,8 @@ Run it with `npx tsx --env-file=.env src/server.ts` and you have a fully functio
 
 This tutorial covered the core patterns for Express-based PDF generation. From here, you can extend the service in several directions:
 
-- **Add authentication middleware** to protect your endpoints and pass user context to DocuForge for usage tracking.
+- **Add authentication middleware** to protect your endpoints and pass user context to Deckle for usage tracking.
 - **Use the batch endpoint** (`df.batch()`) for generating hundreds of PDFs asynchronously through BullMQ.
 - **Deploy as a standalone microservice** behind an API gateway, keeping PDF generation isolated from your main application.
 
-For more depth, see the [Next.js PDF generation guide](https://getdocuforge.dev/blog/generate-pdfs-nextjs-docuforge) for framework-specific patterns, the [DocuForge vs Puppeteer comparison](https://getdocuforge.dev/blog/docuforge-vs-puppeteer-why-i-switched) for architectural context, and the [page layout and styling guide](https://getdocuforge.dev/blog/pdf-page-breaks-headers-footers-guide) for advanced CSS techniques in PDF rendering.
+For more depth, see the [Next.js PDF generation guide](https://getdeckle.dev/blog/generate-pdfs-nextjs-deckle) for framework-specific patterns, the [Deckle vs Puppeteer comparison](https://getdeckle.dev/blog/deckle-vs-puppeteer-why-i-switched) for architectural context, and the [page layout and styling guide](https://getdeckle.dev/blog/pdf-page-breaks-headers-footers-guide) for advanced CSS techniques in PDF rendering.

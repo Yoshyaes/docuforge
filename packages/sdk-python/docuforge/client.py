@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Union
 
 import httpx
 
-from docuforge.types import (
+from deckle.types import (
     PDFOptions,
     GenerateResponse,
     Generation,
@@ -16,15 +16,15 @@ from docuforge.types import (
     BatchItem,
     BatchResponse,
 )
-from docuforge.errors import (
-    DocuForgeError,
+from deckle.errors import (
+    DeckleError,
     AuthenticationError,
     RateLimitError,
 )
 
 
 class _Templates:
-    def __init__(self, client: "DocuForge"):
+    def __init__(self, client: "Deckle"):
         self._client = client
 
     def create(
@@ -81,11 +81,11 @@ class _Templates:
         return resp.get("deleted", False)
 
 
-class DocuForge:
-    """DocuForge Python SDK.
+class Deckle:
+    """Deckle Python SDK.
 
     Usage:
-        df = DocuForge("df_live_...")
+        df = Deckle("dk_live_...")
         pdf = df.generate("<h1>Hello</h1>")
         print(pdf.url)
     """
@@ -96,12 +96,12 @@ class DocuForge:
     def __init__(
         self,
         api_key: str,
-        base_url: str = "https://api.getdocuforge.dev",
+        base_url: str = "https://api.getdeckle.dev",
         timeout: float = 30.0,
         max_retries: int = 3,
     ):
         if not api_key:
-            raise ValueError("DocuForge API key is required")
+            raise ValueError("Deckle API key is required")
         self._api_key = api_key
         self._base_url = base_url.rstrip("/")
         self._max_retries = max_retries
@@ -110,7 +110,7 @@ class DocuForge:
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
-                "User-Agent": "docuforge-python/0.1.0",
+                "User-Agent": "deckle-python/0.1.0",
             },
             timeout=timeout,
         )
@@ -134,7 +134,7 @@ class DocuForge:
                 data = resp.json()
             except Exception:
                 if not resp.is_success:
-                    raise DocuForgeError(
+                    raise DeckleError(
                         message=f"Non-JSON response from API (status {resp.status_code})",
                         status_code=resp.status_code,
                         code="INVALID_RESPONSE",
@@ -162,7 +162,7 @@ class DocuForge:
 
             if not resp.is_success:
                 err = data.get("error", {})
-                raise DocuForgeError(
+                raise DeckleError(
                     message=err.get("message", "Request failed"),
                     status_code=resp.status_code,
                     code=err.get("code", "UNKNOWN"),
@@ -409,7 +409,7 @@ class DocuForge:
           - ``p12`` (str): base64-encoded P12/PFX blob (max 100 KB decoded)
           - ``password`` (str, optional): P12 passphrase, "" for unprotected
 
-        The P12 blob is sent over TLS and used ephemerally — DocuForge
+        The P12 blob is sent over TLS and used ephemerally — Deckle
         does not persist it.
         """
         body: Dict[str, Any] = {"pdf": pdf, "name": name, "output": output}
@@ -562,7 +562,7 @@ class DocuForge:
         """Close the HTTP client."""
         self._client.close()
 
-    def __enter__(self) -> "DocuForge":
+    def __enter__(self) -> "Deckle":
         return self
 
     def __exit__(self, *args: Any) -> None:

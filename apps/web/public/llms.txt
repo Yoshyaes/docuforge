@@ -1,19 +1,19 @@
-# DocuForge
+# Deckle
 
 > PDF generation API for developers. HTML in, pixel-perfect PDF out.
 
 ## Docs
-- [Quickstart](https://getdocuforge.dev/docs/quickstart)
-- [HTML to PDF](https://getdocuforge.dev/docs/api-reference/generate)
-- [Templates](https://getdocuforge.dev/docs/api-reference/templates)
-- [API Reference](https://getdocuforge.dev/docs/api-reference/generate)
-- [Full LLM Docs](https://getdocuforge.dev/llms-full.txt)
+- [Quickstart](https://getdeckle.dev/docs/quickstart)
+- [HTML to PDF](https://getdeckle.dev/docs/api-reference/generate)
+- [Templates](https://getdeckle.dev/docs/api-reference/templates)
+- [API Reference](https://getdeckle.dev/docs/api-reference/generate)
+- [Full LLM Docs](https://getdeckle.dev/llms-full.txt)
 
 ## SDKs
-- TypeScript: `npm install docuforge` — `DocuForge` class with `generate()`, `fromTemplate()`, `fromReact()`, `batch()`, `templates.*`
-- Python: `pip install docuforge` — mirrors TS SDK API, uses httpx + Pydantic v2
-- Go: `go get github.com/docuforge/docuforge-go` — stdlib net/http, functional options, context-based API
-- Ruby: `gem install docuforge` — uses Faraday HTTP client, idiomatic Ruby API
+- TypeScript: `npm install deckle` — `Deckle` class with `generate()`, `fromTemplate()`, `fromReact()`, `batch()`, `templates.*`
+- Python: `pip install deckle` — mirrors TS SDK API, uses httpx + Pydantic v2
+- Go: `go get github.com/Yoshyaes/deckle/packages/sdk-go` — stdlib net/http, functional options, context-based API
+- Ruby: `gem install deckle` — uses Faraday HTTP client, idiomatic Ruby API
 
 ## Core Endpoints
 - `POST /v1/generate` — Generate PDF from HTML, React (JSX/TSX), or template + data. Supports watermarks, headers/footers with `{{pageNumber}}`/`{{totalPages}}`.
@@ -48,7 +48,7 @@
 - `POST /v1/starter-templates/:slug/clone` — Clone a starter template.
 
 ## React-to-PDF
-Send JSX/TSX directly via `react` field in `/v1/generate`. Server transpiles with esbuild and renders via `renderToStaticMarkup`. Component library `@docuforge/react` provides: Document, Page, Header, Footer, Table, Grid, Watermark, Barcode, Signature, List, Divider, PageNumber.
+Send JSX/TSX directly via `react` field in `/v1/generate`. Server transpiles with esbuild and renders via `renderToStaticMarkup`. Component library `@deckle/react` provides: Document, Page, Header, Footer, Table, Grid, Watermark, Barcode, Signature, List, Divider, PageNumber.
 
 ## QR Codes & Barcodes
 Use `{{qr:data}}` and `{{barcode:data}}` placeholders in HTML. Replaced with inline SVGs during rendering.
@@ -57,7 +57,7 @@ Use `{{qr:data}}` and `{{barcode:data}}` placeholders in HTML. Replaced with inl
 - `POST /v1/ai/generate-template` — AI-powered template generation using Claude. Requires `ANTHROPIC_API_KEY`.
 
 ## MCP Server
-`@docuforge/mcp-server` for AI agent integration (Claude Desktop, Cursor, Claude Code). Provides 7 tools for generating PDFs, managing templates, and querying usage from AI assistants.
+`@deckle/mcp-server` for AI agent integration (Claude Desktop, Cursor, Claude Code). Provides 7 tools for generating PDFs, managing templates, and querying usage from AI assistants.
 
 ## Usage & Billing
 - `GET /v1/usage` — Current billing period stats.
@@ -66,8 +66,8 @@ Use `{{qr:data}}` and `{{barcode:data}}` placeholders in HTML. Replaced with inl
 
 ## Quick Example
 ```typescript
-import { DocuForge } from 'docuforge';
-const df = new DocuForge('df_live_...');
+import { Deckle } from 'deckle';
+const df = new Deckle('dk_live_...');
 const pdf = await df.generate({
   html: '<h1>Invoice #1234</h1>',
   options: { format: 'A4', margin: '1in' }

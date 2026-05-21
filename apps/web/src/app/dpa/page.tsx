@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { SectionWrapper } from '@/components/ui/section-wrapper';
 
 export const metadata: Metadata = {
-  title: 'Data Processing Agreement — DocuForge',
+  title: 'Data Processing Agreement — Deckle',
   description:
-    'How to obtain a Data Processing Agreement (DPA) for DocuForge — required for EU customer onboarding under GDPR.',
+    'How to obtain a Data Processing Agreement (DPA) for Deckle — required for EU customer onboarding under GDPR.',
 };
 
 const LAST_UPDATED = '2026-05-20';
@@ -22,7 +22,7 @@ export default function DpaPage() {
 
         <div className="space-y-6 text-text-muted leading-relaxed">
           <p>
-            DocuForge offers a signable Data Processing Agreement (DPA) to customers who require
+            Deckle offers a signable Data Processing Agreement (DPA) to customers who require
             one for GDPR Article 28 or comparable regulatory obligations. The DPA references the
             EU Standard Contractual Clauses (2021/914) for transfers of personal data outside the
             EEA.
@@ -33,10 +33,10 @@ export default function DpaPage() {
             <ol className="list-decimal pl-5 space-y-2">
               <li>
                 Email{' '}
-                <a href="mailto:legal@getdocuforge.dev" className="text-accent hover:underline">
-                  legal@getdocuforge.dev
+                <a href="mailto:legal@getdeckle.dev" className="text-accent hover:underline">
+                  legal@getdeckle.dev
                 </a>{' '}
-                from your work address with your company name and the DocuForge account email.
+                from your work address with your company name and the Deckle account email.
               </li>
               <li>
                 We send the DPA as a DocuSign or PandaDoc envelope. Most customers receive it
@@ -71,13 +71,13 @@ export default function DpaPage() {
           <section>
             <h2 className="text-xl font-semibold text-text-primary mb-3">Self-hosting</h2>
             <p>
-              If you run DocuForge from{' '}
-              <a href="https://docs.getdocuforge.dev" className="text-accent hover:underline">
+              If you run Deckle from{' '}
+              <a href="https://docs.getdeckle.dev" className="text-accent hover:underline">
                 our open-source repo
               </a>{' '}
               on your own infrastructure, you are the data controller AND processor for your end
-              users — DocuForge has no access to the data. In that case a DPA between you and
-              DocuForge is not required for the data you process. You may still want one with
+              users — Deckle has no access to the data. In that case a DPA between you and
+              Deckle is not required for the data you process. You may still want one with
               your own hosting provider.
             </p>
           </section>

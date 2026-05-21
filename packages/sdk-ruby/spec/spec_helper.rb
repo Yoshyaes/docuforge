@@ -2,7 +2,7 @@
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
-require "docuforge"
+require "deckle"
 require "faraday"
 require "json"
 
@@ -21,13 +21,13 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 end
 
-module DocuForgeSpecHelpers
+module DeckleSpecHelpers
   BASE_URL = "https://api.test.local"
 
-  # Build a DocuForge::Client whose Faraday connection uses the supplied
+  # Build a Deckle::Client whose Faraday connection uses the supplied
   # Faraday::Adapter::Test::Stubs. Real network is never touched.
-  def build_client(stubs, api_key: "df_live_test", max_retries: 0)
-    client = DocuForge::Client.new(
+  def build_client(stubs, api_key: "dk_live_test", max_retries: 0)
+    client = Deckle::Client.new(
       api_key: api_key,
       base_url: BASE_URL,
       timeout: 5,
@@ -36,7 +36,7 @@ module DocuForgeSpecHelpers
     test_conn = Faraday.new(url: BASE_URL) do |f|
       f.headers["Authorization"] = "Bearer #{api_key}"
       f.headers["Content-Type"] = "application/json"
-      f.headers["User-Agent"] = "docuforge-ruby/#{DocuForge::VERSION}"
+      f.headers["User-Agent"] = "deckle-ruby/#{Deckle::VERSION}"
       f.adapter(:test, stubs)
     end
     client.instance_variable_set(:@conn, test_conn)

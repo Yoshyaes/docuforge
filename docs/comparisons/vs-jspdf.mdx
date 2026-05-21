@@ -1,15 +1,15 @@
 ---
-title: "DocuForge vs jsPDF"
-description: "Compare DocuForge's server-side API against client-side jsPDF"
+title: "Deckle vs jsPDF"
+description: "Compare Deckle's server-side API against client-side jsPDF"
 ---
 
-# DocuForge vs jsPDF
+# Deckle vs jsPDF
 
-jsPDF is a client-side JavaScript library that generates PDFs in the browser. DocuForge is a server-side API that renders PDFs using headless Chromium for pixel-perfect output.
+jsPDF is a client-side JavaScript library that generates PDFs in the browser. Deckle is a server-side API that renders PDFs using headless Chromium for pixel-perfect output.
 
 ## Feature Comparison
 
-| Feature | DocuForge | jsPDF |
+| Feature | Deckle | jsPDF |
 |---------|-----------|-------|
 | **Runs on** | Server (API) | Client (browser) |
 | **HTML/CSS support** | Full CSS3 | Very limited (html2canvas) |
@@ -33,7 +33,7 @@ jsPDF is a client-side JavaScript library that generates PDFs in the browser. Do
 - `html2canvas` plugin is needed for HTML, but output is approximate
 - Large documents can freeze the browser
 
-**DocuForge** renders PDFs server-side using Chromium, giving you:
+**Deckle** renders PDFs server-side using Chromium, giving you:
 - Full CSS3 support (the same rendering as Chrome)
 - Automatic page breaks, headers, footers
 - Zero client-side bundle size impact
@@ -67,11 +67,11 @@ doc.autoTable({
 doc.save('invoice.pdf');
 ```
 
-### DocuForge
+### Deckle
 
 ```typescript
-import { DocuForge } from 'docuforge';
-const df = new DocuForge('df_live_...');
+import { Deckle } from 'deckle';
+const df = new Deckle('dk_live_...');
 
 const pdf = await df.generate({
   html: `
@@ -94,7 +94,7 @@ const pdf = await df.generate({
 - You're generating simple documents with manual layouts
 - You can't send data to a third-party server
 
-## When to Choose DocuForge
+## When to Choose Deckle
 
 - You need pixel-perfect PDFs with proper CSS layout
 - You're building production invoices, reports, or certificates

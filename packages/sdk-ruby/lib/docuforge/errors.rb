@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module DocuForge
+module Deckle
   class Error < StandardError
     attr_reader :status_code, :code, :message
 

@@ -37,5 +37,5 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install -e ".[dev]" 2>/dev/null || pip install -e .
-      - run: python -m py_compile docuforge/__init__.py
-      - run: python -m py_compile docuforge/client.py
+      - run: python -m py_compile deckle/__init__.py
+      - run: python -m py_compile deckle/client.py

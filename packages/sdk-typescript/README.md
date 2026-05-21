@@ -1,19 +1,19 @@
-# DocuForge
+# Deckle
 
 PDF generation API for developers. HTML in, pixel-perfect PDF out.
 
 ## Installation
 
 ```bash
-npm install docuforge
+npm install deckle
 ```
 
 ## Quick Start
 
 ```typescript
-import { DocuForge } from 'docuforge';
+import { Deckle } from 'deckle';
 
-const df = new DocuForge('df_live_...');
+const df = new Deckle('dk_live_...');
 
 // Generate a PDF from HTML
 const pdf = await df.generate({
@@ -21,7 +21,7 @@ const pdf = await df.generate({
   options: { format: 'A4', margin: '1in' }
 });
 
-console.log(pdf.url);    // https://cdn.getdocuforge.dev/gen_abc123.pdf
+console.log(pdf.url);    // https://cdn.getdeckle.dev/gen_abc123.pdf
 console.log(pdf.pages);  // 2
 ```
 
@@ -99,14 +99,14 @@ const pdf = await df.generate({
 ## Error Handling
 
 ```typescript
-import { DocuForge, DocuForgeError, RateLimitError } from 'docuforge';
+import { Deckle, DeckleError, RateLimitError } from 'deckle';
 
 try {
   const pdf = await df.generate({ html: '<h1>Hello</h1>' });
 } catch (err) {
   if (err instanceof RateLimitError) {
     console.log(`Rate limited. Retry after ${err.retryAfter}s`);
-  } else if (err instanceof DocuForgeError) {
+  } else if (err instanceof DeckleError) {
     console.log(`Error ${err.code}: ${err.message}`);
   }
 }
@@ -115,8 +115,8 @@ try {
 ## Configuration
 
 ```typescript
-const df = new DocuForge('df_live_...', {
-  baseUrl: 'https://api.getdocuforge.dev', // Custom API URL
+const df = new Deckle('dk_live_...', {
+  baseUrl: 'https://api.getdeckle.dev', // Custom API URL
   timeout: 30000                         // Request timeout in ms
 });
 ```

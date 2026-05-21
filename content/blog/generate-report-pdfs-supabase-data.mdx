@@ -1,9 +1,9 @@
-﻿---
+---
 title: "Generate Report PDFs from Supabase Data"
-description: "Query your Supabase database, transform the data, and generate polished PDF reports with DocuForge. Complete with tables, QR codes, and automatic scheduling."
+description: "Query your Supabase database, transform the data, and generate polished PDF reports with Deckle. Complete with tables, QR codes, and automatic scheduling."
 slug: "generate-report-pdfs-supabase-data"
 date: "2026-03-21"
-author: "DocuForge Team"
+author: "Deckle Team"
 authorRole: "Developer Advocate"
 tags: ["supabase", "typescript", "templates", "pdf-generation", "tutorial"]
 readingTime: "11 min read"
@@ -15,23 +15,23 @@ Your Supabase database holds everything: orders, users, revenue, product perform
 
 Building a reporting pipeline from scratch means stitching together a query layer, a templating engine, a PDF renderer, and a delivery mechanism. That is a lot of surface area for bugs.
 
-In this tutorial, you will build a complete reporting pipeline that queries sales data from Supabase, feeds it into a Handlebars template with tables and QR codes, generates a pixel-perfect PDF with DocuForge, stores the result back in Supabase, and automates the whole thing with an Edge Function. You will also see how to scale to multi-client batch reports using the DocuForge batch API.
+In this tutorial, you will build a complete reporting pipeline that queries sales data from Supabase, feeds it into a Handlebars template with tables and QR codes, generates a pixel-perfect PDF with Deckle, stores the result back in Supabase, and automates the whole thing with an Edge Function. You will also see how to scale to multi-client batch reports using the Deckle batch API.
 
 ## Step 1: Set Up the Project
 
-Start by creating a new Node.js project and installing the two dependencies you need: the DocuForge SDK for PDF generation and the Supabase client for database queries.
+Start by creating a new Node.js project and installing the two dependencies you need: the Deckle SDK for PDF generation and the Supabase client for database queries.
 
 ```bash
 mkdir sales-report-generator
 cd sales-report-generator
 npm init -y
-npm install docuforge @supabase/supabase-js
+npm install deckle @supabase/supabase-js
 ```
 
 Add your credentials to a `.env` file. Never commit this file to version control.
 
 ```bash
-DOCUFORGE_API_KEY=df_live_your_api_key_here
+DECKLE_API_KEY=dk_live_your_api_key_here
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_KEY=eyJhbGciOiJIUzI1NiIs...
 ```
@@ -42,10 +42,10 @@ Create a `report.ts` file and initialize both clients:
 
 ```typescript
 // report.ts
-import DocuForge from "docuforge";
+import Deckle from "deckle";
 import { createClient } from "@supabase/supabase-js";
 
-const df = new DocuForge(process.env.DOCUFORGE_API_KEY!);
+const df = new Deckle(process.env.DECKLE_API_KEY!);
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -383,7 +383,7 @@ async function createReportTemplate() {
 
 A few things to note about this template. The summary cards use a CSS grid with three equal columns. This renders cleanly in Chromium and produces consistent output across pages. The product ranking uses `{{@index}}` from Handlebars to display the position number automatically.
 
-The QR code at the bottom uses DocuForge's `{{qr:data}}` placeholder syntax. Before rendering, DocuForge replaces this with an inline SVG. The QR code links to your live dashboard URL, so anyone who receives the printed report can scan it to see real-time data. This is particularly useful for reports that are printed and distributed in meetings.
+The QR code at the bottom uses Deckle's `{{qr:data}}` placeholder syntax. Before rendering, Deckle replaces this with an inline SVG. The QR code links to your live dashboard URL, so anyone who receives the printed report can scan it to see real-time data. This is particularly useful for reports that are printed and distributed in meetings.
 
 You only need to create this template once. Save the returned template ID and reuse it for every report generation.
 
@@ -486,7 +486,7 @@ async function storeReportRecord(
 }
 ```
 
-Now you can query the `reports` table to show a history of generated reports, link to the PDF URLs, or track generation performance over time. This is also useful for debugging: if a stakeholder says a report looks wrong, you can look up the exact generation ID and inspect it in your DocuForge dashboard.
+Now you can query the `reports` table to show a history of generated reports, link to the PDF URLs, or track generation performance over time. This is also useful for debugging: if a stakeholder says a report looks wrong, you can look up the exact generation ID and inspect it in your Deckle dashboard.
 
 ## Step 6: Automate with Supabase Edge Functions
 
@@ -535,11 +535,11 @@ serve(async (req) => {
     const totalRevenue = orders.reduce((sum: number, o: any) => sum + o.total_price, 0);
     const totalOrders = orders.length;
 
-    // Call DocuForge API directly (no npm SDK in Deno)
-    const apiKey = Deno.env.get("DOCUFORGE_API_KEY")!;
+    // Call Deckle API directly (no npm SDK in Deno)
+    const apiKey = Deno.env.get("DECKLE_API_KEY")!;
     const templateId = Deno.env.get("REPORT_TEMPLATE_ID")!;
 
-    const generateResponse = await fetch("https://api.docuforge.com/v1/generate", {
+    const generateResponse = await fetch("https://api.deckle.com/v1/generate", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${apiKey}`,
@@ -599,7 +599,7 @@ Deploy the function and set the required secrets:
 
 ```bash
 supabase functions deploy generate-weekly-report
-supabase secrets set DOCUFORGE_API_KEY=df_live_your_key
+supabase secrets set DECKLE_API_KEY=dk_live_your_key
 supabase secrets set REPORT_TEMPLATE_ID=tmpl_your_id
 ```
 
@@ -622,7 +622,7 @@ This triggers the Edge Function every Monday at 8 AM. The report covers the prev
 
 ## Step 7: Batch Reports for Multiple Clients
 
-If you run a multi-tenant platform, you need to generate separate reports for each client. Doing this sequentially is slow. The DocuForge batch API lets you queue all reports at once and get notified when they are done.
+If you run a multi-tenant platform, you need to generate separate reports for each client. Doing this sequentially is slow. The Deckle batch API lets you queue all reports at once and get notified when they are done.
 
 ```typescript
 async function generateClientReports(startDate: string, endDate: string) {
@@ -698,9 +698,9 @@ async function generateClientReports(startDate: string, endDate: string) {
 }
 ```
 
-The `df.batch()` call returns immediately with HTTP 202. The response includes a `batch_id`, the `total` number of reports queued, and an array of `generations` with each item's `id` and `index`. DocuForge processes the jobs concurrently on its side using a BullMQ worker pool with retries and exponential backoff.
+The `df.batch()` call returns immediately with HTTP 202. The response includes a `batch_id`, the `total` number of reports queued, and an array of `generations` with each item's `id` and `index`. Deckle processes the jobs concurrently on its side using a BullMQ worker pool with retries and exponential backoff.
 
-When all reports finish, DocuForge sends a POST request to your webhook URL. Your webhook handler can then update the batch status in Supabase, notify clients via email, or trigger downstream workflows. For a batch of 50 client reports, this approach is dramatically faster than generating them one at a time.
+When all reports finish, Deckle sends a POST request to your webhook URL. Your webhook handler can then update the batch status in Supabase, notify clients via email, or trigger downstream workflows. For a batch of 50 client reports, this approach is dramatically faster than generating them one at a time.
 
 You can also poll individual generation status using `df.getGeneration(id)` if you prefer polling over webhooks.
 
@@ -708,8 +708,8 @@ You can also poll individual generation status using `df.getGeneration(id)` if y
 
 You now have a fully automated reporting pipeline: Supabase data in, polished PDFs out, with scheduling and multi-client batch support. Here are some natural next steps:
 
-- **[Automate Stripe invoices](https://getdocuforge.dev/blog/invoice-system-stripe-docuforge)** -- Generate PDF invoices on every successful Stripe payment and email them to customers.
-- **[Generate PDFs in Next.js](https://getdocuforge.dev/blog/generate-pdfs-nextjs-docuforge)** -- Build a dashboard front end that lets users trigger report generation on demand.
-- **[Page layout guide](https://getdocuforge.dev/blog/pdf-page-breaks-headers-footers-guide)** -- Fine-tune margins, headers, footers, and multi-page layouts for professional documents.
+- **[Automate Stripe invoices](https://getdeckle.dev/blog/invoice-system-stripe-deckle)** -- Generate PDF invoices on every successful Stripe payment and email them to customers.
+- **[Generate PDFs in Next.js](https://getdeckle.dev/blog/generate-pdfs-nextjs-deckle)** -- Build a dashboard front end that lets users trigger report generation on demand.
+- **[Page layout guide](https://getdeckle.dev/blog/pdf-page-breaks-headers-footers-guide)** -- Fine-tune margins, headers, footers, and multi-page layouts for professional documents.
 
-Check out the [full API reference](https://getdocuforge.dev/docs/api-reference) for additional features like PDF merging, splitting, password protection, and form filling.
+Check out the [full API reference](https://getdeckle.dev/docs/api-reference) for additional features like PDF merging, splitting, password protection, and form filling.

@@ -1,5 +1,5 @@
 {
-  "name": "@docuforge/dashboard",
+  "name": "@deckle/dashboard",
   "version": "0.1.0",
   "private": true,
   "scripts": {

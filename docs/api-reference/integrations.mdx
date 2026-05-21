@@ -11,7 +11,7 @@ Endpoints designed for no-code automation platforms like Zapier, Make (Integroma
 
 ## Test Authentication
 
-`GET https://api.getdocuforge.dev/v1/integrations/auth/test`
+`GET https://api.getdeckle.dev/v1/integrations/auth/test`
 
 Verify that an API key is valid. Used during Zapier/Make connection setup.
 
@@ -29,7 +29,7 @@ Verify that an API key is valid. Used during Zapier/Make connection setup.
 
 ## Trigger: New Generation
 
-`GET https://api.getdocuforge.dev/v1/integrations/triggers/new-generation`
+`GET https://api.getdeckle.dev/v1/integrations/triggers/new-generation`
 
 Polling trigger that returns the most recent PDF generations. Automation platforms call this periodically to detect new items.
 
@@ -48,7 +48,7 @@ Polling trigger that returns the most recent PDF generations. Automation platfor
     "template_id": "tmpl_xyz789",
     "input_type": "template",
     "status": "completed",
-    "url": "https://cdn.getdocuforge.dev/gen_abc123.pdf",
+    "url": "https://cdn.getdeckle.dev/gen_abc123.pdf",
     "pages": 3,
     "file_size": 45230,
     "generation_time_ms": 1840,
@@ -62,7 +62,7 @@ Polling trigger that returns the most recent PDF generations. Automation platfor
 
 ## Trigger: New Template
 
-`GET https://api.getdocuforge.dev/v1/integrations/triggers/new-template`
+`GET https://api.getdeckle.dev/v1/integrations/triggers/new-template`
 
 Polling trigger that returns the most recent templates.
 
@@ -91,7 +91,7 @@ Polling trigger that returns the most recent templates.
 
 ## Action: Generate PDF
 
-`POST https://api.getdocuforge.dev/v1/integrations/actions/generate`
+`POST https://api.getdeckle.dev/v1/integrations/actions/generate`
 
 Simplified PDF generation action with flat parameters (no nested `options` object). Designed for easy mapping in automation builders.
 
@@ -110,8 +110,8 @@ Simplified PDF generation action with flat parameters (no nested `options` objec
 ### Example
 
 ```bash
-curl -X POST https://api.getdocuforge.dev/v1/integrations/actions/generate \
-  -H "Authorization: Bearer df_live_sk_..." \
+curl -X POST https://api.getdeckle.dev/v1/integrations/actions/generate \
+  -H "Authorization: Bearer dk_live_sk_..." \
   -H "Content-Type: application/json" \
   -d '{
     "template_id": "tmpl_abc123",
@@ -128,7 +128,7 @@ curl -X POST https://api.getdocuforge.dev/v1/integrations/actions/generate \
 ```json
 {
   "id": "gen_abc123",
-  "url": "https://cdn.getdocuforge.dev/gen_abc123.pdf",
+  "url": "https://cdn.getdeckle.dev/gen_abc123.pdf",
   "pages": 2,
   "file_size": 45230
 }

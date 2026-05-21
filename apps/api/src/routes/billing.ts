@@ -18,7 +18,7 @@ app.post('/checkout', async (c) => {
       {
         error: {
           code: 'NOT_CONFIGURED',
-          message: 'Billing is not yet enabled on this DocuForge instance. Contact support@getdocuforge.dev.',
+          message: 'Billing is not yet enabled on this Deckle instance. Contact support@getdeckle.dev.',
         },
       },
       503,
@@ -29,7 +29,7 @@ app.post('/checkout', async (c) => {
   const plan = body.plan;
 
   if (!plan || !['starter', 'pro'].includes(plan)) {
-    throw new ValidationError("Plan must be 'starter' or 'pro'. See https://getdocuforge.dev/pricing for details.");
+    throw new ValidationError("Plan must be 'starter' or 'pro'. See https://getdeckle.dev/pricing for details.");
   }
 
   const user = c.get('user');
@@ -44,7 +44,7 @@ app.post('/portal', async (c) => {
       {
         error: {
           code: 'NOT_CONFIGURED',
-          message: 'Billing is not yet enabled on this DocuForge instance. Contact support@getdocuforge.dev.',
+          message: 'Billing is not yet enabled on this Deckle instance. Contact support@getdeckle.dev.',
         },
       },
       503,
@@ -88,7 +88,7 @@ billingWebhookApp.post('/', async (c) => {
       {
         error: {
           code: 'NOT_CONFIGURED',
-          message: 'Billing is not yet enabled on this DocuForge instance. Contact support@getdocuforge.dev.',
+          message: 'Billing is not yet enabled on this Deckle instance. Contact support@getdeckle.dev.',
         },
       },
       503,
