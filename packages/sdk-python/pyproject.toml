@@ -29,7 +29,7 @@ test = ["pytest>=7", "respx>=0.20"]
 [project.urls]
 Homepage = "https://getdeckle.dev"
 Documentation = "https://getdeckle.dev/docs"
-Repository = "https://github.com/Yoshyaes/deckle/deckle-python"
+Repository = "https://github.com/Yoshyaes/deckle"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

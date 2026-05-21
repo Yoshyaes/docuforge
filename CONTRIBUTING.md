@@ -15,7 +15,7 @@ Thanks for your interest in contributing to Deckle! This guide will help you get
 1. Fork and clone the repository:
 
 ```bash
-git clone https://github.com/Yoshyaes/deckle/deckle.git
+git clone https://github.com/Yoshyaes/deckle.git
 cd deckle
 ```
 

@@ -145,7 +145,7 @@ export function nudge2Email(ctx: TemplateContext): EmailTemplate {
 }
 
 export function lastCallEmail(ctx: TemplateContext): EmailTemplate {
-  const reply = ctx.founderEmail ?? 'support@deckle.dev';
+  const reply = ctx.founderEmail ?? 'support@getdeckle.dev';
   return {
     subject: 'Can I help you get Deckle working?',
     html: layout(

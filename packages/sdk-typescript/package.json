@@ -1,13 +1,13 @@
 {
-  "name": "deckle",
+  "name": "@deckle/sdk",
   "version": "1.0.0",
   "author": "Deckle",
   "homepage": "https://getdeckle.dev",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Yoshyaes/deckle/deckle"
+    "url": "https://github.com/Yoshyaes/deckle"
   },
-  "bugs": "https://github.com/Yoshyaes/deckle/deckle/issues",
+  "bugs": "https://github.com/Yoshyaes/deckle/issues",
   "description": "Deckle - PDF generation API for developers. HTML in, pixel-perfect PDF out.",
   "sideEffects": false,
   "type": "module",
